@@ -1,1 +1,0 @@
-Data Transfer Object, dùng để làm việc với phía client
