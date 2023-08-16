@@ -11,8 +11,6 @@ import com.example.froggyblogserver.dto.RegisterDto;
 import com.example.froggyblogserver.entity.Account;
 import com.example.froggyblogserver.entity.RefreshToken;
 import com.example.froggyblogserver.exception.ValidateException;
-import com.example.froggyblogserver.repository.AccountRepo;
-import com.example.froggyblogserver.repository.RefreshTokenRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.LoginResponse;
 import com.example.froggyblogserver.service.AccountService;
