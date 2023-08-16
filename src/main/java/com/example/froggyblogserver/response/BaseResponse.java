@@ -1,4 +1,4 @@
-package com.example.froggyblogserver.dto;
+package com.example.froggyblogserver.response;
 
 import lombok.Getter;
 import lombok.Setter;

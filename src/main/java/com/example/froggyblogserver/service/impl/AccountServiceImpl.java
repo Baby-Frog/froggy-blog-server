@@ -11,17 +11,17 @@ import org.springframework.stereotype.Service;
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.AccountPrinciple;
-import com.example.froggyblogserver.dto.BaseResponse;
 import com.example.froggyblogserver.entity.Account;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.repository.AccountRepo;
+import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.service.AccountService;
 import com.example.froggyblogserver.utils.StringHelper;
 
 @Service
-public class AccountServiceImpl implements AccountService, UserDetailsService{
+public class AccountServiceImpl implements AccountService{
 
     @Autowired
     private AccountRepo repo;
@@ -55,6 +55,13 @@ public class AccountServiceImpl implements AccountService, UserDetailsService{
         var found = repo.findByUsername(username);
         if(found == null) throw new UsernameNotFoundException("Can not find username: "+username);
         return AccountPrinciple.build(found);
+    }
+
+    @Override
+    public Account findByUsername(String username) {
+        var found = repo.findByUsername(username);
+        if(found == null) return null;
+        return found;
     }
     
 }

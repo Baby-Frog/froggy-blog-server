@@ -3,6 +3,8 @@ package com.example.froggyblogserver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -16,5 +18,10 @@ public class FroggyBlogServerApplication {
      @Bean
     public Dotenv dotenv() {
         return Dotenv.configure().load();
+    }
+
+    @Bean 
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder(17);
     }
 }

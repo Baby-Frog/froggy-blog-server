@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.froggyblogserver.dto.BaseResponse;
+import com.example.froggyblogserver.response.BaseResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
