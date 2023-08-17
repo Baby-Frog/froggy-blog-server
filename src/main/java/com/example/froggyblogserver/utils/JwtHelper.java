@@ -2,7 +2,7 @@ package com.example.froggyblogserver.utils;
 
 import java.util.Date;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -13,14 +13,18 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class JwtHelper {
-    private static Dotenv dotenv;
 
-    private static final String SECRET_KEY = dotenv.get("secretKey");
+    @Value("${jwt.secretKey}")
+    private String SECRET_KEY ;
 
-    private static final long EXPIRE_TIME = Long.parseLong(dotenv.get("expiredTimeAccess"));
-    private static final long EXPIRE_TIME_REFRESH = Long.parseLong(dotenv.get("expiredTimeRefresh"));
-    private static final String AUDIENCE = dotenv.get("audience");
-    private static final String ISSUER = dotenv.get("issuer");
+    @Value("${jwt.expiredTimeAccess}")
+    private long EXPIRE_TIME;
+    @Value("${jwt.expiredTimeRefresh}")
+    private long EXPIRE_TIME_REFRESH ;
+    @Value("${jwt.audience}")
+    private String AUDIENCE ;
+    @Value("${jwt.issuer}")
+    private String ISSUER ;
 
     public String generateAccessToken(String username){
         return Jwts.builder()
