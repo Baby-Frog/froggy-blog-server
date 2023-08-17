@@ -1,1 +1,0 @@
-chứa các config dữ liệu và cấu hình cho dự án, job, database

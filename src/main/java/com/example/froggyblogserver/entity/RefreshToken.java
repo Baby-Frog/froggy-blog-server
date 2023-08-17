@@ -11,24 +11,28 @@ import javax.persistence.Table;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Table(name = "topic")
+@Table(name = "refresh_token")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
-public class TopicEntity extends BaseEntity{
-
+public class RefreshToken extends BaseEntity{
     @Id
     private String id;
-    private String topicName;
+    private String ipAddress;
+    private String token;
+    private String accountId;
+       
+    
+    public RefreshToken(String id, String ipAddress, String token, String accountId) {
+        this.id = id;
+        this.ipAddress = ipAddress;
+        this.token = token;
+        this.accountId = accountId;
+    }
+
     @PrePersist
     private void beforeInsert(){
         this.id = UUID.randomUUID().toString();
