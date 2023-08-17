@@ -12,34 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.LoginDto;
 import com.example.froggyblogserver.dto.RefreshTokenDto;
 import com.example.froggyblogserver.dto.RegisterDto;
-import com.example.froggyblogserver.entity.Account;
-import com.example.froggyblogserver.entity.RefreshToken;
-import com.example.froggyblogserver.exception.ValidateException;
-import com.example.froggyblogserver.response.LoginResponse;
-import com.example.froggyblogserver.service.AccountService;
 import com.example.froggyblogserver.service.AuthenService;
-import com.example.froggyblogserver.service.RefreshTokenService;
-import com.example.froggyblogserver.utils.JwtHelper;
-import com.example.froggyblogserver.utils.StringHelper;
-
-import lombok.var;
 
 @RestController
 @RequestMapping
 @CrossOrigin("*")
-public class LoginController {
-    @Autowired
-    private AccountService accountService;
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-    @Autowired
-    private JwtHelper jwtHelper;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+public class AuthenController {
     @Autowired
     private AuthenService authenService;
 

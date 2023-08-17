@@ -1,1 +1,0 @@
-Chứa các response trả về cho FE

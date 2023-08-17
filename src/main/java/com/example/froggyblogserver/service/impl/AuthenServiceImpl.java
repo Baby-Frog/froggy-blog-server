@@ -71,6 +71,7 @@ public class AuthenServiceImpl implements AuthenService {
             var newAccount = new Account();
             newAccount.setUsername(req.getUsername());
             newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
+            // newAccount.getRoles().add()
             accountService.saveOrUpdate(newAccount);
             return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
         } catch (Exception e) {

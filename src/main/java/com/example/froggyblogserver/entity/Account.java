@@ -1,7 +1,6 @@
 package com.example.froggyblogserver.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -10,7 +9,6 @@ import com.example.froggyblogserver.common.CONSTANTS;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.PrePersist;

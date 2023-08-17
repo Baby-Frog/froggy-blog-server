@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.example.froggyblogserver.common.MESSAGE;
+import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.service.AccountService;
 import com.example.froggyblogserver.utils.JwtHelper;
 
@@ -40,7 +42,7 @@ public class AuthenFilter extends OncePerRequestFilter {
                 String username = jwtHelper.getUserNameFromJwtToken(jwt);
 
                 UserDetails userDetails = accountService.loadUserByUsername(username);
-
+                if(userDetails.getAuthorities().size()<1) throw new ValidateException(MESSAGE.VALIDATE.USER_NOT_PERMISSION);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

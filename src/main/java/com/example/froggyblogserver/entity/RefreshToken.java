@@ -11,7 +11,6 @@ import javax.persistence.Table;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
