@@ -31,7 +31,7 @@ public class AuthenServiceImpl implements AuthenService {
     private AccountService accountService;
     @Autowired
     private RefreshTokenService refreshTokenService;
-    @Autowired
+
     private JwtHelper jwtHelper;
     @Autowired
     PasswordEncoder passwordEncoder;

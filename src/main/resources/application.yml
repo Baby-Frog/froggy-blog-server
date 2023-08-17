@@ -1,0 +1,20 @@
+# spring:
+#   datasource:
+#     url: jdbc:mysql://localhost:3306/froggyblog?createDatabaseIfNotExist=true&serverTimezone=UTC
+#     driver-class-name: com.mysql.cj.jdbc.Driver
+#     username: root
+#     password: 
+#   jpa:
+#     properties:
+#         hibernate:
+#             dialect: org.hibernate.dialect.MySQL8Dialect
+#             format_sql: true
+#         show-sql: true
+application:
+    port: 8080
+jwt:
+   secretKey: geG-4w9NviA-h6kt2DASBZf0o8bRqp0VJd9PZuZg78s.bwUF7PMAWODIxqqyqErNfn1ZWmKtTqLcQDb7GVTueTg.hmvUpKfPFuy8C2YbSvkTCOSHUl693Kjl7W95rrdu9do
+   expiredTimeAccess: 900000
+   expiredTimeRefresh: 2592000000
+   audience: FroggyBlogReact
+   issuer : FroggyBlogSpringBoot
