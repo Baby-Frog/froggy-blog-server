@@ -27,4 +27,12 @@ public class BaseResponse {
         this.message = "Success";
         this.data = data;
     }
+
+    public BaseResponse(int statusCode, String message, Object data) {
+        this.statusCode = statusCode;
+        this.message = message;
+        this.data = data;
+    }
+
+    
 }

@@ -9,4 +9,5 @@ public interface AuthenService {
     BaseResponse login(LoginDto req);
     BaseResponse register(RegisterDto req);
     BaseResponse refreshToken(RefreshTokenDto req);
+    BaseResponse logout(RefreshTokenDto req);
 }

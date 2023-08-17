@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class RefreshTokenDto {
-    private String refreshToken;
+    private String token;
     private String ipAddress;
 }

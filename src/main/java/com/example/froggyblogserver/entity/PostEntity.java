@@ -1,33 +1,49 @@
 package com.example.froggyblogserver.entity;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import javax.persistence.*;
+
+import com.example.froggyblogserver.common.CONSTANTS;
+
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
 
 @Entity
-@Data
+@Table(name = "posts")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PostEntity {
+public class PostEntity extends BaseEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
     private StringBuilder content;
     private String title;
     private String status;
     private String credit;
-    private Date createdDate;
-    private Date updateDate;
 
     @ManyToOne
     private TopicEntity topicEntity;
 
     @ManyToOne
     private UserEntity userEntity;
+        @PrePersist
+    private void beforeInsert(){
+        this.id = UUID.randomUUID().toString();
+        this.createDate = LocalDateTime.now();
+        this.isDelete = CONSTANTS.IS_DELETE.FALSE;
+    }
+
+    @PreUpdate
+    private void beforeUpdate(){
+        this.updateDate = LocalDateTime.now();
+    }
 }
