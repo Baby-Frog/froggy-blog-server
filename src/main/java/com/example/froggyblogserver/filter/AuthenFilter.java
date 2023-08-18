@@ -20,7 +20,7 @@ import com.example.froggyblogserver.service.AccountService;
 import com.example.froggyblogserver.utils.JwtHelper;
 
 public class AuthenFilter extends OncePerRequestFilter {
-    @Autowired
+
     private JwtHelper jwtHelper;
     @Autowired
     private AccountService accountService;

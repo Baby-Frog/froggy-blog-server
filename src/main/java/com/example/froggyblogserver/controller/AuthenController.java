@@ -16,7 +16,7 @@ import com.example.froggyblogserver.dto.RegisterDto;
 import com.example.froggyblogserver.service.AuthenService;
 
 @RestController
-@RequestMapping
+@RequestMapping("")
 @CrossOrigin("*")
 public class AuthenController {
     @Autowired
@@ -42,4 +42,7 @@ public class AuthenController {
     public ResponseEntity<?> logout(RefreshTokenDto req){
         return ResponseEntity.ok().body(authenService.logout(req));
     }
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<?> forgotPassword(){return null;}
 }

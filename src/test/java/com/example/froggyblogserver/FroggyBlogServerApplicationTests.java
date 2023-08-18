@@ -30,11 +30,11 @@ class FroggyBlogServerApplicationTests {
     // String secretKeyString = String.join(".", secretKeys);
     // System.err.println(secretKeyString);
     // }
-    @Value("${jwt.issuer}")
-    private  String ISSUER;
-
+    // @Value("${jwt.issuer}")
+    // private  String ISSUER;
+        
     @Test
     void testpropertis(){
-        System.err.println(ISSUER);
+        
     }
 }

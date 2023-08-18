@@ -1,13 +1,19 @@
 package com.example.froggyblogserver.service.impl;
 
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
+import com.example.froggyblogserver.dto.ForgotPassword;
 import com.example.froggyblogserver.dto.LoginDto;
 import com.example.froggyblogserver.dto.RefreshTokenDto;
 import com.example.froggyblogserver.dto.RegisterDto;
@@ -24,18 +30,19 @@ import com.example.froggyblogserver.utils.StringHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Service
 @Slf4j
+@Service
 public class AuthenServiceImpl implements AuthenService {
     @Autowired
     private AccountService accountService;
     @Autowired
     private RefreshTokenService refreshTokenService;
-
+    @Autowired
+    private JavaMailSender mailSender;
     private JwtHelper jwtHelper;
     @Autowired
     PasswordEncoder passwordEncoder;
-
+    private final String PATH_RESET = "confirm-required";
     @Override
     public BaseResponse login(LoginDto req) {
         try {
@@ -123,6 +130,20 @@ public class AuthenServiceImpl implements AuthenService {
             log.error(e.getMessage());
             return new BaseResponse(HttpStatus.BAD_REQUEST.value(),MESSAGE.RESPONSE.FAIL,e.getMessage());
         }
+    }
+
+    @Override
+    public BaseResponse forgotPassword(ForgotPassword req) {
+        var subject = "Verify reset password";
+        var url = req.getUrl() + "/" + PATH_RESET +'/'+ UUID.randomUUID().toString();
+        var text = "You have requested a password change. If this wasn't you, please do not click on the link below: "+ url ;
+       SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(req.getEmail());
+        message.setSubject(subject);
+        message.setText(text);
+
+        mailSender.send(message);
+        return new BaseResponse();
     }
 
 }

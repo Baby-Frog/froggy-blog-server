@@ -18,3 +18,10 @@ jwt:
    expiredTimeRefresh: 2592000000
    audience: FroggyBlogReact
    issuer : FroggyBlogSpringBoot
+mail:
+    port: 587
+    host: smtp.gmail.com
+    username: antaodi321@gmail.com
+    password: dxvcwkttgftasmuk
+forgotPassword:
+    required: confirm-required
