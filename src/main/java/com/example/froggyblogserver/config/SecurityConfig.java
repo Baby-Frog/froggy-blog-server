@@ -17,6 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.froggyblogserver.exception.AuthenEntryPoint;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 import com.example.froggyblogserver.exception.AuthenAccessDeniedExceptionHandler;
 import com.example.froggyblogserver.filter.AuthenFilter;
 import com.example.froggyblogserver.service.AccountService;
@@ -37,8 +39,8 @@ public class SecurityConfig {
         auth.userDetailsService(accountService).passwordEncoder(passwordEncoder);
     }
 
-    @Bean 
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,PasswordEncoder passwordEncoder){
+    @Bean
+    AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
@@ -46,16 +48,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
-        http.csrf().ignoringAntMatchers("/**");
-        http.httpBasic().authenticationEntryPoint(new AuthenEntryPoint());
-        http.authorizeRequests().antMatchers("/","/login","/register").permitAll()
-            .anyRequest().authenticated()
-            .and().csrf().disable();
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        http.csrf(csrf -> csrf.ignoringAntMatchers("/**"));
+        http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
+        http.authorizeHttpRequests(requests -> requests.antMatchers("/", "/login", "/register","/refreshToken","/api/role/**").permitAll()
+                .anyRequest().authenticated()).csrf(csrf -> csrf.disable());
         http.addFilterBefore(new AuthenFilter(), UsernamePasswordAuthenticationFilter.class)
-            .exceptionHandling().accessDeniedHandler(new AuthenAccessDeniedExceptionHandler());
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.cors();
+                .exceptionHandling(handling -> handling.accessDeniedHandler(new AuthenAccessDeniedExceptionHandler()));
+        http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.cors(withDefaults());
         return http.build();
 
     }

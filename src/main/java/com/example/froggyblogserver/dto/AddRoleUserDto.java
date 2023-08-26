@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
-public class LoginDto {
-    private String username;
-    private String password;
-    private String redirectUrl;
-    private String ipAddress;
+public class AddRoleUserDto {
+    private String accountId;
+    private String roleId;
 }

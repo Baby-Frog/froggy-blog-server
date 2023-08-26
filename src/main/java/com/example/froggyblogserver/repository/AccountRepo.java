@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.froggyblogserver.entity.Account;
+
 @Repository
 public interface AccountRepo extends JpaRepository<Account,String> {
     @Query(value = "SELECT * FROM accounts WHERE username = :username",nativeQuery = true)

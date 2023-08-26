@@ -21,7 +21,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PostEntity extends BaseEntity{
+public class PostEntity extends BaseEntity {
 
     @Id
     private String id;
@@ -29,21 +29,18 @@ public class PostEntity extends BaseEntity{
     private String title;
     private String status;
     private String credit;
+    private String topicId;
+    private String userId;
 
-    @ManyToOne
-    private TopicEntity topicEntity;
-
-    @ManyToOne
-    private UserEntity userEntity;
-        @PrePersist
-    private void beforeInsert(){
+    @PrePersist
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.IS_DELETE.FALSE;
     }
 
     @PreUpdate
-    private void beforeUpdate(){
+    private void beforeUpdate() {
         this.updateDate = LocalDateTime.now();
     }
 }

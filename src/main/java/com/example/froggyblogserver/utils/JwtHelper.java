@@ -3,6 +3,8 @@ package com.example.froggyblogserver.utils;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -12,6 +14,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 public class JwtHelper {
 
     @Value("${jwt.secretKey}")
