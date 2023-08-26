@@ -51,7 +51,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf -> csrf.ignoringAntMatchers("/**"));
         http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
-        http.authorizeHttpRequests(requests -> requests.antMatchers("/", "/login", "/register").permitAll()
+        http.authorizeHttpRequests(requests -> requests.antMatchers("/", "/login", "/register","/refreshToken","/api/role/**").permitAll()
                 .anyRequest().authenticated()).csrf(csrf -> csrf.disable());
         http.addFilterBefore(new AuthenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handling -> handling.accessDeniedHandler(new AuthenAccessDeniedExceptionHandler()));

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class AuthenServiceImpl implements AuthenService {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private JavaMailSender mailSender;
+    @Autowired
     private JwtHelper jwtHelper;
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -50,7 +52,7 @@ public class AuthenServiceImpl implements AuthenService {
                     || StringHelper.isNullOrEmpty(req.getIpAddress()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             var foundAcc = accountService.findByUsername(req.getUsername());
-            if (foundAcc != null && passwordEncoder.matches(req.getPassword(), foundAcc.getPassword())) {
+            if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
                 var refreshToken = jwtHelper.generateRefreshToken(req.getUsername());
                 var createAccessToken = jwtHelper.generateAccessToken(req.getUsername());
                 var checkDevice = refreshTokenService.findDevice(req.getUsername(), req.getIpAddress());

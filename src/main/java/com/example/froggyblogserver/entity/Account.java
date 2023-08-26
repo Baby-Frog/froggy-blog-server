@@ -6,14 +6,8 @@ import java.util.UUID;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,8 +25,10 @@ public class Account extends BaseEntity{
     private String username;
     private String password;
     private String userId;
-    @ManyToMany
-    @JoinTable(name = "accounts_roles",joinColumns = {@JoinColumn(name = "accountId")},inverseJoinColumns = {@JoinColumn(name ="roleId")})
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.MERGE)
+    @JoinTable(name = "accounts_roles",
+            joinColumns = {@JoinColumn(name="account_id")},
+            inverseJoinColumns = {@JoinColumn(name="role_id")})
     private Set<RoleEntity> roles;
     
     @PrePersist

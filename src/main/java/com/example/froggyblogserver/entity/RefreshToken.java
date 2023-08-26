@@ -11,13 +11,16 @@ import javax.persistence.Table;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "refresh_token")
 @Getter
 @Setter
+@NoArgsConstructor
 public class RefreshToken extends BaseEntity{
     @Id
     private String id;
