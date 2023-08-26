@@ -1,6 +1,7 @@
 package com.example.froggyblogserver.controller;
 
 
+import com.example.froggyblogserver.dto.ForgotPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,5 +45,7 @@ public class AuthenController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassword(){return null;}
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPassword req){
+        return ResponseEntity.ok().body(authenService.forgotPassword(req));
+    }
 }
