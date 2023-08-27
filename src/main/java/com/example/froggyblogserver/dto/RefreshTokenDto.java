@@ -9,5 +9,4 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RefreshTokenDto {
     private String token;
-    private String ipAddress;
 }

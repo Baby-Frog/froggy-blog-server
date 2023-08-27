@@ -1,7 +1,7 @@
 package com.example.froggyblogserver.controller;
 
 
-import com.example.froggyblogserver.dto.ForgotPassword;
+import com.example.froggyblogserver.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.froggyblogserver.dto.LoginDto;
-import com.example.froggyblogserver.dto.RefreshTokenDto;
-import com.example.froggyblogserver.dto.RegisterDto;
 import com.example.froggyblogserver.service.AuthenService;
 
 @RestController
@@ -47,5 +44,9 @@ public class AuthenController {
     @PostMapping("/forgotPassword")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPassword req){
         return ResponseEntity.ok().body(authenService.forgotPassword(req));
+    }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto req){
+        return ResponseEntity.ok().body(authenService.resetPassword(req));
     }
 }
