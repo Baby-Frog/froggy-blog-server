@@ -1,9 +1,7 @@
 package com.example.froggyblogserver.service;
 
-import com.example.froggyblogserver.dto.ForgotPassword;
-import com.example.froggyblogserver.dto.LoginDto;
-import com.example.froggyblogserver.dto.RefreshTokenDto;
-import com.example.froggyblogserver.dto.RegisterDto;
+import com.example.froggyblogserver.dto.*;
+import com.example.froggyblogserver.entity.ResetPassword;
 import com.example.froggyblogserver.response.BaseResponse;
 
 public interface AuthenService {
@@ -12,4 +10,5 @@ public interface AuthenService {
     BaseResponse refreshToken(RefreshTokenDto req);
     BaseResponse logout(RefreshTokenDto req);
     BaseResponse forgotPassword(ForgotPassword req);
+    BaseResponse resetPassword(ResetPasswordDto req);
 }

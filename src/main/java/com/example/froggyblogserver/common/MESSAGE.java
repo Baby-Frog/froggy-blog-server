@@ -4,10 +4,12 @@ public class MESSAGE {
     public static class VALIDATE{
         public static final String USER_NOT_PERMISSION = "user are not role permission!!!";
         public static final String INPUT_INVALID = "Input invalid!!!";
-        public static final String IP_EMPTY = "IP is not null";
-        public static final String IP_INVALID = "IP invalid";
+        public static final String EMAIL_INVALID = "Email invalid!!!";
         public static final String USERNAME_PASSWORD_INVALID = "Username or password invalid!!!";
         public static final String USERNAME_ALREADY_EXIST = "Username already exist!!!";
+        public static final String VERIFY_EXPIRES = "Verify code is expires!!!";
+        public static final String PASSWORD_INCORRECT = "Confirm password does not match password!!!";
+
     }
 
     public static class RESPONSE{
