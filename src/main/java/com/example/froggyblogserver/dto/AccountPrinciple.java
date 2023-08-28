@@ -30,8 +30,8 @@ public class AccountPrinciple implements UserDetails{
         List<GrantedAuthority> authorities = account.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new AccountPrinciple(
                 account.getId(),
+                account.getEmail(),
                 account.getPassword(),
-                account.getUsername(),
                 authorities);
     }
     
