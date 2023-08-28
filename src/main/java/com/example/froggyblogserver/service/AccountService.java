@@ -8,5 +8,5 @@ import com.example.froggyblogserver.response.BaseResponse;
 
 public interface AccountService extends GeneralService<Account>,UserDetailsService{
     BaseResponse deleteAccount(String id);
-    Account findByUsername(String username);
+    Account findByEmail(String username);
 }

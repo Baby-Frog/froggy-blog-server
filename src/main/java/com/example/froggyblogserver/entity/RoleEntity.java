@@ -3,11 +3,7 @@ package com.example.froggyblogserver.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
@@ -29,6 +25,8 @@ public class RoleEntity extends BaseEntity{
     @Id
     private String id;
     private String name;
+    @Column(unique = true)
+    private String code;
 
         @PrePersist
     private void beforeInsert(){

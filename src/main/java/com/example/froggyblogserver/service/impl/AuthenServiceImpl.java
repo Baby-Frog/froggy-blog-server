@@ -5,10 +5,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.entity.ResetPassword;
 import com.example.froggyblogserver.repository.AccountRepo;
 import com.example.froggyblogserver.repository.ResetPasswordRepo;
+import com.example.froggyblogserver.repository.RoleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
@@ -44,17 +46,20 @@ public class AuthenServiceImpl implements AuthenService {
     PasswordEncoder passwordEncoder;
     @Autowired
     private ResetPasswordRepo resetPasswordRepo;
+
+    @Autowired
+    private RoleRepo roleRepo;
     private final String PATH_RESET = "confirm-required";
 
     @Override
     public BaseResponse login(LoginDto req) {
         try {
-            if (StringHelper.isNullOrEmpty(req.getUsername()) || StringHelper.isNullOrEmpty(req.getPassword()))
+            if (StringHelper.isNullOrEmpty(req.getEmail()) || !req.getEmail().contains("@") || StringHelper.isNullOrEmpty(req.getPassword()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var foundAcc = accountService.findByUsername(req.getUsername());
+            var foundAcc = accountService.findByEmail(req.getEmail());
             if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
-                var refreshToken = jwtHelper.generateRefreshToken(req.getUsername());
-                var accessToken = jwtHelper.generateAccessToken(req.getUsername());
+                var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
+                var accessToken = jwtHelper.generateAccessToken(req.getEmail());
                 return new BaseResponse(new LoginResponse(accessToken, refreshToken, req.getRedirectUrl()));
             }
         } catch (Exception e) {
@@ -66,16 +71,17 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse register(RegisterDto req) {
         try {
-            if (StringHelper.isNullOrEmpty(req.getUsername()) || StringHelper.isNullOrEmpty(req.getPassword())
+            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword())
                     || !req.getPassword().equals(req.getRePassword()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var checkUsername = accountService.findByUsername(req.getUsername());
+            var checkUsername = accountService.findByEmail(req.getEmail());
             if (checkUsername != null)
                 throw new ValidateException(MESSAGE.VALIDATE.USERNAME_ALREADY_EXIST);
             var newAccount = new Account();
-            newAccount.setUsername(req.getUsername());
+            newAccount.setEmail(req.getEmail());
             newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
-            // newAccount.getRoles().add()
+            var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
+             newAccount.getRoles().add(findRoleDefault);
             accountService.saveOrUpdate(newAccount);
             return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
         } catch (Exception e) {
@@ -118,7 +124,7 @@ public class AuthenServiceImpl implements AuthenService {
         try {
             if (StringHelper.isNullOrEmpty(req.getEmail()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var getAccount = accountRepo.findByUsername(req.getEmail());
+            var getAccount = accountRepo.findByEmail(req.getEmail());
             if(getAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
             var verifyCode = UUID.randomUUID().toString();
 

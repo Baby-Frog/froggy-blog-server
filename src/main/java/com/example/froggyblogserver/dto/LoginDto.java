@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class LoginDto {
-    private String username;
+    private String email;
     private String password;
     private String redirectUrl;
 }
