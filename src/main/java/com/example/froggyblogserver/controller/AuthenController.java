@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.froggyblogserver.service.AuthenService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("")
 @CrossOrigin("*")
@@ -25,17 +27,19 @@ public class AuthenController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto req) {
         var exec = authenService.login(req);
-        if (exec != null)
+        if (exec.getStatusCode() == 200)
             return ResponseEntity.ok().body(exec);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(MESSAGE.VALIDATE.USERNAME_PASSWORD_INVALID);
+        else if (exec.getStatusCode() == 400)
+            return ResponseEntity.badRequest().body(exec);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto req) {
         var exec = authenService.register(req);
-        if (exec != null)
+        if (exec.getStatusCode() == 200)
             return ResponseEntity.ok().body(exec);
-        return ResponseEntity.badRequest().body(MESSAGE.RESPONSE.REGISTER_FAIL);
+        return ResponseEntity.badRequest().body(exec);
 
     }
 

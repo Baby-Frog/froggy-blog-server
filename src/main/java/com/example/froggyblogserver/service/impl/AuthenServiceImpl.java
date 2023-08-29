@@ -31,6 +31,9 @@ import com.example.froggyblogserver.utils.StringHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+
 @Slf4j
 @Service
 public class AuthenServiceImpl implements AuthenService {
@@ -51,51 +54,52 @@ public class AuthenServiceImpl implements AuthenService {
     private RoleRepo roleRepo;
     private final String PATH_RESET = "confirm-required";
 
+    private boolean validateEmail(String email) {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        return validator.validateValue(LoginDto.class, "email", email).isEmpty();
+    }
+
     @Override
     public BaseResponse login(LoginDto req) {
-        try {
-            if (StringHelper.isNullOrEmpty(req.getEmail()) || !req.getEmail().contains("@") || StringHelper.isNullOrEmpty(req.getPassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var foundAcc = accountService.findByEmail(req.getEmail());
-            if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
-                var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
-                var accessToken = jwtHelper.generateAccessToken(req.getEmail());
-                return new BaseResponse(new LoginResponse(accessToken, refreshToken, req.getRedirectUrl()));
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        if (!validateEmail(req.getEmail()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+        var foundAcc = accountService.findByEmail(req.getEmail());
+        if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
+            var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
+            var accessToken = jwtHelper.generateAccessToken(req.getEmail());
+            return new BaseResponse(new LoginResponse(accessToken, refreshToken, req.getRedirectUrl()));
         }
-        return null;
+        return new BaseResponse(401, MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @Override
     public BaseResponse register(RegisterDto req) {
-        try {
-            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            if(!req.getPassword().equals(req.getRePassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
-            var checkUsername = accountService.findByEmail(req.getEmail());
-            if (checkUsername != null)
-                throw new ValidateException(MESSAGE.VALIDATE.USERNAME_ALREADY_EXIST);
-            var newAccount = new Account();
-            newAccount.setEmail(req.getEmail());
-            newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
-            var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
-             newAccount.getRoles().add(findRoleDefault);
-            accountService.saveOrUpdate(newAccount);
-            return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return null;
+        if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        if (!validateEmail(req.getEmail()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+        if (!req.getPassword().equals(req.getRePassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+        var checkEmail = accountService.findByEmail(req.getEmail());
+        if (checkEmail != null)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+        var newAccount = new Account();
+        newAccount.setEmail(req.getEmail());
+        newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
+        var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
+        newAccount.getRoles().add(findRoleDefault);
+        accountService.saveOrUpdate(newAccount);
+        return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
+
     }
 
     @Override
     public BaseResponse refreshToken(RefreshTokenDto req) {
         try {
             if (StringHelper.isNullOrEmpty(req.getToken()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
             if (jwtHelper.validateJwtToken(req.getToken())) {
                 var username = jwtHelper.getUserNameFromJwtToken(req.getToken());
                 return new BaseResponse(
@@ -111,7 +115,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse logout(RefreshTokenDto req) {
         try {
-            if (!jwtHelper.validateJwtToken(req.getToken())) throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
+            if (!jwtHelper.validateJwtToken(req.getToken()))
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.TOKEN.TOKEN_INVALID).build();
 
             return new BaseResponse();
         } catch (Exception e) {
@@ -122,52 +127,44 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse forgotPassword(ForgotPassword req) {
-        try {
-            if (StringHelper.isNullOrEmpty(req.getEmail()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var getAccount = accountRepo.findByEmail(req.getEmail());
-            if(getAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
-            var verifyCode = UUID.randomUUID().toString();
+        if (StringHelper.isNullOrEmpty(req.getEmail()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        var getAccount = accountRepo.findByEmail(req.getEmail());
+        if (getAccount == null)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+        var verifyCode = UUID.randomUUID().toString();
 
-            resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
-            var subject = "Verify reset password";
-            var url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
-            var text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(req.getEmail());
-            message.setSubject(subject);
-            message.setText(text);
+        resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
+        var subject = "Verify reset password";
+        var url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
+        var text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(req.getEmail());
+        message.setSubject(subject);
+        message.setText(text);
 
-            mailSender.send(message);
-            return new BaseResponse();
-        } catch (ValidateException e) {
-            throw new RuntimeException(e);
-        }
-
+        mailSender.send(message);
+        return new BaseResponse();
     }
 
     @Override
     public BaseResponse resetPassword(ResetPasswordDto req) {
-        try {
-            if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            if (!req.getNewPassword().equals(req.getReNewPassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
-            var check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
-            if (check.isEmpty())
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-            var checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
+        if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        if (!req.getNewPassword().equals(req.getReNewPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+        var check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
+        if (check.isEmpty())
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        var checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
 
-            if (checkTimeExpires.toMinutes() > 15) throw new ValidateException(MESSAGE.VALIDATE.VERIFY_EXPIRES);
-            var getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
-            assert getAccount != null;
-            getAccount.setPassword(passwordEncoder.encode(req.getNewPassword()));
-            accountService.saveOrUpdate(getAccount);
-            return new BaseResponse();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return new BaseResponse(400, MESSAGE.RESPONSE.FAIL);
+        if (checkTimeExpires.toMinutes() > 15)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
+        var getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
+        assert getAccount != null;
+        getAccount.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        accountService.saveOrUpdate(getAccount);
+        return new BaseResponse();
     }
 
 }
