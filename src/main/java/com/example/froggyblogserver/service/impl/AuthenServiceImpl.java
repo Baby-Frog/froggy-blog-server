@@ -76,20 +76,22 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse register(RegisterDto req) {
-            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-            if (!req.getPassword().equals(req.getRePassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
-            var checkEmail = accountService.findByEmail(req.getEmail());
-            if (checkEmail != null)
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
-            var newAccount = new Account();
-            newAccount.setEmail(req.getEmail());
-            newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
-            var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
-            newAccount.getRoles().add(findRoleDefault);
-            accountService.saveOrUpdate(newAccount);
-            return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
+        if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        if (!validateEmail(req.getEmail()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+        if (!req.getPassword().equals(req.getRePassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+        var checkEmail = accountService.findByEmail(req.getEmail());
+        if (checkEmail != null)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+        var newAccount = new Account();
+        newAccount.setEmail(req.getEmail());
+        newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
+        var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
+        newAccount.getRoles().add(findRoleDefault);
+        accountService.saveOrUpdate(newAccount);
+        return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
 
     }
 
@@ -113,7 +115,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse logout(RefreshTokenDto req) {
         try {
-            if (!jwtHelper.validateJwtToken(req.getToken())) return BaseResponse.builder().statusCode(400).message(MESSAGE.TOKEN.TOKEN_INVALID).build();
+            if (!jwtHelper.validateJwtToken(req.getToken()))
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.TOKEN.TOKEN_INVALID).build();
 
             return new BaseResponse();
         } catch (Exception e) {
@@ -124,42 +127,44 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse forgotPassword(ForgotPassword req) {
-            if (StringHelper.isNullOrEmpty(req.getEmail()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-            var getAccount = accountRepo.findByEmail(req.getEmail());
-            if (getAccount == null) return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
-            var verifyCode = UUID.randomUUID().toString();
+        if (StringHelper.isNullOrEmpty(req.getEmail()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        var getAccount = accountRepo.findByEmail(req.getEmail());
+        if (getAccount == null)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+        var verifyCode = UUID.randomUUID().toString();
 
-            resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
-            var subject = "Verify reset password";
-            var url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
-            var text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(req.getEmail());
-            message.setSubject(subject);
-            message.setText(text);
+        resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
+        var subject = "Verify reset password";
+        var url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
+        var text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(req.getEmail());
+        message.setSubject(subject);
+        message.setText(text);
 
-            mailSender.send(message);
-            return new BaseResponse();
+        mailSender.send(message);
+        return new BaseResponse();
     }
 
     @Override
     public BaseResponse resetPassword(ResetPasswordDto req) {
-            if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-            if (!req.getNewPassword().equals(req.getReNewPassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
-            var check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
-            if (check.isEmpty())
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-            var checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
+        if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        if (!req.getNewPassword().equals(req.getReNewPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+        var check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
+        if (check.isEmpty())
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        var checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
 
-            if (checkTimeExpires.toMinutes() > 15) return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
-            var getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
-            assert getAccount != null;
-            getAccount.setPassword(passwordEncoder.encode(req.getNewPassword()));
-            accountService.saveOrUpdate(getAccount);
-            return new BaseResponse();
+        if (checkTimeExpires.toMinutes() > 15)
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
+        var getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
+        assert getAccount != null;
+        getAccount.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        accountService.saveOrUpdate(getAccount);
+        return new BaseResponse();
     }
 
 }
