@@ -29,14 +29,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public BaseResponse findById(String id) {
-        try {
             if (StringHelper.isNullOrEmpty(id))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+               return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
             return new BaseResponse(repo.findById(id).orElse(null));
-        } catch (ValidateException e) {
-            log.error(e.getMessage());
-        }
-        return null;
     }
 
     @Override
@@ -49,16 +44,11 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteAccount(String id) {
-        try {
             var found = repo.findById(id).orElse(null);
-            if (found == null) throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            if (found == null)return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
             return new BaseResponse(id);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new BaseResponse(400,e.getMessage());
-        }
     }
 
     @Override
