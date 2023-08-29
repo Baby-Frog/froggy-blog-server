@@ -3,19 +3,19 @@ package com.example.froggyblogserver.common;
 public class MESSAGE {
     public static class VALIDATE{
         public static final String USER_NOT_PERMISSION = "user are not role permission!!!";
-        public static final String INPUT_INVALID = "Input invalid!!!";
-        public static final String EMAIL_INVALID = "Email invalid!!!";
-        public static final String EMAIL_PASSWORD_INVALID = "Email or password invalid!!!";
-        public static final String EMAIL_ALREADY_EXIST = "Email already exist!!!";
-        public static final String VERIFY_EXPIRES = "Verify code is expires!!!";
-        public static final String PASSWORD_INCORRECT = "Confirm password does not match password!!!";
+        public static final String INPUT_INVALID = "Invalid";
+        public static final String EMAIL_INVALID = "Your e-mail address is invalid, please try another one";
+        public static final String EMAIL_PASSWORD_INVALID = "Your e-mail address or password is invalid, please try again";
+        public static final String EMAIL_ALREADY_EXIST = "E-mail address already exists, please try another one";
+        public static final String VERIFY_EXPIRES = "Verify code has been expired";
+        public static final String PASSWORD_INCORRECT = "Password and confirm password doesn't match";
 
     }
 
     public static class RESPONSE{
-        public static final String REGISTER_SUCCESS = "Register success!!!";
-        public static final String REGISTER_FAIL = "Register failed, please try again in minutes!!!";
-        public static final String FAIL = " failed, please try again in minutes!!!";
+        public static final String REGISTER_SUCCESS = "Your account has been registered, please login to proceed.";
+        public static final String REGISTER_FAIL = "Oops! Something happened, please try again later";
+        public static final String FAIL = "Oops! Something happened, please try again later";
     }
     public static class TOKEN{
         public static final String TOKEN_INVALID = "Token invalid";
