@@ -65,15 +65,16 @@ public class AuthenServiceImpl implements AuthenService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return new BaseResponse(401, MESSAGE.VALIDATE.USERNAME_PASSWORD_INVALID);
+        return null;
     }
 
     @Override
     public BaseResponse register(RegisterDto req) {
         try {
-            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword())
-                    || !req.getPassword().equals(req.getRePassword()))
+            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            if(!req.getPassword().equals(req.getRePassword()))
+                throw new ValidateException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
             var checkUsername = accountService.findByEmail(req.getEmail());
             if (checkUsername != null)
                 throw new ValidateException(MESSAGE.VALIDATE.USERNAME_ALREADY_EXIST);
@@ -87,7 +88,7 @@ public class AuthenServiceImpl implements AuthenService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return new BaseResponse(400, MESSAGE.RESPONSE.REGISTER_FAIL);
+        return null;
     }
 
     @Override
