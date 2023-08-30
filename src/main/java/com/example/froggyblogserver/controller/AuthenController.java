@@ -3,6 +3,7 @@ package com.example.froggyblogserver.controller;
 
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.*;
+import com.example.froggyblogserver.response.BaseResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AuthenController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto req) {
-        var exec = authenService.login(req);
+        BaseResponse exec = authenService.login(req);
         if (exec.getStatusCode() == 200)
             return ResponseEntity.ok().body(exec);
         else if (exec.getStatusCode() == 400)
@@ -36,7 +37,7 @@ public class AuthenController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto req) {
-        var exec = authenService.register(req);
+        BaseResponse exec = authenService.register(req);
         if (exec.getStatusCode() == 200)
             return ResponseEntity.ok().body(exec);
         return ResponseEntity.badRequest().body(exec);
