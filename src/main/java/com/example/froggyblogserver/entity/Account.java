@@ -9,10 +9,7 @@ import com.example.froggyblogserver.common.CONSTANTS;
 
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "accounts")
@@ -20,6 +17,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Account extends BaseEntity{
     @Id
     private String id;

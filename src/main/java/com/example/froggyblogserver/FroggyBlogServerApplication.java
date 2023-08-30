@@ -20,6 +20,6 @@ public class FroggyBlogServerApplication {
 
     @Bean 
      PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(17);
+        return new BCryptPasswordEncoder(5);
     }
 }
