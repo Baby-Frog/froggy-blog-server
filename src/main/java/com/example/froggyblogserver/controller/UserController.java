@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.controller;
 
+import com.example.froggyblogserver.dto.UserSearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,6 +26,11 @@ public class UserController {
     @PostMapping("/saveOrUpdate")
     public ResponseEntity<?> saveOrUpdate(@RequestBody UserEntity req ){
         return ResponseEntity.ok().body(userService.saveOrUpdate(req));
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<?> search(@RequestBody UserSearchRequest req ){
+        return ResponseEntity.ok().body(userService.search(req));
     }
 
     @GetMapping("/findById/{id}")
