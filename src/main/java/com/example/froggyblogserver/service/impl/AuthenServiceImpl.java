@@ -3,14 +3,15 @@ package com.example.froggyblogserver.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
-import com.example.froggyblogserver.entity.ResetPassword;
-import com.example.froggyblogserver.repository.AccountRepo;
-import com.example.froggyblogserver.repository.ResetPasswordRepo;
-import com.example.froggyblogserver.repository.RoleRepo;
+import com.example.froggyblogserver.entity.*;
+import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.froggyblogserver.common.MESSAGE;
-import com.example.froggyblogserver.entity.Account;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.LoginResponse;
@@ -31,6 +31,7 @@ import com.example.froggyblogserver.utils.StringHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.transaction.Transactional;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
@@ -42,6 +43,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Autowired
     private AccountRepo accountRepo;
     @Autowired
+    private AccountRoleRepo accountRoleRepo;
+    @Autowired
     private JavaMailSender mailSender;
     @Autowired
     private JwtHelper jwtHelper;
@@ -49,7 +52,8 @@ public class AuthenServiceImpl implements AuthenService {
     PasswordEncoder passwordEncoder;
     @Autowired
     private ResetPasswordRepo resetPasswordRepo;
-
+    @Autowired
+    private UserRepo userRepo;
     @Autowired
     private RoleRepo roleRepo;
     private final String PATH_RESET = "confirm-required";
@@ -69,30 +73,45 @@ public class AuthenServiceImpl implements AuthenService {
         if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
             var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
             var accessToken = jwtHelper.generateAccessToken(req.getEmail());
-            return new BaseResponse(new LoginResponse(accessToken, refreshToken, req.getRedirectUrl()));
+            var getUserProfile = userRepo.findById(foundAcc.getUserId()).orElse(null);
+            return new BaseResponse(
+                    LoginResponse.builder()
+                            .accessToken(accessToken).refreshToken(refreshToken)
+                            .redirectUrl(req.getRedirectUrl()).profile(getUserProfile).build());
         }
         return new BaseResponse(401, MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @Override
+    @Transactional
     public BaseResponse register(RegisterDto req) {
-        if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-        if (!validateEmail(req.getEmail()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
-        if (!req.getPassword().equals(req.getRePassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
-        var checkEmail = accountService.findByEmail(req.getEmail());
-        if (checkEmail != null)
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
-        var newAccount = new Account();
-        newAccount.setEmail(req.getEmail());
-        newAccount.setPassword(passwordEncoder.encode(req.getPassword()));
-        var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
-        newAccount.getRoles().add(findRoleDefault);
-        accountService.saveOrUpdate(newAccount);
-        return new BaseResponse(200, MESSAGE.RESPONSE.REGISTER_SUCCESS);
-
+        try {
+            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            if (!validateEmail(req.getEmail()))
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+            if (!req.getPassword().equals(req.getRePassword()))
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+            var checkEmail = accountService.findByEmail(req.getEmail());
+            if (checkEmail != null)
+                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+            var newUser = UserEntity.builder().name(req.getName())
+                    .address(req.getAddress()).email(req.getEmail())
+                    .phoneNumber(req.getPhoneNumber()).build();
+            var saveNewUser = userRepo.save(newUser);
+            var newAccount = Account.builder()
+                    .email(req.getEmail()).password(passwordEncoder.encode(req.getPassword()))
+                    .userId(saveNewUser.getId()).build();
+            var findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
+            var saveNewAccount = accountRepo.save(newAccount);
+            assert findRoleDefault != null;
+            accountRoleRepo.save(AccountsRoles.builder().accountId(saveNewAccount.getId()).roleId(findRoleDefault.getId()).build());
+            return BaseResponse.builder().statusCode(200).message(MESSAGE.RESPONSE.REGISTER_SUCCESS).build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            return BaseResponse.builder().statusCode(400).message(e.getCause().getMessage()).build();
+        }
     }
 
     @Override
@@ -103,7 +122,10 @@ public class AuthenServiceImpl implements AuthenService {
             if (jwtHelper.validateJwtToken(req.getToken())) {
                 var username = jwtHelper.getUserNameFromJwtToken(req.getToken());
                 return new BaseResponse(
-                        new LoginResponse(jwtHelper.generateAccessToken(username), req.getToken(), null));
+                        LoginResponse.builder()
+                                .accessToken(jwtHelper.generateAccessToken(username))
+                                .refreshToken(jwtHelper.generateRefreshToken(username))
+                                .build());
             }
         } catch (Exception e) {
             log.error(e.getMessage());
