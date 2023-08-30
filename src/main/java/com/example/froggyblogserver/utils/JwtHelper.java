@@ -12,9 +12,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 public class JwtHelper {
 
     @Value("${jwt.secretKey}")

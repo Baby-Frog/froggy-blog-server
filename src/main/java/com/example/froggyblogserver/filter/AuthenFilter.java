@@ -7,23 +7,28 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.example.froggyblogserver.service.impl.AccountServiceImpl;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.service.AccountService;
 import com.example.froggyblogserver.utils.JwtHelper;
-
+@Builder
 public class AuthenFilter extends OncePerRequestFilter {
-
+    @Autowired
     private JwtHelper jwtHelper;
     @Autowired
     private AccountService accountService;
+
 
     private String getTokenRequest(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");

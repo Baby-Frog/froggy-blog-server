@@ -11,4 +11,5 @@ public interface AuthenService {
     BaseResponse logout(RefreshTokenDto req);
     BaseResponse forgotPassword(ForgotPassword req);
     BaseResponse resetPassword(ResetPasswordDto req);
+    BaseResponse changePassword(ChangePasswordDto req);
 }

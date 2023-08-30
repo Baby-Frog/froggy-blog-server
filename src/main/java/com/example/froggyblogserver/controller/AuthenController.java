@@ -44,12 +44,21 @@ public class AuthenController {
 
     }
 
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto req) {
+        BaseResponse exec = authenService.changePassword(req);
+        if (exec.getStatusCode() == 200)
+            return ResponseEntity.ok().body(exec);
+        return ResponseEntity.badRequest().body(exec);
+
+    }
+
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.refreshToken(req));
     }
 
-    @GetMapping
+    @GetMapping("/logout")
     public ResponseEntity<?> logout(RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.logout(req));
     }

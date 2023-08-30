@@ -12,6 +12,7 @@ import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.entity.*;
 import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,7 +88,7 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req) {
         try {
             if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
@@ -99,12 +100,12 @@ public class AuthenServiceImpl implements AuthenService {
             Account checkEmail = accountService.findByEmail(req.getEmail());
             if (checkEmail != null)
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
-            UserEntity newUser = UserEntity.builder().name(req.getName())
-                    .address(req.getAddress()).email(req.getEmail())
+            UserEntity newUser = UserEntity.builder().name(req.getName().trim())
+                    .address(req.getAddress().trim()).email(req.getEmail().trim())
                     .phoneNumber(req.getPhoneNumber()).build();
             UserEntity saveNewUser = userRepo.save(newUser);
             Account newAccount = Account.builder()
-                    .email(req.getEmail()).password(passwordEncoder.encode(req.getPassword()))
+                    .email(req.getEmail().trim()).password(passwordEncoder.encode(req.getPassword().trim()))
                     .userId(saveNewUser.getId()).build();
             RoleEntity findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
             Account saveNewAccount = accountRepo.save(newAccount);
@@ -188,9 +189,26 @@ public class AuthenServiceImpl implements AuthenService {
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
         Account getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
         assert getAccount != null;
-        getAccount.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        getAccount.setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
         accountService.saveOrUpdate(getAccount);
         return new BaseResponse();
+    }
+
+    @Override
+    @Transactional(rollbackOn = {UncheckedException.class,ValidateException.class})
+    public BaseResponse changePassword(ChangePasswordDto req) {
+        if(StringHelper.isNullOrEmpty(req.getOldPassword()) || StringHelper.isNullOrEmpty(req.getNewPassword()) || StringHelper.isNullOrEmpty(req.getConfirmPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+        var found = accountRepo.findById(req.getId());
+        if(found.isEmpty())
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.ID_INVALID).build();
+        if(!passwordEncoder.matches(req.getOldPassword(),found.get().getPassword()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT).build();
+        if (!req.getNewPassword().trim().equals(req.getConfirmPassword().trim()))
+            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+        found.get().setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
+        accountRepo.save(found.get());
+        return new BaseResponse(200,MESSAGE.RESPONSE.CHANGE_PASSWORD_SUCCESS);
     }
 
 }
