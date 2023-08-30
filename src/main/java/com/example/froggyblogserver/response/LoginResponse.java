@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.response;
 
+import com.example.froggyblogserver.dto.UserDto;
 import com.example.froggyblogserver.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,5 +16,5 @@ public class LoginResponse {
     private String accessToken;
     private String refreshToken;
     private String redirectUrl;
-    private UserEntity profile;
+    private UserDto profile;
 }

@@ -37,14 +37,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(Account req) {
-        var execute = repo.save(req);
+        Account execute = repo.save(req);
         return new BaseResponse(execute.getId());
     }
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteAccount(String id) {
-            var found = repo.findById(id).orElse(null);
+            Account found = repo.findById(id).orElse(null);
             if (found == null)return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
@@ -53,14 +53,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var found = repo.findByEmail(username);
+        Account found = repo.findByEmail(username);
         if (found == null) throw new UsernameNotFoundException("Can not find email: " + username);
         return AccountPrinciple.build(found);
     }
 
     @Override
     public Account findByEmail(String username) {
-        var found = repo.findByEmail(username);
+        Account found = repo.findByEmail(username);
         if (found == null) return null;
         return found;
     }

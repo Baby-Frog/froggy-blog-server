@@ -13,6 +13,8 @@ import com.example.froggyblogserver.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse deleteById(String id) {
         try {
-            var found = repo.findById(id);
+            Optional<UserEntity> found = repo.findById(id);
             if (!found.isPresent())
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
