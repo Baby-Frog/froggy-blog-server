@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountsRoles extends BaseEntity{
+public class AccountsRolesEntity extends BaseEntity{
     @Id
     private String id;
     @Column(name = "account_id")

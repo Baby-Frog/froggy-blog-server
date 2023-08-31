@@ -1,7 +1,6 @@
 package com.example.froggyblogserver.service.impl;
 
-import com.example.froggyblogserver.dto.AddRoleUserDto;
-import com.example.froggyblogserver.entity.AccountsRoles;
+import com.example.froggyblogserver.entity.AccountsRolesEntity;
 import com.example.froggyblogserver.entity.RoleEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
@@ -35,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse addRoleToUser(AccountsRoles req) {
+    public BaseResponse addRoleToUser(AccountsRolesEntity req) {
 
         accountRoleRepo.save(req);
         return new BaseResponse();

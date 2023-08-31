@@ -18,13 +18,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserPost extends BaseEntity {
+public class UserPostEntity extends BaseEntity {
     @Id
     private String id;
     private String userId;
     private Long postId; 
     
-    public UserPost(String userId, Long postId) {
+    public UserPostEntity(String userId, Long postId) {
         this.userId = userId;
         this.postId = postId;
     }

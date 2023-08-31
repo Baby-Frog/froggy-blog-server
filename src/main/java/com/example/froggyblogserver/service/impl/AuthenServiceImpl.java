@@ -3,9 +3,7 @@ package com.example.froggyblogserver.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import com.example.froggyblogserver.common.CONSTANTS;
@@ -74,7 +72,7 @@ public class AuthenServiceImpl implements AuthenService {
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
         if (!validateEmail(req.getEmail()))
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
-        Account foundAcc = accountService.findByEmail(req.getEmail());
+        AccountEntity foundAcc = accountService.findByEmail(req.getEmail());
         if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
             String refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
             String accessToken = jwtHelper.generateAccessToken(req.getEmail());
@@ -97,20 +95,20 @@ public class AuthenServiceImpl implements AuthenService {
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
             if (!req.getPassword().equals(req.getRePassword()))
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
-            Account checkEmail = accountService.findByEmail(req.getEmail());
+            AccountEntity checkEmail = accountService.findByEmail(req.getEmail());
             if (checkEmail != null)
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
             UserEntity newUser = UserEntity.builder().name(req.getName().trim())
                     .address(req.getAddress().trim()).email(req.getEmail().trim())
                     .phoneNumber(req.getPhoneNumber()).build();
             UserEntity saveNewUser = userRepo.save(newUser);
-            Account newAccount = Account.builder()
+            AccountEntity newAccount = AccountEntity.builder()
                     .email(req.getEmail().trim()).password(passwordEncoder.encode(req.getPassword().trim()))
                     .userId(saveNewUser.getId()).build();
             RoleEntity findRoleDefault = roleRepo.findByCode(CONSTANTS.ROLE.USER).orElse(null);
-            Account saveNewAccount = accountRepo.save(newAccount);
+            AccountEntity saveNewAccount = accountRepo.save(newAccount);
             assert findRoleDefault != null;
-            accountRoleRepo.save(AccountsRoles.builder().accountId(saveNewAccount.getId()).roleId(findRoleDefault.getId()).build());
+            accountRoleRepo.save(AccountsRolesEntity.builder().accountId(saveNewAccount.getId()).roleId(findRoleDefault.getId()).build());
             return BaseResponse.builder().statusCode(200).message(MESSAGE.RESPONSE.REGISTER_SUCCESS).build();
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -156,7 +154,7 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse forgotPassword(ForgotPassword req) {
         if (StringHelper.isNullOrEmpty(req.getEmail()))
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
-        Account getAccount = accountRepo.findByEmail(req.getEmail());
+        AccountEntity getAccount = accountRepo.findByEmail(req.getEmail());
         if (getAccount == null)
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
         String verifyCode = UUID.randomUUID().toString();
@@ -187,7 +185,7 @@ public class AuthenServiceImpl implements AuthenService {
 
         if (checkTimeExpires.toMinutes() > 15)
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
-        Account getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
+        AccountEntity getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
         assert getAccount != null;
         getAccount.setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
         accountService.saveOrUpdate(getAccount);

@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.froggyblogserver.entity.Account;
+import com.example.froggyblogserver.entity.AccountEntity;
 
 import lombok.AllArgsConstructor;
 
@@ -26,7 +26,7 @@ public class AccountPrinciple implements UserDetails{
     }
 
 
-    public static AccountPrinciple build(Account account){
+    public static AccountPrinciple build(AccountEntity account){
         List<GrantedAuthority> authorities = account.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
         return new AccountPrinciple(
                 account.getId(),

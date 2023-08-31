@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.AccountPrinciple;
-import com.example.froggyblogserver.entity.Account;
+import com.example.froggyblogserver.entity.AccountEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
-import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.repository.AccountRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.service.AccountService;
@@ -36,15 +35,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse saveOrUpdate(Account req) {
-        Account execute = repo.save(req);
+    public BaseResponse saveOrUpdate(AccountEntity req) {
+        AccountEntity execute = repo.save(req);
         return new BaseResponse(execute.getId());
     }
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteAccount(String id) {
-            Account found = repo.findById(id).orElse(null);
+            AccountEntity found = repo.findById(id).orElse(null);
             if (found == null)return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
@@ -53,14 +52,14 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Account found = repo.findByEmail(username);
+        AccountEntity found = repo.findByEmail(username);
         if (found == null) throw new UsernameNotFoundException("Can not find email: " + username);
         return AccountPrinciple.build(found);
     }
 
     @Override
-    public Account findByEmail(String username) {
-        Account found = repo.findByEmail(username);
+    public AccountEntity findByEmail(String username) {
+        AccountEntity found = repo.findByEmail(username);
         if (found == null) return null;
         return found;
     }
