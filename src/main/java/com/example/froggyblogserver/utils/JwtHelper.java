@@ -55,15 +55,15 @@ public class JwtHelper {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(authToken);
             return true;
         }catch (SignatureException e){
-            log.error("Invalid JWT signature -> Message: {}",e);
+            log.error("Invalid JWT signature -> Message: {}",e.getMessage());
         }catch (MalformedJwtException e){
-            log.error("Invalid JWT token -> Message: {}",e);
+            log.error("Invalid JWT token -> Message: {}",e.getMessage());
         }catch (ExpiredJwtException e){
-            log.error("Expired JWT token -> Message: {}",e);
+            log.error("Expired JWT token -> Message: {}",e.getMessage());
         }catch (UnsupportedJwtException e){
-            log.error("Unsupported JWT token -> Message: {}",e);
+            log.error("Unsupported JWT token -> Message: {}",e.getMessage());
         }catch (IllegalArgumentException e){
-            log.error("JWT claim string is empty -> Message:{}", e);
+            log.error("JWT claim string is empty -> Message:{}", e.getMessage());
         }
         return false;
 

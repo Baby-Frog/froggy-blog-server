@@ -1,10 +1,15 @@
 package com.example.froggyblogserver.service.impl;
 
-import com.example.froggyblogserver.dto.UserSearchRequest;
+import com.example.froggyblogserver.dto.request.UserPostDto;
+import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.UserMapper;
+import com.example.froggyblogserver.repository.AccountRepo;
+import com.example.froggyblogserver.repository.UserPostRepo;
 import com.example.froggyblogserver.response.PageResponse;
+import com.example.froggyblogserver.service.CurrentUserService;
+import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +37,12 @@ public class UserServiceImpl implements UserService {
     private UserRepo repo;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private UserPostRepo userPostRepo;
+    @Autowired
+    private AccountRepo accountRepo;
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @Override
     public BaseResponse findById(String id) {
@@ -41,14 +52,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(UserEntity req) {
+        if (!StringHelper.isNullOrEmpty(req.getEmail())) {
+            var checkEmail = accountRepo.findByEmail(req.getEmail());
+            if (checkEmail != null) return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+            var user = currentUserService.getInfo();
+            var account = accountRepo.findByEmail(user.getEmail());
+            account.setEmail(req.getEmail());
+            account.setUpdateId(user.getId());
+            accountRepo.save(account);
+        }
+
         return new BaseResponse(repo.save(req).getId());
     }
 
     @Override
     public BaseResponse search(UserSearchRequest request) {
-        Page<UserEntity> exec = repo.search(request, PageRequest.of(request.getPageNumber()-1 , request.getPageSize()));
+        Page<UserEntity> exec = repo.search(request, PageRequest.of(request.getPageNumber() - 1, request.getPageSize()));
         return new BaseResponse(PageResponse.builder()
-                .data(exec.get().map(e->userMapper.entityToDto(e)).collect(Collectors.toList()))
+                .data(exec.get().map(e -> userMapper.entityToDto(e)).collect(Collectors.toList()))
                 .pageNumber(request.getPageNumber())
                 .pageSize(request.getPageSize())
                 .totalPage(exec.getTotalPages())
@@ -69,7 +90,12 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        return new BaseResponse(400,MESSAGE.RESPONSE.FAIL);
+        return new BaseResponse(400, MESSAGE.RESPONSE.FAIL);
+    }
+
+    @Override
+    public BaseResponse savePost(UserPostDto dto) {
+        return null;
     }
 
 }
