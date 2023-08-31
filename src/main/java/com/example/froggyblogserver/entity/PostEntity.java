@@ -29,7 +29,6 @@ public class PostEntity extends BaseEntity {
     private String title;
     private String status;
     private String credit;
-    private String topicId;
     private String userId;
 
     @PrePersist

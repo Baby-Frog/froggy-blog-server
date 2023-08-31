@@ -18,7 +18,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account extends BaseEntity{
+public class AccountEntity extends BaseEntity{
     @Id
     private String id;
     private String email;

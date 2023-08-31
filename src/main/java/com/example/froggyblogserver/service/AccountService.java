@@ -2,11 +2,11 @@ package com.example.froggyblogserver.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.example.froggyblogserver.entity.Account;
+import com.example.froggyblogserver.entity.AccountEntity;
 import com.example.froggyblogserver.generic.GeneralService;
 import com.example.froggyblogserver.response.BaseResponse;
 
-public interface AccountService extends GeneralService<Account>,UserDetailsService{
+public interface AccountService extends GeneralService<AccountEntity>,UserDetailsService{
     BaseResponse deleteAccount(String id);
-    Account findByEmail(String username);
+    AccountEntity findByEmail(String username);
 }

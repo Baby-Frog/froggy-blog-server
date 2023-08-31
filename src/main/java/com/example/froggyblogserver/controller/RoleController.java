@@ -1,7 +1,6 @@
 package com.example.froggyblogserver.controller;
 
-import com.example.froggyblogserver.dto.AddRoleUserDto;
-import com.example.froggyblogserver.entity.AccountsRoles;
+import com.example.froggyblogserver.entity.AccountsRolesEntity;
 import com.example.froggyblogserver.entity.RoleEntity;
 import com.example.froggyblogserver.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class RoleController {
     }
 
     @PostMapping("addRole")
-    public ResponseEntity<?> addRole(@RequestBody AccountsRoles dto){
+    public ResponseEntity<?> addRole(@RequestBody AccountsRolesEntity dto){
         return ResponseEntity.ok().body(roleService.addRoleToUser(dto));
     }
 }
