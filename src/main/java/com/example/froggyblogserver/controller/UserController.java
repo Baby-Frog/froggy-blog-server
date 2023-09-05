@@ -1,6 +1,8 @@
 package com.example.froggyblogserver.controller;
 
-import com.example.froggyblogserver.dto.UserSearchRequest;
+import com.example.froggyblogserver.dto.request.UserSearchRequest;
+import com.example.froggyblogserver.service.CurrentUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -15,15 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.service.UserService;
 
-import java.util.concurrent.Flow;
-
 @RestController
 @RequestMapping("api/v1/user")
 @CrossOrigin("*")
+@Slf4j
 public class UserController {
     
     @Autowired
     private UserService userService;
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @PostMapping("/saveOrUpdate")
     public ResponseEntity<?> saveOrUpdate(@RequestBody UserEntity req ){
@@ -43,5 +46,11 @@ public class UserController {
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<?> deleteById(@PathVariable String id){
         return ResponseEntity.ok().body(userService.deleteById(id));
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<?> test(){
+        log.error("test log");
+        return ResponseEntity.ok().build();
     }
 }

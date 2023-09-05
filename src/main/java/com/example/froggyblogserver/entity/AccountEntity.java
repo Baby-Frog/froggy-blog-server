@@ -21,6 +21,7 @@ import lombok.*;
 public class AccountEntity extends BaseEntity{
     @Id
     private String id;
+    @Column(unique = true)
     private String email;
     private String password;
     private String userId;

@@ -21,6 +21,7 @@ public class UserEntity extends BaseEntity {
     @Id
     private String id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String phoneNumber;
     private String address;
