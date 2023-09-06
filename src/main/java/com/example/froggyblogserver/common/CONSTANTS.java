@@ -7,6 +7,10 @@ public class CONSTANTS {
         public final static byte FALSE = 0;
     }
 
+    public static class PROPERTIES{
+        public final static String EMAIL = "Email";
+    }
+
     public static class ROLE{
         public static final String USER = "USER";
         public static final String PUBLISHER = "PUBLISHER";

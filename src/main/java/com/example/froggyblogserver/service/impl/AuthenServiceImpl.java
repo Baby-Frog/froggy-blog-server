@@ -10,6 +10,7 @@ import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.entity.*;
 import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.exception.DataAlreadyExistExeption;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
@@ -88,7 +89,6 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req) {
-        try {
             if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (!validateEmail(req.getEmail()))
@@ -97,7 +97,7 @@ public class AuthenServiceImpl implements AuthenService {
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+                throw new DataAlreadyExistExeption(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
             UserEntity newUser = UserEntity.builder().name(req.getName().trim())
                     .address(req.getAddress().trim()).email(req.getEmail().trim())
                     .phoneNumber(req.getPhoneNumber()).provider(CONSTANTS.PROVIDER.SYSTEM).build();
@@ -110,11 +110,7 @@ public class AuthenServiceImpl implements AuthenService {
             assert findRoleDefault != null;
             accountRoleRepo.save(AccountsRolesEntity.builder().accountId(saveNewAccount.getId()).roleId(findRoleDefault.getId()).build());
             return BaseResponse.builder().statusCode(200).message(MESSAGE.RESPONSE.REGISTER_SUCCESS).build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            return BaseResponse.builder().statusCode(400).message(e.getCause().getMessage()).build();
-        }
+
     }
 
     @Override
