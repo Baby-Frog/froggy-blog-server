@@ -26,6 +26,7 @@ public class UserEntity extends BaseEntity {
     private String phoneNumber;
     private String address;
     private String avatarPath;
+    private String provider;
 
     @PrePersist
     private void beforeInsert() {

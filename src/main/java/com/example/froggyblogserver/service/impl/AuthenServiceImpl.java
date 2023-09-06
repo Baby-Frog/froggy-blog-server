@@ -69,7 +69,7 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse login(LoginDto req) {
         if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         if (!validateEmail(req.getEmail()))
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
         AccountEntity foundAcc = accountService.findByEmail(req.getEmail());
@@ -90,17 +90,17 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse register(RegisterDto req) {
         try {
             if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (!validateEmail(req.getEmail()))
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
             if (!req.getPassword().equals(req.getRePassword()))
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
-            AccountEntity checkEmail = accountService.findByEmail(req.getEmail());
-            if (checkEmail != null)
+            var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
+            if (checkEmail.isPresent())
                 return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
             UserEntity newUser = UserEntity.builder().name(req.getName().trim())
                     .address(req.getAddress().trim()).email(req.getEmail().trim())
-                    .phoneNumber(req.getPhoneNumber()).build();
+                    .phoneNumber(req.getPhoneNumber()).provider(CONSTANTS.PROVIDER.SYSTEM).build();
             UserEntity saveNewUser = userRepo.save(newUser);
             AccountEntity newAccount = AccountEntity.builder()
                     .email(req.getEmail().trim()).password(passwordEncoder.encode(req.getPassword().trim()))
@@ -121,7 +121,7 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse refreshToken(RefreshTokenDto req) {
         try {
             if (StringHelper.isNullOrEmpty(req.getToken()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (jwtHelper.validateJwtToken(req.getToken())) {
                 var username = jwtHelper.getUserNameFromJwtToken(req.getToken());
                 return new BaseResponse(
@@ -153,7 +153,7 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse forgotPassword(ForgotPassword req) {
         if (StringHelper.isNullOrEmpty(req.getEmail()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         AccountEntity getAccount = accountRepo.findByEmail(req.getEmail());
         if (getAccount == null)
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
@@ -175,12 +175,12 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse resetPassword(ResetPasswordDto req) {
         if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         if (!req.getNewPassword().equals(req.getReNewPassword()))
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
         Optional<ResetPassword> check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
         if (!check.isPresent())
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         Duration checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
 
         if (checkTimeExpires.toMinutes() > 15)
@@ -196,14 +196,14 @@ public class AuthenServiceImpl implements AuthenService {
     @Transactional(rollbackOn = {UncheckedException.class,ValidateException.class})
     public BaseResponse changePassword(ChangePasswordDto req) {
         if(StringHelper.isNullOrEmpty(req.getOldPassword()) || StringHelper.isNullOrEmpty(req.getNewPassword()) || StringHelper.isNullOrEmpty(req.getConfirmPassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         var found = accountRepo.findById(req.getId());
         if(found.isEmpty())
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.ID_INVALID).build();
+            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         if(!passwordEncoder.matches(req.getOldPassword(),found.get().getPassword()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT).build();
+            throw new ValidateException(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT);
         if (!req.getNewPassword().trim().equals(req.getConfirmPassword().trim()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+            throw new ValidateException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
         found.get().setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
         accountRepo.save(found.get());
         return new BaseResponse(200,MESSAGE.RESPONSE.CHANGE_PASSWORD_SUCCESS);

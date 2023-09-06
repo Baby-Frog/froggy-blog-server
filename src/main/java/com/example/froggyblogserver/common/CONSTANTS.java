@@ -12,5 +12,9 @@ public class CONSTANTS {
         public static final String PUBLISHER = "PUBLISHER";
         public static final String ADMINISTRATOR = "ADMINISTRATOR";
     }
-    
+    public  static class PROVIDER{
+        public static final String FACEBOOK = "FACEBOOK";
+        public static final String GOOGLE = "GOOGLE";
+        public static final String SYSTEM = "SYSTEM";
+    }
 }

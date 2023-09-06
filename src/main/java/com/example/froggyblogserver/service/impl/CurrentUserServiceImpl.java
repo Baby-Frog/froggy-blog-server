@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.service.impl;
 
+import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.UserRepo;
@@ -25,7 +26,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     public UserEntity getInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         var getEmail = authentication.getName();
-        var userInfo = userRepo.findByEmail(getEmail);
+        var userInfo = userRepo.findByEmailanAndProvider(getEmail, null);
         return userInfo.get();
     }
 }
