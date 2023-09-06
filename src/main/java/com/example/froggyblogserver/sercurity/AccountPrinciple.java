@@ -1,4 +1,4 @@
-package com.example.froggyblogserver.dto;
+package com.example.froggyblogserver.sercurity;
 
 import java.util.Collection;
 import java.util.List;

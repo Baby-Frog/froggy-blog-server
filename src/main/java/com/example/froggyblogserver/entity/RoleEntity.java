@@ -7,11 +7,7 @@ import javax.persistence.*;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Getter
@@ -20,6 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Builder
 public class RoleEntity extends BaseEntity{
 
     @Id

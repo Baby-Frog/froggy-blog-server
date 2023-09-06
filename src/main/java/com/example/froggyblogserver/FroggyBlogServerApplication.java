@@ -1,5 +1,8 @@
 package com.example.froggyblogserver;
 
+import com.example.froggyblogserver.common.CONSTANTS;
+import com.example.froggyblogserver.entity.RoleEntity;
+import com.example.froggyblogserver.repository.RoleRepo;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,5 +24,14 @@ public class FroggyBlogServerApplication {
     @Bean 
      PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(5);
+    }
+    @Bean
+    CommandLineRunner commandLineRunner(RoleRepo roleRepo){
+        return args -> {
+            var check = roleRepo.findByCode(CONSTANTS.ROLE.USER);
+            if (check.isEmpty()){
+                roleRepo.save(RoleEntity.builder().name("User").code(CONSTANTS.ROLE.USER).build());
+            }
+        };
     }
 }

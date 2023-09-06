@@ -2,6 +2,7 @@ package com.example.froggyblogserver.service.impl;
 
 import javax.transaction.Transactional;
 
+import com.example.froggyblogserver.exception.ValidateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
-import com.example.froggyblogserver.dto.AccountPrinciple;
+import com.example.froggyblogserver.sercurity.AccountPrinciple;
 import com.example.froggyblogserver.entity.AccountEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
@@ -29,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public BaseResponse findById(String id) {
             if (StringHelper.isNullOrEmpty(id))
-               return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             return new BaseResponse(repo.findById(id).orElse(null));
     }
 
@@ -44,7 +45,8 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteAccount(String id) {
             AccountEntity found = repo.findById(id).orElse(null);
-            if (found == null)return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.INPUT_INVALID).build();
+            if (found == null)
+                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
             return new BaseResponse(id);

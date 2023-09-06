@@ -1,5 +1,7 @@
 package com.example.froggyblogserver.config;
 
+import com.example.froggyblogserver.sercurity.handler.OAuthSuccessHandler;
+import com.example.froggyblogserver.service.impl.CustomOAuth2UserService;
 import com.example.froggyblogserver.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -41,6 +44,10 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtHelper jwtHelper;
+    @Autowired
+    CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    OAuthSuccessHandler successHandler;
 
     @Bean
     WebMvcConfigurer webMvcConfigurer() {
@@ -72,13 +79,17 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }
-
+    @Bean
+    OidcUserService oidcUserService(){
+        return new OidcUserService();
+    }
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.ignoringAntMatchers("/**")).headers().contentSecurityPolicy("default-src 'self'");
         http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
-        http.authorizeHttpRequests(requests -> requests.antMatchers("/", "/login", "/register", "/refreshToken", "/api/role/**").permitAll()
-                .anyRequest().authenticated()).csrf(csrf -> csrf.disable());
+        http.authorizeHttpRequests().antMatchers("/", "/login", "/login/**", "/register", "/refreshToken", "/api/role/**").permitAll()
+                .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
+        http.csrf().disable();
         http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(handling -> handling.accessDeniedHandler(new AuthenAccessDeniedExceptionHandler()));
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

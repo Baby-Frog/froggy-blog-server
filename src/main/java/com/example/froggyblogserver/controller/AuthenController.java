@@ -4,6 +4,7 @@ package com.example.froggyblogserver.controller;
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.response.BaseResponse;
+import com.example.froggyblogserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,8 @@ import javax.validation.Valid;
 public class AuthenController {
     @Autowired
     private AuthenService authenService;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto req) {
@@ -72,4 +75,11 @@ public class AuthenController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto req) {
         return ResponseEntity.ok().body(authenService.resetPassword(req));
     }
+
+    @GetMapping("/oauth2/authorization/google")
+    public String loginfb(){
+
+        return "redirect://oauth2/authorization/google";
+    }
+
 }
