@@ -9,9 +9,7 @@ import java.util.UUID;
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.entity.*;
-import com.example.froggyblogserver.exception.CheckedException;
-import com.example.froggyblogserver.exception.DataAlreadyExistExeption;
-import com.example.froggyblogserver.exception.UncheckedException;
+import com.example.froggyblogserver.exception.*;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.froggyblogserver.common.MESSAGE;
-import com.example.froggyblogserver.exception.ValidateException;
+import com.example.froggyblogserver.exception.ValidateInputException;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.LoginResponse;
 import com.example.froggyblogserver.service.AccountService;
@@ -70,9 +68,9 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse login(LoginDto req) {
         if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         if (!validateEmail(req.getEmail()))
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+            throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_INVALID);
         AccountEntity foundAcc = accountService.findByEmail(req.getEmail());
         if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
             String refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
@@ -83,21 +81,21 @@ public class AuthenServiceImpl implements AuthenService {
                             .accessToken(accessToken).refreshToken(refreshToken)
                             .redirectUrl(req.getRedirectUrl()).profile(userMapper.entityToDto(getUserProfile)).build());
         }
-        return new BaseResponse(401, MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
+        throw new ValidateException(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req) {
             if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (!validateEmail(req.getEmail()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_INVALID);
             if (!req.getPassword().equals(req.getRePassword()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.PASSWORD,MESSAGE.VALIDATE.PASSWORD_INCORRECT);
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
-                throw new DataAlreadyExistExeption(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
             UserEntity newUser = UserEntity.builder().name(req.getName().trim())
                     .address(req.getAddress().trim()).email(req.getEmail().trim())
                     .phoneNumber(req.getPhoneNumber()).provider(CONSTANTS.PROVIDER.SYSTEM).build();
@@ -117,7 +115,7 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse refreshToken(RefreshTokenDto req) {
         try {
             if (StringHelper.isNullOrEmpty(req.getToken()))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (jwtHelper.validateJwtToken(req.getToken())) {
                 var username = jwtHelper.getUserNameFromJwtToken(req.getToken());
                 return new BaseResponse(
@@ -149,7 +147,7 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse forgotPassword(ForgotPassword req) {
         if (StringHelper.isNullOrEmpty(req.getEmail()))
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         AccountEntity getAccount = accountRepo.findByEmail(req.getEmail());
         if (getAccount == null)
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
@@ -171,12 +169,12 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse resetPassword(ResetPasswordDto req) {
         if (StringHelper.isNullOrEmpty(req.getReNewPassword()) || StringHelper.isNullOrEmpty(req.getReNewPassword()))
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         if (!req.getNewPassword().equals(req.getReNewPassword()))
             return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.PASSWORD_INCORRECT).build();
         Optional<ResetPassword> check = resetPasswordRepo.findByVerifyCode(req.getVerifyCode());
         if (!check.isPresent())
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         Duration checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
 
         if (checkTimeExpires.toMinutes() > 15)
@@ -189,17 +187,17 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    @Transactional(rollbackOn = {UncheckedException.class,ValidateException.class})
+    @Transactional(rollbackOn = {UncheckedException.class, ValidateException.class})
     public BaseResponse changePassword(ChangePasswordDto req) {
         if(StringHelper.isNullOrEmpty(req.getOldPassword()) || StringHelper.isNullOrEmpty(req.getNewPassword()) || StringHelper.isNullOrEmpty(req.getConfirmPassword()))
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         var found = accountRepo.findById(req.getId());
         if(found.isEmpty())
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         if(!passwordEncoder.matches(req.getOldPassword(),found.get().getPassword()))
-            throw new ValidateException(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT);
+            throw new ValidateInputException(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT);
         if (!req.getNewPassword().trim().equals(req.getConfirmPassword().trim()))
-            throw new ValidateException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
+            throw new ValidateInputException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
         found.get().setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
         accountRepo.save(found.get());
         return new BaseResponse(200,MESSAGE.RESPONSE.CHANGE_PASSWORD_SUCCESS);

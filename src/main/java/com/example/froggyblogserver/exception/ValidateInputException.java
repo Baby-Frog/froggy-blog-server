@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class DataAlreadyExistExeption extends RuntimeException{
+public class ValidateInputException extends RuntimeException{
     private String key;
     private String message;
 
-    public DataAlreadyExistExeption(String message) {
+    public ValidateInputException(String message) {
         this.message = message;
     }
 }

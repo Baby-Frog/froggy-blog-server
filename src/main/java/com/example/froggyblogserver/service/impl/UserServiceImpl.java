@@ -7,6 +7,7 @@ import com.example.froggyblogserver.entity.AccountEntity;
 import com.example.froggyblogserver.entity.AccountsRolesEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
+import com.example.froggyblogserver.exception.ValidateInputException;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.response.PageResponse;
@@ -94,7 +95,7 @@ public class UserServiceImpl implements UserService {
     public BaseResponse deleteById(String id) {
             Optional<UserEntity> found = repo.findById(id);
             if (!found.isPresent())
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
             found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found.get());
             return new BaseResponse(id);

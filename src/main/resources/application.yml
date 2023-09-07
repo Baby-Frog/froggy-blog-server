@@ -50,7 +50,7 @@ logging:
     file:  "->  %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n"
     dateformat: dd-MM-yyyy
   level:
-    root: error
+    root: info
   file:
     path: C:/FroggyBlog/
     name: '${logging.file.path}/logServer_%d.log'

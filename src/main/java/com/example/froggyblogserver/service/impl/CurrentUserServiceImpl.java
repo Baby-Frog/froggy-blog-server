@@ -1,6 +1,5 @@
 package com.example.froggyblogserver.service.impl;
 
-import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.UserRepo;
@@ -12,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 
 @Builder
 @Service
