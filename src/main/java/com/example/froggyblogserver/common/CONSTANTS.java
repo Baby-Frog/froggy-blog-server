@@ -9,6 +9,7 @@ public class CONSTANTS {
 
     public static class PROPERTIES{
         public final static String EMAIL = "Email";
+        public final static String PASSWORD = "Password";
     }
 
     public static class ROLE{

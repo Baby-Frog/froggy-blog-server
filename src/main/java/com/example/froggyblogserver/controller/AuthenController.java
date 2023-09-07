@@ -31,28 +31,19 @@ public class AuthenController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto req) {
         BaseResponse exec = authenService.login(req);
-        if (exec.getStatusCode() == 200)
-            return ResponseEntity.ok().body(exec);
-        else if (exec.getStatusCode() == 400)
-            return ResponseEntity.badRequest().body(exec);
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
+        return ResponseEntity.ok().body(exec);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto req) {
         BaseResponse exec = authenService.register(req);
-        if (exec.getStatusCode() == 200)
-            return ResponseEntity.ok().body(exec);
-        return ResponseEntity.badRequest().body(exec);
-
+        return ResponseEntity.ok().body(exec);
     }
 
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto req) {
         BaseResponse exec = authenService.changePassword(req);
-        if (exec.getStatusCode() == 200)
-            return ResponseEntity.ok().body(exec);
-        return ResponseEntity.badRequest().body(exec);
+        return ResponseEntity.ok().body(exec);
 
     }
 
@@ -77,7 +68,7 @@ public class AuthenController {
     }
 
     @GetMapping("/oauth2/authorization/google")
-    public String loginfb(){
+    public String loginGoogle() {
 
         return "redirect://oauth2/authorization/google";
     }
