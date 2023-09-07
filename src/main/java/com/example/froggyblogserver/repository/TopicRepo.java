@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TopicRepo extends JpaRepository<TopicEntity, String> {
+
+    TopicEntity findTopicEntityById(String id);
+
 }
