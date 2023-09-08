@@ -20,7 +20,8 @@ public class JwtHelper {
 
     @Value("${jwt.secretKey}")
     private String SECRET_KEY ;
-
+    @Value("${jwt.refreshKey}")
+    private String REFRESH_KEY;
     @Value("${jwt.expiredTimeAccess}")
     private long EXPIRE_TIME;
     @Value("${jwt.expiredTimeRefresh}")
@@ -46,7 +47,7 @@ public class JwtHelper {
                 .setIssuer(ISSUER)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + EXPIRE_TIME_REFRESH))
-                .signWith(SignatureAlgorithm.HS512,SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS512,REFRESH_KEY)
                 .compact();
     }
 
@@ -69,11 +70,36 @@ public class JwtHelper {
 
     }
 
+    public boolean validateRefreshToken(String refreshToken){
+        try{
+            Jwts.parser().setSigningKey(REFRESH_KEY).parseClaimsJws(refreshToken);
+            return true;
+        }catch (SignatureException e){
+            log.error("Invalid JWT signature -> Message: {}",e.getMessage());
+        }catch (MalformedJwtException e){
+            log.error("Invalid JWT token -> Message: {}",e.getMessage());
+        }catch (ExpiredJwtException e){
+            log.error("Expired JWT token -> Message: {}",e.getMessage());
+        }catch (UnsupportedJwtException e){
+            log.error("Unsupported JWT token -> Message: {}",e.getMessage());
+        }catch (IllegalArgumentException e){
+            log.error("JWT claim string is empty -> Message:{}", e.getMessage());
+        }
+        return false;
+
+    }
+
     public String getUserNameFromJwtToken(String token){
-        String userName = Jwts.parser()
+        return Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody().getSubject();
-        return userName;
+    }
+
+    public String getUserNameFromRefreshToken(String token){
+        return Jwts.parser()
+                .setSigningKey(REFRESH_KEY)
+                .parseClaimsJws(token)
+                .getBody().getSubject();
     }
 }

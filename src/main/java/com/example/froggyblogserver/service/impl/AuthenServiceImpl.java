@@ -58,6 +58,8 @@ public class AuthenServiceImpl implements AuthenService {
     private RoleRepo roleRepo;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RefreshTokenRepo refreshTokenRepo;
     private final String PATH_RESET = "confirm-required";
 
     private boolean validateEmail(String email) {
@@ -76,6 +78,7 @@ public class AuthenServiceImpl implements AuthenService {
             String refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
             String accessToken = jwtHelper.generateAccessToken(req.getEmail());
             UserEntity getUserProfile = userRepo.findById(foundAcc.getUserId()).orElse(null);
+            refreshTokenRepo.save(RefreshToken.builder().email(foundAcc.getEmail()).refreshToken(refreshToken).build());
             return new BaseResponse(
                     LoginResponse.builder()
                             .accessToken(accessToken).refreshToken(refreshToken)
@@ -96,9 +99,10 @@ public class AuthenServiceImpl implements AuthenService {
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
                 throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
-            UserEntity newUser = UserEntity.builder().name(req.getName().trim())
-                    .address(req.getAddress().trim()).email(req.getEmail().trim())
-                    .phoneNumber(req.getPhoneNumber()).provider(CONSTANTS.PROVIDER.SYSTEM).build();
+            var name = "FroggyBlog@" + UUID.randomUUID();
+            UserEntity newUser = UserEntity.builder().name(name)
+                    .email(req.getEmail().trim())
+                    .provider(CONSTANTS.PROVIDER.SYSTEM).build();
             UserEntity saveNewUser = userRepo.save(newUser);
             AccountEntity newAccount = AccountEntity.builder()
                     .email(req.getEmail().trim()).password(passwordEncoder.encode(req.getPassword().trim()))
@@ -116,12 +120,15 @@ public class AuthenServiceImpl implements AuthenService {
         try {
             if (StringHelper.isNullOrEmpty(req.getToken()))
                 throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
-            if (jwtHelper.validateJwtToken(req.getToken())) {
-                var username = jwtHelper.getUserNameFromJwtToken(req.getToken());
+            if (jwtHelper.validateRefreshToken(req.getToken())) {
+                var email = jwtHelper.getUserNameFromJwtToken(req.getToken());
+                var findToken = refreshTokenRepo.findByEmail(email);
+                if (findToken.isEmpty())
+                    throw new ValidateInputException(CONSTANTS.PROPERTIES.TOKEN,MESSAGE.TOKEN.TOKEN_INVALID);
                 return new BaseResponse(
                         LoginResponse.builder()
-                                .accessToken(jwtHelper.generateAccessToken(username))
-                                .refreshToken(jwtHelper.generateRefreshToken(username))
+                                .accessToken(jwtHelper.generateAccessToken(email))
+                                .refreshToken(req.getToken())
                                 .build());
             }
         } catch (Exception e) {
@@ -132,11 +139,14 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    public BaseResponse logout(RefreshTokenDto req) {
+    public BaseResponse logout(RefreshTokenDto dto) {
         try {
-            if (!jwtHelper.validateJwtToken(req.getToken()))
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.TOKEN.TOKEN_INVALID).build();
-
+            var email = jwtHelper.getUserNameFromRefreshToken(dto.getToken());
+            var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getToken(), email);
+            if(findUser.isEmpty())
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.TOKEN,MESSAGE.TOKEN.TOKEN_INVALID);
+            findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
+            refreshTokenRepo.save(findUser.get());
             return new BaseResponse();
         } catch (Exception e) {
             log.error(e.getMessage());

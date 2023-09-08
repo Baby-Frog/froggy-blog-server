@@ -34,6 +34,7 @@ spring:
                 - profile
 jwt:
    secretKey: geG-4w9NviA-h6kt2DASBZf0o8bRqp0VJd9PZuZg78s.bwUF7PMAWODIxqqyqErNfn1ZWmKtTqLcQDb7GVTueTg.hmvUpKfPFuy8C2YbSvkTCOSHUl693Kjl7W95rrdu9do
+   refreshKey: ZZ9cgC0Uh0fPyqv4fvEedXeaX7L378G2kvDH9l0-u00.6Szw_Yhs_kho1esPtah_68F8fVM0Nk1Bw7ZMtEwAWD8.kLpZGI7w5VxX5LBx-V4NeIH5J1vu461yNbcRA6vhzHE
    expiredTimeAccess: 900000
    expiredTimeRefresh: 2592000000
    audience: FroggyBlogReact
