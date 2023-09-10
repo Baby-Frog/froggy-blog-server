@@ -86,7 +86,7 @@ public class AuthenServiceImpl implements AuthenService {
                             .accessToken(accessToken).refreshToken(refreshToken)
                             .profile(userMapper.entityToDto(getUserProfile.get())).build());
         }
-        throw new ValidateException(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
+        throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @Override
