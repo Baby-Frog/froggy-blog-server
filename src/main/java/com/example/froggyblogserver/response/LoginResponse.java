@@ -15,6 +15,5 @@ public class LoginResponse {
     private final String tokenType = "Bearer ";
     private String accessToken;
     private String refreshToken;
-    private String redirectUrl;
     private UserDto profile;
 }

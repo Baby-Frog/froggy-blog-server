@@ -30,7 +30,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         var accessToken = jwtHelper.generateAccessToken(customOauth2User.getEmail());
         var refreshToken = jwtHelper.generateRefreshToken(customOauth2User.getEmail());
         var profile = userService.findByEmail(customOauth2User.getEmail());
-        LoginResponse loginResponse = new LoginResponse(accessToken,refreshToken,null,profile);
+        LoginResponse loginResponse = new LoginResponse(accessToken,refreshToken,profile);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();

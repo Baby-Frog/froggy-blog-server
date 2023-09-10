@@ -15,5 +15,4 @@ public class LoginDto {
     @Email(message = MESSAGE.VALIDATE.EMAIL_INVALID)
     private String email;
     private String password;
-    private String redirectUrl;
 }

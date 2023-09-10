@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "accounts")
+@Table(name = "refreshToken")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +18,7 @@ public class RefreshToken extends BaseEntity{
     @Id
     private String id;
     private String email;
+    @Column(length = 500)
     private String refreshToken;
     @PrePersist
     private void beforeInsert(){
