@@ -11,6 +11,7 @@ public class MESSAGE {
         public static final String VERIFY_EXPIRES = "Verify code has been expired";
         public static final String PASSWORD_INCORRECT = "Password and confirm password doesn't match";
         public static final String OLD_PASSWORD_INCORRECT = "Old password invalid";
+        public static final String USER_NOT_EXIST = "User not exist!!!";
 
     }
 

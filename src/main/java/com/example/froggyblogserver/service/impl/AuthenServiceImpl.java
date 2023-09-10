@@ -72,17 +72,19 @@ public class AuthenServiceImpl implements AuthenService {
         if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
             throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         if (!validateEmail(req.getEmail()))
-            throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_INVALID);
+            throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_INVALID);
         AccountEntity foundAcc = accountService.findByEmail(req.getEmail());
-        if (foundAcc != null && BCrypt.checkpw(req.getPassword(), foundAcc.getPassword())) {
-            String refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
-            String accessToken = jwtHelper.generateAccessToken(req.getEmail());
-            UserEntity getUserProfile = userRepo.findById(foundAcc.getUserId()).orElse(null);
+        if (foundAcc != null && passwordEncoder.matches(req.getPassword(), foundAcc.getPassword())) {
+            var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
+            var accessToken = jwtHelper.generateAccessToken(req.getEmail());
+            if(StringHelper.isNullOrEmpty(foundAcc.getUserId()))
+                throw new ValidateException(MESSAGE.VALIDATE.USER_NOT_EXIST);
+            var getUserProfile = userRepo.findById(foundAcc.getUserId());
             refreshTokenRepo.save(RefreshToken.builder().email(foundAcc.getEmail()).refreshToken(refreshToken).build());
             return new BaseResponse(
                     LoginResponse.builder()
                             .accessToken(accessToken).refreshToken(refreshToken)
-                            .redirectUrl(req.getRedirectUrl()).profile(userMapper.entityToDto(getUserProfile)).build());
+                            .profile(userMapper.entityToDto(getUserProfile.get())).build());
         }
         throw new ValidateException(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
@@ -93,12 +95,12 @@ public class AuthenServiceImpl implements AuthenService {
             if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
                 throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (!validateEmail(req.getEmail()))
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_INVALID);
+                throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_INVALID);
             if (!req.getPassword().equals(req.getRePassword()))
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.PASSWORD,MESSAGE.VALIDATE.PASSWORD_INCORRECT);
+                throw new ValidateInputException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
+                throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
             var name = "FroggyBlog@" + UUID.randomUUID();
             UserEntity newUser = UserEntity.builder().name(name)
                     .email(req.getEmail().trim())
@@ -124,7 +126,7 @@ public class AuthenServiceImpl implements AuthenService {
                 var email = jwtHelper.getUserNameFromJwtToken(req.getToken());
                 var findToken = refreshTokenRepo.findByEmail(email);
                 if (findToken.isEmpty())
-                    throw new ValidateInputException(CONSTANTS.PROPERTIES.TOKEN,MESSAGE.TOKEN.TOKEN_INVALID);
+                    throw new ValidateInputException(MESSAGE.TOKEN.TOKEN_INVALID);
                 return new BaseResponse(
                         LoginResponse.builder()
                                 .accessToken(jwtHelper.generateAccessToken(email))
@@ -140,18 +142,13 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse logout(RefreshTokenDto dto) {
-        try {
             var email = jwtHelper.getUserNameFromRefreshToken(dto.getToken());
             var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getToken(), email);
             if(findUser.isEmpty())
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.TOKEN,MESSAGE.TOKEN.TOKEN_INVALID);
+                throw new ValidateInputException(MESSAGE.TOKEN.TOKEN_INVALID);
             findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             refreshTokenRepo.save(findUser.get());
             return new BaseResponse();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new BaseResponse(HttpStatus.BAD_REQUEST.value(), MESSAGE.RESPONSE.FAIL, e.getMessage());
-        }
     }
 
     @Override
