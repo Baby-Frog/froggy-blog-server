@@ -87,7 +87,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.ignoringAntMatchers("/**")).headers().contentSecurityPolicy("default-src 'self'");
         http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
-        http.authorizeHttpRequests().antMatchers("/", "/login", "/login/**", "/register", "/refreshToken", "/api/role/**").permitAll()
+        http.authorizeHttpRequests().antMatchers("/", "/login", "/register", "/refreshToken", "/api/role/**").permitAll()
                 .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
         http.csrf().disable();
         http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
