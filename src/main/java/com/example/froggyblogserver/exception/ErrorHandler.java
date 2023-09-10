@@ -35,11 +35,10 @@ public class ErrorHandler {
     @ExceptionHandler(ValidateInputException.class)
     public ResponseEntity<?> dataAlreadyExist(ValidateInputException e) {
         response.setStatusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-        response.setMessage(MESSAGE.RESPONSE.VALIDATE_ERROR);
         if (StringHelper.isNullOrEmpty(e.getKey()))
-            response.setData(e.getMessage());
+            response.setMessage(e.getMessage());
         else
-            response.setData(e.getKey() + ':' + e.getMessage());
+            response.setMessage(e.getKey() + ':' + e.getMessage());
         log.error(e.getMessage(), e);
         return ResponseEntity.unprocessableEntity().body(response);
     }
