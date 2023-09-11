@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepo extends JpaRepository<UserEntity, String> {
-    @Query(value = "from UserEntity u WHERE (:#{#req.name} IS NULL OR u.name like %:#{#req.name}%) ORDER BY u.createDate")
+    @Query(value = "from UserEntity u WHERE (:#{#req.name} IS NULL OR u.fullName like %:#{#req.name}%) ORDER BY u.createDate")
     Page<UserEntity> search(@Param("req") UserSearchRequest request, Pageable pageable);
 
     @Query(value = "from UserEntity u WHERE (:email IS NULL OR u.email = :email) AND (:provider IS NULL OR u.provider = :provider)")

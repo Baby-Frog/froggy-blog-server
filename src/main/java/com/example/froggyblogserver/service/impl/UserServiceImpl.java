@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
     public void OAuthLogin(String name, String email) {
         var checkExist = repo.findByEmailanAndProvider(email,null);
         if (checkExist.isEmpty()){
-            var newUser = UserEntity.builder().name(name).email(email).provider(CONSTANTS.PROVIDER.GOOGLE).build();
+            var newUser = UserEntity.builder().fullName(name).email(email).provider(CONSTANTS.PROVIDER.GOOGLE).build();
             var execNewUser =  repo.save(newUser);
             var newAccount = AccountEntity.builder().userId(execNewUser.getId()).email(email).password(passwordEncoder.encode(UUID.randomUUID().toString())).build();
             var saveNewAccount = accountRepo.save(newAccount);

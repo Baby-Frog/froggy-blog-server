@@ -20,7 +20,7 @@ public class UserEntity extends BaseEntity {
 
     @Id
     private String id;
-    private String name;
+    private String fullName;
     @Column(unique = true)
     private String email;
     private String phoneNumber;
