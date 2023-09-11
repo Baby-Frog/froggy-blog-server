@@ -101,10 +101,8 @@ public class AuthenServiceImpl implements AuthenService {
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
                 throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
-            var name = "FroggyBlog@" + UUID.randomUUID();
-            var nameUser = req.getEmail().split("@")[0];
-            var pathAvt = PATH_AVT + nameUser;
-            UserEntity newUser = UserEntity.builder().name(nameUser)
+            var pathAvt = PATH_AVT + StringHelper.convertToNonAccentVietnamese(req.getFullName());
+            UserEntity newUser = UserEntity.builder().fullName(req.getFullName())
                     .email(req.getEmail().trim()).avatarPath(pathAvt)
                     .provider(CONSTANTS.PROVIDER.SYSTEM).build();
             UserEntity saveNewUser = userRepo.save(newUser);
