@@ -13,10 +13,9 @@ import com.example.froggyblogserver.exception.*;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,8 @@ public class AuthenServiceImpl implements AuthenService {
     private UserMapper userMapper;
     @Autowired
     private RefreshTokenRepo refreshTokenRepo;
-    private final String PATH_RESET = "confirm-required";
+    @Value("${avatar.path}")
+    private String PATH_AVT ;
 
     private boolean validateEmail(String email) {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
@@ -102,8 +102,10 @@ public class AuthenServiceImpl implements AuthenService {
             if (checkEmail.isPresent())
                 throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
             var name = "FroggyBlog@" + UUID.randomUUID();
-            UserEntity newUser = UserEntity.builder().name(name)
-                    .email(req.getEmail().trim())
+            var nameUser = req.getEmail().split("@")[0];
+            var pathAvt = PATH_AVT + nameUser;
+            UserEntity newUser = UserEntity.builder().name(nameUser)
+                    .email(req.getEmail().trim()).avatarPath(pathAvt)
                     .provider(CONSTANTS.PROVIDER.SYSTEM).build();
             UserEntity saveNewUser = userRepo.save(newUser);
             AccountEntity newAccount = AccountEntity.builder()
@@ -120,17 +122,17 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse refreshToken(RefreshTokenDto req) {
         try {
-            if (StringHelper.isNullOrEmpty(req.getToken()))
+            if (StringHelper.isNullOrEmpty(req.getRefreshToken()))
                 throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
-            if (jwtHelper.validateRefreshToken(req.getToken())) {
-                var email = jwtHelper.getUserNameFromJwtToken(req.getToken());
+            if (jwtHelper.validateRefreshToken(req.getRefreshToken())) {
+                var email = jwtHelper.getUserNameFromJwtToken(req.getRefreshToken());
                 var findToken = refreshTokenRepo.findByEmail(email);
                 if (findToken.isEmpty())
                     throw new ValidateInputException(MESSAGE.TOKEN.TOKEN_INVALID);
                 return new BaseResponse(
                         LoginResponse.builder()
                                 .accessToken(jwtHelper.generateAccessToken(email))
-                                .refreshToken(req.getToken())
+                                .refreshToken(req.getRefreshToken())
                                 .build());
             }
         } catch (Exception e) {
@@ -142,8 +144,8 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse logout(RefreshTokenDto dto) {
-            var email = jwtHelper.getUserNameFromRefreshToken(dto.getToken());
-            var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getToken(), email);
+            var email = jwtHelper.getUserNameFromRefreshToken(dto.getRefreshToken());
+            var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getRefreshToken(), email);
             if(findUser.isEmpty())
                 throw new ValidateInputException(MESSAGE.TOKEN.TOKEN_INVALID);
             findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
@@ -162,6 +164,7 @@ public class AuthenServiceImpl implements AuthenService {
 
         resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
         String subject = "Verify reset password";
+        String PATH_RESET = "confirm-required";
         String url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
         String text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
         SimpleMailMessage message = new SimpleMailMessage();
