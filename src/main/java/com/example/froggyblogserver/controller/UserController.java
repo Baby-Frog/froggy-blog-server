@@ -48,9 +48,4 @@ public class UserController {
         return ResponseEntity.ok().body(userService.deleteById(id));
     }
 
-    @GetMapping("/")
-    public ResponseEntity<?> test(){
-        log.error("test log");
-        return ResponseEntity.ok().build();
-    }
 }

@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
                 throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
-            return new BaseResponse(id);
+            return new BaseResponse();
     }
 
     @Override

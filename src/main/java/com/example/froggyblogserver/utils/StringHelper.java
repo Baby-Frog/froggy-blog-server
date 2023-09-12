@@ -8,7 +8,7 @@ public class StringHelper {
         return str == null || str.trim().isEmpty();
     }
 
-    public static String convertToNonAccentVietnamese(String str) {
+    public static String convertToNonAccent(String str) {
         if (str == null) {
             return null;
         }

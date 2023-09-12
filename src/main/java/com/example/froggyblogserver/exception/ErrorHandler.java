@@ -42,4 +42,11 @@ public class ErrorHandler {
         log.error(e.getMessage(), e);
         return ResponseEntity.unprocessableEntity().body(response);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> Exception (Exception e){
+        response.setStatusCode(422);
+        response.setMessage(e.getMessage());
+        return ResponseEntity.unprocessableEntity().body(response);
+    }
 }

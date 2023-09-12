@@ -7,11 +7,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PageResponse<T> {
+public class PageResponse {
     private int pageNumber;
     private int pageSize;
     private long totalRecord;
     private int totalPage;
-    private T data;
+    private Object data;
 
 }

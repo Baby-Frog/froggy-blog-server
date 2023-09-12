@@ -92,7 +92,7 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req) {
-            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()))
+            if (StringHelper.isNullOrEmpty(req.getEmail()) || StringHelper.isNullOrEmpty(req.getPassword()) || StringHelper.isNullOrEmpty(req.getFullName()))
                 throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
             if (!validateEmail(req.getEmail()))
                 throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_INVALID);
@@ -101,7 +101,7 @@ public class AuthenServiceImpl implements AuthenService {
             var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(),null);
             if (checkEmail.isPresent())
                 throw new ValidateInputException(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST);
-            var pathAvt = PATH_AVT + StringHelper.convertToNonAccentVietnamese(req.getFullName());
+            var pathAvt = PATH_AVT + StringHelper.convertToNonAccent(req.getFullName().trim());
             UserEntity newUser = UserEntity.builder().fullName(req.getFullName())
                     .email(req.getEmail().trim()).avatarPath(pathAvt)
                     .provider(CONSTANTS.PROVIDER.SYSTEM).build();
@@ -186,7 +186,7 @@ public class AuthenServiceImpl implements AuthenService {
         Duration checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
 
         if (checkTimeExpires.toMinutes() > 15)
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.VERIFY_EXPIRES).build();
+            throw new ValidateException(MESSAGE.VALIDATE.VERIFY_EXPIRES);
         AccountEntity getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
         assert getAccount != null;
         getAccount.setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
@@ -199,13 +199,13 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse changePassword(ChangePasswordDto req) {
         if(StringHelper.isNullOrEmpty(req.getOldPassword()) || StringHelper.isNullOrEmpty(req.getNewPassword()) || StringHelper.isNullOrEmpty(req.getConfirmPassword()))
             throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+        if (!req.getNewPassword().trim().equals(req.getConfirmPassword().trim()))
+            throw new ValidateInputException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
         var found = accountRepo.findById(req.getId());
         if(found.isEmpty())
             throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         if(!passwordEncoder.matches(req.getOldPassword(),found.get().getPassword()))
             throw new ValidateInputException(MESSAGE.VALIDATE.OLD_PASSWORD_INCORRECT);
-        if (!req.getNewPassword().trim().equals(req.getConfirmPassword().trim()))
-            throw new ValidateInputException(MESSAGE.VALIDATE.PASSWORD_INCORRECT);
         found.get().setPassword(passwordEncoder.encode(req.getNewPassword().trim()));
         accountRepo.save(found.get());
         return new BaseResponse(200,MESSAGE.RESPONSE.CHANGE_PASSWORD_SUCCESS);

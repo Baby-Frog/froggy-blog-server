@@ -12,6 +12,8 @@ public class MESSAGE {
         public static final String PASSWORD_INCORRECT = "Password and confirm password doesn't match";
         public static final String OLD_PASSWORD_INCORRECT = "Old password invalid";
         public static final String USER_NOT_EXIST = "User not exist!!!";
+        public static final String PAGE_NUMBER_INVALID = "Page number invalid!!!";
+        public static final String PAGE_SIZE_INVALID = "Page size invalid!!!";
 
     }
 
