@@ -23,4 +23,9 @@ public class CONSTANTS {
         public static final String GOOGLE = "GOOGLE";
         public static final String SYSTEM = "SYSTEM";
     }
+
+    public static class SORT{
+        public static final String ASC = "ASC";
+        public static final String DESC = "DESC";
+    }
 }

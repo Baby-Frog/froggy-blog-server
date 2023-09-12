@@ -16,6 +16,7 @@ import com.example.froggyblogserver.service.TopicService;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -47,24 +48,36 @@ public class TopicServiceImpl implements TopicService {
         var info = currentUserService.getInfo();
         if(StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
         else req.setUpdateId(info.getId());
+        req.setTopicCode(StringHelper.convertToNonAccent(req.getTopicName()).toUpperCase());
         topicRepo.save(req);
         return new BaseResponse();
     }
 
     @Override
-    public BaseResponse search(TopicSearchReq req) {
-        //Exception đã check nếu muốn custom mesage thì bắt lại
-//        if(req.getPageNumber() < 1)
-//            throw new ValidateInputException(MESSAGE.VALIDATE.PAGE_NUMBER_INVALID);
-//        if (req.getPageSize() < 1)
-//            throw new ValidateInputException(MESSAGE.VALIDATE.PAGE_SIZE_INVALID);
-        var search = topicRepo.searchTopic(req, PageRequest.of(req.getPageNumber() - 1,req.getPageSize()));
+    public BaseResponse search(TopicSearchReq req,String orderName,String orderDate) {
+
+        var page = PageRequest.of(req.getPageNumber() - 1,req.getPageSize());
+        if(!StringHelper.isNullOrEmpty(orderName)){
+            if(orderName.equalsIgnoreCase(CONSTANTS.SORT.ASC))
+                page = page.withSort(Sort.Direction.ASC,"topicCode");
+            else if(orderName.equalsIgnoreCase(CONSTANTS.SORT.DESC))
+                page = page.withSort(Sort.Direction.DESC,"topicCode");
+            else throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+        }
+        if(!StringHelper.isNullOrEmpty(orderDate)){
+            if(orderDate.equalsIgnoreCase(CONSTANTS.SORT.ASC))
+                page = page.withSort(Sort.Direction.ASC,"createDate");
+            else if(orderDate.equalsIgnoreCase(CONSTANTS.SORT.DESC))
+                page = page.withSort(Sort.Direction.DESC,"createDate");
+            else throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+        }
+        var search = topicRepo.searchTopic(req, page);
         var data = PageResponse.builder()
                 .pageSize(req.getPageSize())
                 .pageNumber(req.getPageNumber())
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(topic -> topicMapper.entityToDto(topic)).collect(Collectors.toList()))
+                .data(search.getContent())
                 .build();
         return new BaseResponse(data);
     }

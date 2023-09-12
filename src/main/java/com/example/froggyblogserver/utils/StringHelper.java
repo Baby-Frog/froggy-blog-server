@@ -16,6 +16,6 @@ public class StringHelper {
         // Chuyển đổi chuỗi Unicode tiếng Việt có dấu thành chuỗi không dấu
         String temp = Normalizer.normalize(str, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(temp).replaceAll("").replace(" ","");
+        return pattern.matcher(temp).replaceAll("").replace(" ","").replace("Đ","").replace("đ","");
     }
 }

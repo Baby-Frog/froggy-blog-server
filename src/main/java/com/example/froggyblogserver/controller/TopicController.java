@@ -20,9 +20,9 @@ public class TopicController {
         return ResponseEntity.ok().body(topicService.saveOrUpdate(mapper.dtoToEntity(req)));
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<?> search(@RequestBody TopicSearchReq req){
-        return ResponseEntity.ok().body(topicService.search(req));
+    @RequestMapping("/search")
+    public ResponseEntity<?> search(@RequestBody TopicSearchReq req,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate){
+        return ResponseEntity.ok().body(topicService.search(req,orderName,orderDate));
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id){

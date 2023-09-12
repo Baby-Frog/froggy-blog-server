@@ -29,6 +29,7 @@ public class TopicEntity extends BaseEntity{
     @Id
     private String id;
     private String topicName;
+    private String topicCode;
     @PrePersist
     private void beforeInsert(){
         this.id = UUID.randomUUID().toString();
