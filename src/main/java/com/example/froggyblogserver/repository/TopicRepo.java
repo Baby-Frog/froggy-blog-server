@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TopicRepo extends JpaRepository<TopicEntity, String> {
-    @Query(value = "FROM TopicEntity t WHERE (:#{#req.nameTopic} IS NULL OR t.topicName LIKE :#{#req.nameTopic}) ")
+    @Query(value = "FROM TopicEntity t WHERE :#{#req.topicName} IS NULL OR t.topicName LIKE %:#{#req.topicName}% ")
     Page<TopicEntity> searchTopic(@Param("req") TopicSearchReq req, Pageable pageable);
 }

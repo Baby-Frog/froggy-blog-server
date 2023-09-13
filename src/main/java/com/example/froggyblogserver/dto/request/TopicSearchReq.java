@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 public class TopicSearchReq {
-    private String nameTopic;
+    private String topicName;
     private int pageNumber;
     private int pageSize;
 }
