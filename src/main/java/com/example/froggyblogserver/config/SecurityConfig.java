@@ -85,7 +85,7 @@ public class SecurityConfig {
     }
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.ignoringAntMatchers("/**")).headers().contentSecurityPolicy("default-src 'self'");
+        http.csrf(csrf -> csrf.ignoringAntMatchers("/**")).headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
         http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
         http.authorizeHttpRequests().antMatchers("/", "/login", "/register", "/refreshToken", "/api/role/**").permitAll()
                 .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);

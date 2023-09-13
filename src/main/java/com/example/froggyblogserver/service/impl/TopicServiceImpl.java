@@ -13,6 +13,7 @@ import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.service.TopicService;
+import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -57,29 +58,20 @@ public class TopicServiceImpl implements TopicService {
     public BaseResponse search(TopicSearchReq req,String orderName,String orderDate) {
 
         var page = PageRequest.of(req.getPageNumber() - 1,req.getPageSize());
-        if(!StringHelper.isNullOrEmpty(orderName)){
-            if(orderName.equalsIgnoreCase(CONSTANTS.SORT.ASC))
-                page = page.withSort(Sort.Direction.ASC,"topicCode");
-            else if(orderName.equalsIgnoreCase(CONSTANTS.SORT.DESC))
-                page = page.withSort(Sort.Direction.DESC,"topicCode");
-            else throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
-        }
-        if(!StringHelper.isNullOrEmpty(orderDate)){
-            if(orderDate.equalsIgnoreCase(CONSTANTS.SORT.ASC))
-                page = page.withSort(Sort.Direction.ASC,"createDate");
-            else if(orderDate.equalsIgnoreCase(CONSTANTS.SORT.DESC))
-                page = page.withSort(Sort.Direction.DESC,"createDate");
-            else throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
-        }
+        if(!StringHelper.isNullOrEmpty(orderName))
+            page = SortHelper.sort(page,orderName,"topicCode");
+        if(!StringHelper.isNullOrEmpty(orderDate))
+            page = SortHelper.sort(page,orderDate,"updateDate");
+
         var search = topicRepo.searchTopic(req, page);
-        var data = PageResponse.builder()
+        var response = PageResponse.builder()
                 .pageSize(req.getPageSize())
                 .pageNumber(req.getPageNumber())
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent())
+                .data(search.getContent().stream().map(topic -> topicMapper.entityToDto(topic)).collect(Collectors.toList()))
                 .build();
-        return new BaseResponse(data);
+        return new BaseResponse(response);
     }
 
     @Override
