@@ -3,13 +3,12 @@ package com.example.froggyblogserver.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 public class ValidateInputException extends RuntimeException{
-    private String key;
+    private String arg;
     private String message;
-
-    public ValidateInputException(String message) {
-        this.message = message;
-    }
+    private Object value;
 }

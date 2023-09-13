@@ -1,7 +1,7 @@
 package com.example.froggyblogserver.utils;
 
 import com.example.froggyblogserver.common.MESSAGE;
-import com.example.froggyblogserver.exception.ValidateInputException;
+import com.example.froggyblogserver.exception.ValidateException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -10,7 +10,7 @@ public class SortHelper {
         switch (sort.toUpperCase()) {
             case "ASC" -> pageRequest = pageRequest.withSort(Sort.Direction.ASC, properties);
             case "DESC" -> pageRequest = pageRequest.withSort(Sort.Direction.DESC, properties);
-            default -> throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+            default -> throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         }
         return pageRequest;
     }

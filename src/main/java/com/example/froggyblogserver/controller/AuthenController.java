@@ -29,41 +29,41 @@ public class AuthenController {
     private UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto req) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDto req) {
         BaseResponse exec = authenService.login(req);
         return ResponseEntity.ok().body(exec);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDto req) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto req) {
         BaseResponse exec = authenService.register(req);
         return ResponseEntity.ok().body(exec);
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDto req) {
+    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordDto req) {
         BaseResponse exec = authenService.changePassword(req);
         return ResponseEntity.ok().body(exec);
 
     }
 
     @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto req) {
+    public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.refreshToken(req));
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(RefreshTokenDto req) {
+    public ResponseEntity<?> logout(@Valid RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.logout(req));
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPassword req) {
+    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPassword req) {
         return ResponseEntity.ok().body(authenService.forgotPassword(req));
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto req) {
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordDto req) {
         return ResponseEntity.ok().body(authenService.resetPassword(req));
     }
 

@@ -30,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public BaseResponse findById(String id) {
             if (StringHelper.isNullOrEmpty(id))
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
             return new BaseResponse(repo.findById(id).orElse(null));
     }
 
@@ -46,7 +46,7 @@ public class AccountServiceImpl implements AccountService {
     public BaseResponse deleteAccount(String id) {
             AccountEntity found = repo.findById(id).orElse(null);
             if (found == null)
-                throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
             found.setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found);
             return new BaseResponse();

@@ -6,6 +6,7 @@ import com.example.froggyblogserver.dto.request.TopicSearchReq;
 import com.example.froggyblogserver.entity.TopicEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
+import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.exception.ValidateInputException;
 import com.example.froggyblogserver.mapper.TopicMapper;
 import com.example.froggyblogserver.repository.TopicRepo;
@@ -33,19 +34,15 @@ public class TopicServiceImpl implements TopicService {
     private TopicMapper topicMapper;
     @Override
     public BaseResponse findById(String id) {
-        if(StringHelper.isNullOrEmpty(id))
-            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         var found = topicRepo.findById(id);
         if (found.isEmpty())
-            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
         return new BaseResponse(found);
     }
 
     @Override
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(TopicEntity req) {
-        if (StringHelper.isNullOrEmpty(req.getTopicName()))
-            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         var info = currentUserService.getInfo();
         if(StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
         else req.setUpdateId(info.getId());
@@ -76,11 +73,9 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public BaseResponse deleteById(String id) {
-        if(StringHelper.isNullOrEmpty(id))
-            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
         var found = topicRepo.findById(id);
         if (found.isEmpty())
-            throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
         found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
         topicRepo.save(found.get());
         return new BaseResponse();
