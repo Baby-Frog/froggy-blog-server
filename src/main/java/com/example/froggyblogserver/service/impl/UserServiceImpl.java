@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
         if (!StringHelper.isNullOrEmpty(req.getEmail())) {
             var checkEmail = accountRepo.findByEmail(req.getEmail());
             if (checkEmail != null)
-                return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST).build();
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST,req.getEmail());
             var user = currentUserService.getInfo();
             if (user.getProvider().equals(CONSTANTS.PROVIDER.SYSTEM)) {
                 var account = accountRepo.findByEmail(user.getEmail());
@@ -74,7 +74,6 @@ public class UserServiceImpl implements UserService {
                 accountRepo.save(account);
             }
         }
-
         return new BaseResponse(repo.save(req).getId());
     }
 
@@ -95,7 +94,7 @@ public class UserServiceImpl implements UserService {
     public BaseResponse deleteById(String id) {
             Optional<UserEntity> found = repo.findById(id);
             if (!found.isPresent())
-                throw new ValidateInputException(MESSAGE.VALIDATE.INPUT_INVALID);
+                throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
             found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
             repo.save(found.get());
             return new BaseResponse(id);
