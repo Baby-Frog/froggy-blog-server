@@ -1,7 +1,5 @@
 package com.example.froggyblogserver.dto;
 
-import com.example.froggyblogserver.common.CONSTANTS;
-import com.example.froggyblogserver.common.MESSAGE;
 import lombok.*;
 
 import javax.validation.constraints.Email;
