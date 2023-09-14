@@ -62,10 +62,6 @@ public class AuthenServiceImpl implements AuthenService {
     @Value("${avatar.path}")
     private String PATH_AVT;
 
-//    private boolean validateEmail(String email) {
-//        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-//        return validator.validateValue(LoginDto.class, "email", email).isEmpty();
-//    }
 
     @Override
     public BaseResponse login(LoginDto req) {
@@ -112,7 +108,7 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse refreshToken(RefreshTokenDto req) {
         if (jwtHelper.validateRefreshToken(req.getRefreshToken())) {
             var email = jwtHelper.getUserNameFromJwtToken(req.getRefreshToken());
-            var findToken = refreshTokenRepo.findByEmail(email);
+            var findToken = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(req.getRefreshToken(),email);
             if (findToken.isEmpty())
                 throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
             return new BaseResponse(
