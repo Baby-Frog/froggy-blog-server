@@ -1,10 +1,8 @@
 package com.example.froggyblogserver.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,10 +10,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDto {
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String content;
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String title;
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String status;
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String credit;
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String userId;
     private LocalDateTime publishDate;
 }

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("api/post")
 public class PostController {
@@ -21,7 +23,7 @@ public class PostController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveOrUpdate (@RequestBody PostDto postDto) {
+    public ResponseEntity<?> saveOrUpdate (@RequestBody @Valid PostDto postDto) {
         return ResponseEntity.ok().body(postService.saveOrUpdate(mapper.dtoToEntity(postDto)));
     }
 

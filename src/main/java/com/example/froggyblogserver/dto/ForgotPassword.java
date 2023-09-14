@@ -11,6 +11,7 @@ public class ForgotPassword {
     @NotNull
     @NotEmpty
     @NotBlank
+    @Email
     private String email;
     @NotNull
     @NotEmpty
