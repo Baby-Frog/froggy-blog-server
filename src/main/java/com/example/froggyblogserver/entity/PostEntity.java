@@ -25,11 +25,12 @@ public class PostEntity extends BaseEntity {
 
     @Id
     private String id;
-    private StringBuilder content;
+    private String content;
     private String title;
     private String status;
     private String credit;
     private String userId;
+    private LocalDateTime publishDate;
 
     @PrePersist
     private void beforeInsert() {
