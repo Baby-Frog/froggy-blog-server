@@ -1,6 +1,7 @@
 package com.example.froggyblogserver.controller;
 
 import com.example.froggyblogserver.dto.PostDto;
+import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ public class PostController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteById (@PathVariable String id) {
         return ResponseEntity.ok().body(postService.deleteById(id));
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<?> search (@RequestBody PostSearchRequest request,@RequestParam String orderName,@RequestParam String orderDate) {
+        return ResponseEntity.ok().body(postService);
     }
 
 }

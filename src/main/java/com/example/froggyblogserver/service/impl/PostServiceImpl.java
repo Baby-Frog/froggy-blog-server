@@ -3,6 +3,7 @@ package com.example.froggyblogserver.service.impl;
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.PostDetailsDto;
+import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.entity.PostEntity;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.PostMapper;
@@ -12,10 +13,13 @@ import com.example.froggyblogserver.repository.PostRepo;
 import com.example.froggyblogserver.repository.TopicRepo;
 import com.example.froggyblogserver.repository.UserRepo;
 import com.example.froggyblogserver.response.BaseResponse;
+import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.service.PostService;
+import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -83,5 +87,22 @@ public class PostServiceImpl implements PostService {
         postRepo.save(found.get());
 
         return new BaseResponse();
+    }
+
+    @Override
+    public BaseResponse search(PostSearchRequest request, String orderName, String orderDate) {
+        var pageReq = PageRequest.of(request.getPageNumber() -1, request.getPageSize());
+        if (!StringHelper.isNullOrEmpty(orderName))
+            pageReq = SortHelper.sort(pageReq,orderName,"title");
+        if (!StringHelper.isNullOrEmpty(orderDate))
+            pageReq = SortHelper.sort(pageReq,orderDate,"createDate");
+        var search = postRepo.search(request,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(request.getPageNumber())
+                .pageSize(request.getPageSize())
+                .totalPage(search.getTotalPages())
+                .totalRecord(search.getTotalElements())
+                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()));
+        return new BaseResponse(pageRes);
     }
 }
