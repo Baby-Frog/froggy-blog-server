@@ -36,7 +36,7 @@ public class ErrorHandler {
     @ExceptionHandler({UncheckedException.class, CheckedException.class})
     public ResponseEntity<?> uncheckedException(Exception e) {
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        response.setMessage(e.getMessage());
+        response.setMessage(MESSAGE.RESPONSE.SYSTEM_ERROR);
         log.error(e.getMessage(), e);
         return ResponseEntity.badRequest().body(response);
     }
@@ -71,4 +71,12 @@ public class ErrorHandler {
         response.setData(listErrors);
         return ResponseEntity.unprocessableEntity().body(response);
     }
+
+//    @ExceptionHandler(AuthenExeption.class)
+//    public ResponseEntity<?> authException(AuthenExeption e){
+//        response.setMessage(MESSAGE.RESPONSE.AUTH_ERROR);
+//        response.setStatusCode(401);
+//
+//        response.setData();
+//    }
 }

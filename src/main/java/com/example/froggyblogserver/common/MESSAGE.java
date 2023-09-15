@@ -23,6 +23,8 @@ public class MESSAGE {
         public static final String FAIL = "Oops! Something happened, please try again later";
         public static final String CHANGE_PASSWORD_SUCCESS = "Change password success!!!";
         public static final String VALIDATE_ERROR = "Validate error!!!";
+        public static final String SYSTEM_ERROR = "System error!!!";
+        public static final String AUTH_ERROR = "Authentication error!!!";
     }
     public static class TOKEN{
         public static final String TOKEN_INVALID = "Token invalid";

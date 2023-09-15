@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
+import com.example.froggyblogserver.common.DateTimePartern;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,7 @@ public class PostEntity extends BaseEntity {
     private String status;
     private String credit;
     private String userId;
+    @JsonFormat(pattern = DateTimePartern.DD_MM_YYYY_HH_MM_SS)
     private LocalDateTime publishDate;
 
     @PrePersist

@@ -1,5 +1,7 @@
 package com.example.froggyblogserver.dto;
 
+import com.example.froggyblogserver.common.DateTimePartern;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.validation.constraints.*;
@@ -30,12 +32,7 @@ public class PostDto {
     private String credit;
     @NonNull
     @NotEmpty
-    @NotBlank
-    private String userId;
-    @NonNull
-    @NotEmpty
-    @NotBlank
     private List<String> topicId;
-
+    @JsonFormat(pattern = DateTimePartern.DD_MM_YYYY_HH_MM_SS)
     private LocalDateTime publishDate;
 }
