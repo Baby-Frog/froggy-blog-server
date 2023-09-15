@@ -113,7 +113,8 @@ public class PostServiceImpl implements PostService {
                 .pageSize(request.getPageSize())
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()));
+                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
         return new BaseResponse(pageRes);
     }
 }
