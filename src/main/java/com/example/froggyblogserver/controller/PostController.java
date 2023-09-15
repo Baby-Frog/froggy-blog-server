@@ -29,6 +29,11 @@ public class PostController {
         return ResponseEntity.ok().body(postService.saveOrUpdate(postDto));
     }
 
+    @GetMapping("/findById/{postId}")
+    public ResponseEntity<?> findById (@PathVariable String postId) {
+        return ResponseEntity.ok().body(postService.findById(postId));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteById (@PathVariable String id) {
         return ResponseEntity.ok().body(postService.deleteById(id));
