@@ -4,6 +4,7 @@ import com.example.froggyblogserver.dto.TopicDto;
 import com.example.froggyblogserver.dto.request.TopicSearchReq;
 import com.example.froggyblogserver.mapper.TopicMapper;
 import com.example.froggyblogserver.service.TopicService;
+import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,15 @@ public class TopicController {
     }
 
     @RequestMapping("/search")
-    public ResponseEntity<?> search(@RequestBody TopicSearchReq req,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate){
-        return ResponseEntity.ok().body(topicService.search(req,orderName,orderDate));
+    public ResponseEntity<?> search(@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate){
+        var builder = TopicSearchReq.builder();
+        if(!StringHelper.isNullOrEmpty(keyword))
+            builder.topicName(keyword);
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+        return ResponseEntity.ok().body(topicService.search(builder.pageNumber(pageNumber).pageSize(pageSize).build(),orderName,orderDate));
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id){

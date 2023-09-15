@@ -8,9 +8,9 @@ public class CONSTANTS {
     }
 
     public static class PROPERTIES{
-        public final static String EMAIL = "Email";
-        public final static String PASSWORD = "Password";
-        public final static String TOKEN = "Token";
+        public final static String EMAIL = "email";
+        public final static String PASSWORD = "password";
+        public final static String TOKEN = "token";
     }
 
     public static class ROLE{

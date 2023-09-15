@@ -4,6 +4,7 @@ import com.example.froggyblogserver.dto.PostDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.service.PostService;
+import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +34,17 @@ public class PostController {
         return ResponseEntity.ok().body(postService.deleteById(id));
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<?> search (@RequestBody PostSearchRequest request,@RequestParam String orderName,@RequestParam String orderDate) {
-        return ResponseEntity.ok().body(postService);
+    @RequestMapping("/search")
+    public ResponseEntity<?> search (@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+        var builder = PostSearchRequest.builder();
+        if(!StringHelper.isNullOrEmpty(keyword))
+            builder.keyword(keyword);
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+
+        return ResponseEntity.ok().body(postService.search(builder.pageNumber(pageNumber).pageSize(pageSize).build(),orderName,orderDate));
     }
 
 }
