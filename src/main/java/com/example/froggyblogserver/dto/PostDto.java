@@ -3,6 +3,7 @@ package com.example.froggyblogserver.dto;
 import com.example.froggyblogserver.common.DateTimePartern;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -33,6 +34,6 @@ public class PostDto {
     @NonNull
     @NotEmpty
     private List<String> topicId;
-    @JsonFormat(pattern = DateTimePartern.DD_MM_YYYY_HH_MM_SS)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime publishDate;
 }

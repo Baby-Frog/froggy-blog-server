@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 @Entity
@@ -32,7 +33,7 @@ public class PostEntity extends BaseEntity {
     private String status;
     private String credit;
     private String userId;
-    @JsonFormat(pattern = DateTimePartern.DD_MM_YYYY_HH_MM_SS)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime publishDate;
 
     @PrePersist
