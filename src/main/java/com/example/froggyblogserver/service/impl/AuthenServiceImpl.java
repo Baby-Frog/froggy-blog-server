@@ -3,6 +3,8 @@ package com.example.froggyblogserver.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,7 +81,10 @@ public class AuthenServiceImpl implements AuthenService {
                             .accessToken(accessToken).refreshToken(refreshToken)
                             .profile(userMapper.entityToDto(getUserProfile.get())).build());
         }
-        throw new ValidateException(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
+        Map<String,ExceptionDto> errors = new HashMap<>();
+        errors.put(CONSTANTS.PROPERTIES.EMAIL,ExceptionDto.builder().value(req.getEmail()).message(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID).build());
+        errors.put(CONSTANTS.PROPERTIES.PASSWORD,ExceptionDto.builder().value(req.getPassword()).message(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID).build());
+        throw new AuthenExeption(errors);
     }
 
     @Override

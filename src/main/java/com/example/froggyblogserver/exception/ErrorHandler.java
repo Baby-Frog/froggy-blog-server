@@ -72,11 +72,11 @@ public class ErrorHandler {
         return ResponseEntity.unprocessableEntity().body(response);
     }
 
-//    @ExceptionHandler(AuthenExeption.class)
-//    public ResponseEntity<?> authException(AuthenExeption e){
-//        response.setMessage(MESSAGE.RESPONSE.AUTH_ERROR);
-//        response.setStatusCode(401);
-//
-//        response.setData();
-//    }
+    @ExceptionHandler(AuthenExeption.class)
+    public ResponseEntity<?> authException(AuthenExeption e){
+        response.setMessage(MESSAGE.RESPONSE.AUTH_ERROR);
+        response.setStatusCode(401);
+        response.setData(e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
 }
