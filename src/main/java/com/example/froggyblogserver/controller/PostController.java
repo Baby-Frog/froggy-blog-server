@@ -25,7 +25,7 @@ public class PostController {
 
     @PostMapping("/save")
     public ResponseEntity<?> saveOrUpdate (@RequestBody @Valid PostDto postDto) {
-        return ResponseEntity.ok().body(postService.saveOrUpdate(mapper.dtoToEntity(postDto)));
+        return ResponseEntity.ok().body(postService.saveOrUpdate(postDto));
     }
 
     @DeleteMapping("/delete/{id}")

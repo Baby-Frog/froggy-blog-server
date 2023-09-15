@@ -4,12 +4,14 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDto {
+    private String id;
     @NonNull
     @NotEmpty
     @NotBlank
@@ -30,5 +32,10 @@ public class PostDto {
     @NotEmpty
     @NotBlank
     private String userId;
+    @NonNull
+    @NotEmpty
+    @NotBlank
+    private List<String> topicId;
+
     private LocalDateTime publishDate;
 }
