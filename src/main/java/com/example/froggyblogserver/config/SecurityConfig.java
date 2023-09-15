@@ -79,20 +79,23 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
     }
+
     @Bean
-    OidcUserService oidcUserService(){
+    OidcUserService oidcUserService() {
         return new OidcUserService();
     }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.ignoringAntMatchers("/**")).headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
-        http.httpBasic(basic -> basic.authenticationEntryPoint(new AuthenEntryPoint()));
-        http.authorizeHttpRequests().antMatchers("/api/post/findById/**", "/login", "/register", "/refreshToken", "/forgotPassword","/resetPassword","/api/topic/search/**","/api/post/search/**").permitAll()
+        http.csrf().ignoringAntMatchers("/**");
+        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
+        http.httpBasic().authenticationEntryPoint(new AuthenEntryPoint());
+        http.authorizeHttpRequests().antMatchers("/api/post/findById/**", "/login", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
                 .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
         http.csrf().disable();
         http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(handling -> handling.accessDeniedHandler(new AuthenAccessDeniedExceptionHandler()));
-        http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .exceptionHandling().accessDeniedHandler(new AuthenAccessDeniedExceptionHandler());
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors(withDefaults());
         return http.build();
 

@@ -7,6 +7,8 @@ import com.example.froggyblogserver.dto.PostDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.entity.PostEntity;
 import com.example.froggyblogserver.entity.PostTopicEntity;
+import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.mapper.TopicMapper;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -66,6 +69,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(PostDto req) {
 
         var info = currentUserService.getInfo();
@@ -87,6 +91,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse deleteById(String id) {
 
 
