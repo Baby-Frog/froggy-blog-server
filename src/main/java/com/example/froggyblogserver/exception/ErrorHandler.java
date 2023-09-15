@@ -2,9 +2,9 @@ package com.example.froggyblogserver.exception;
 
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.ExceptionDto;
-import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,11 +14,8 @@ import com.example.froggyblogserver.response.BaseResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -78,5 +75,12 @@ public class ErrorHandler {
         response.setStatusCode(401);
         response.setData(e.getErrors());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> forbidden(AccessDeniedException e){
+        response.setStatusCode(403);
+        response.setMessage(MESSAGE.RESPONSE.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 }

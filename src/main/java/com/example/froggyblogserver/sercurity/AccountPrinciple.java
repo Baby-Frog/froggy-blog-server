@@ -27,7 +27,7 @@ public class AccountPrinciple implements UserDetails{
 
 
     public static AccountPrinciple build(AccountEntity account){
-        List<GrantedAuthority> authorities = account.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = account.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getCode())).collect(Collectors.toList());
         return new AccountPrinciple(
                 account.getId(),
                 account.getEmail(),

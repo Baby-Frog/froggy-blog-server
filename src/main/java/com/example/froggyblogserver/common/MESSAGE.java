@@ -25,6 +25,7 @@ public class MESSAGE {
         public static final String VALIDATE_ERROR = "Validate error!!!";
         public static final String SYSTEM_ERROR = "System error!!!";
         public static final String AUTH_ERROR = "Authentication error!!!";
+        public static final String FORBIDDEN = "You don't have access denied!!!";
     }
     public static class TOKEN{
         public static final String TOKEN_INVALID = "Token invalid";

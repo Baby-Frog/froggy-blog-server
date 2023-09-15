@@ -5,6 +5,7 @@ import com.example.froggyblogserver.service.CurrentUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,11 +39,11 @@ public class UserController {
         return ResponseEntity.ok().body(userService.search(req));
     }
 
+
     @GetMapping("/findById/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){
         return ResponseEntity.ok().body(userService.findById(id));
     }
-
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<?> deleteById(@PathVariable String id){
         return ResponseEntity.ok().body(userService.deleteById(id));
