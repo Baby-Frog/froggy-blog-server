@@ -52,7 +52,7 @@ public class AuthenController {
         return ResponseEntity.ok().body(authenService.refreshToken(req));
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/api/logout")
     public ResponseEntity<?> logout(@RequestBody @Valid RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.logout(req));
     }
