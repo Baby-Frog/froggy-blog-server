@@ -12,6 +12,7 @@ import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
+import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -78,8 +79,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponse search(UserSearchRequest request) {
-        Page<UserEntity> exec = repo.search(request, PageRequest.of(request.getPageNumber() - 1, request.getPageSize()));
+    public BaseResponse search(UserSearchRequest request,String orderName,String orderDate) {
+        var page = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
+        if(!StringHelper.isNullOrEmpty(orderName) )
+            page = SortHelper.sort(page,orderName,"fullName");
+        if(!StringHelper.isNullOrEmpty(orderDate) )
+            page = SortHelper.sort(page,orderDate,"createDate");
+        var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
                 .data(exec.get().map(e -> userMapper.entityToDto(e)).collect(Collectors.toList()))
                 .pageNumber(request.getPageNumber())

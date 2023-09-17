@@ -9,7 +9,7 @@ import com.example.froggyblogserver.response.BaseResponse;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 
 public interface UserService  extends GeneralService<UserEntity> {
-    BaseResponse search(UserSearchRequest request);
+    BaseResponse search(UserSearchRequest request,String orderName,String orderDate);
     BaseResponse deleteById(String id);
     BaseResponse savePost(UserPostDto dto);
     void OAuthLogin(String name,String email);

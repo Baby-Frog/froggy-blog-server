@@ -41,15 +41,13 @@ public class PostController {
 
     @RequestMapping("/search")
     public ResponseEntity<?> search (@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
-        var builder = PostSearchRequest.builder();
-        if(!StringHelper.isNullOrEmpty(keyword))
-            builder.keyword(keyword);
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
 
-        return ResponseEntity.ok().body(postService.search(builder.pageNumber(pageNumber).pageSize(pageSize).build(),orderName,orderDate));
+        var builder = PostSearchRequest.builder().keyword(keyword).pageNumber(pageNumber).pageSize(pageSize).build();
+        return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
     }
 
 }
