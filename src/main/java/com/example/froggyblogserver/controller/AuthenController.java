@@ -53,7 +53,7 @@ public class AuthenController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(@Valid RefreshTokenDto req) {
+    public ResponseEntity<?> logout(@RequestBody @Valid RefreshTokenDto req) {
         return ResponseEntity.ok().body(authenService.logout(req));
     }
 

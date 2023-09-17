@@ -127,13 +127,15 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     public BaseResponse logout(RefreshTokenDto dto) {
+        if(!jwtHelper.validateRefreshToken(dto.getRefreshToken()))
+            throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
         var email = jwtHelper.getUserNameFromRefreshToken(dto.getRefreshToken());
         var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getRefreshToken(), email);
         if (findUser.isEmpty())
             throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
         findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
         refreshTokenRepo.save(findUser.get());
-        return new BaseResponse();
+        return new BaseResponse(MESSAGE.RESPONSE.LOG_OUT_SUCCESS);
     }
 
     @Override
