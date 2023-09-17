@@ -3,8 +3,6 @@ package com.example.froggyblogserver.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,8 +31,6 @@ import com.example.froggyblogserver.utils.StringHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Transactional;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 @Slf4j
 @Service
@@ -109,8 +105,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse refreshToken(RefreshTokenDto req) {
         if (jwtHelper.validateRefreshToken(req.getRefreshToken())) {
-            var email = jwtHelper.getUserNameFromJwtToken(req.getRefreshToken());
-            var findToken = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(req.getRefreshToken(),email);
+            var email = jwtHelper.getUserNameFromRefreshToken(req.getRefreshToken());
+            var findToken = refreshTokenRepo.findToken(req.getRefreshToken(),email);
             if (findToken.isEmpty())
                 throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
             return new BaseResponse(
@@ -127,7 +123,7 @@ public class AuthenServiceImpl implements AuthenService {
         if(StringHelper.isNullOrEmpty(dto.getRefreshToken()) || !jwtHelper.validateRefreshToken(dto.getRefreshToken()))
             throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         var email = jwtHelper.getUserNameFromRefreshToken(dto.getRefreshToken());
-        var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getRefreshToken(), email);
+        var findUser = refreshTokenRepo.findToken(dto.getRefreshToken(), email);
         if (findUser.isEmpty())
             throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
         findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);

@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface RefreshTokenRepo extends JpaRepository<RefreshToken,String> {
     Optional<RefreshToken> findByEmail(String username);
     @Query(value = "FROM RefreshToken r WHERE r.refreshToken = :token and r.email = :email AND r.isDelete = 0")
-    Optional<RefreshToken> findByRefreshTokenAndEmailAndIsDeleteIsFalse(@Param("token") String token,@Param("email") String email);
+    Optional<RefreshToken> findToken(@Param("token") String token, @Param("email") String email);
 }
