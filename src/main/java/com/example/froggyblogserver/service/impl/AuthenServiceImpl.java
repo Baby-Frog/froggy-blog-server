@@ -70,10 +70,10 @@ public class AuthenServiceImpl implements AuthenService {
 
         AccountEntity foundAcc = accountService.findByEmail(req.getEmail());
         if (foundAcc != null && passwordEncoder.matches(req.getPassword(), foundAcc.getPassword())) {
-            var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
-            var accessToken = jwtHelper.generateAccessToken(req.getEmail());
             if (StringHelper.isNullOrEmpty(foundAcc.getUserId()))
                 throw new ValidateException(MESSAGE.VALIDATE.USER_NOT_EXIST);
+            var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
+            var accessToken = jwtHelper.generateAccessToken(req.getEmail());
             var getUserProfile = userRepo.findById(foundAcc.getUserId());
             refreshTokenRepo.save(RefreshToken.builder().email(foundAcc.getEmail()).refreshToken(refreshToken).build());
             return new BaseResponse(
@@ -81,10 +81,7 @@ public class AuthenServiceImpl implements AuthenService {
                             .accessToken(accessToken).refreshToken(refreshToken)
                             .profile(userMapper.entityToDto(getUserProfile.get())).build());
         }
-        Map<String,ExceptionDto> errors = new HashMap<>();
-        errors.put(CONSTANTS.PROPERTIES.EMAIL,ExceptionDto.builder().value(req.getEmail()).message(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID).build());
-        errors.put(CONSTANTS.PROPERTIES.PASSWORD,ExceptionDto.builder().value(req.getPassword()).message(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID).build());
-        throw new AuthenExeption(errors);
+        throw new AuthenExeption(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
 
     @Override
@@ -128,7 +125,7 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     public BaseResponse logout(RefreshTokenDto dto) {
         if(StringHelper.isNullOrEmpty(dto.getRefreshToken()) || !jwtHelper.validateRefreshToken(dto.getRefreshToken()))
-            throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         var email = jwtHelper.getUserNameFromRefreshToken(dto.getRefreshToken());
         var findUser = refreshTokenRepo.findByRefreshTokenAndEmailAndIsDeleteIsFalse(dto.getRefreshToken(), email);
         if (findUser.isEmpty())
@@ -142,7 +139,7 @@ public class AuthenServiceImpl implements AuthenService {
     public BaseResponse forgotPassword(ForgotPassword req) {
         AccountEntity getAccount = accountRepo.findByEmail(req.getEmail());
         if (getAccount == null)
-            return BaseResponse.builder().statusCode(400).message(MESSAGE.VALIDATE.EMAIL_INVALID).build();
+            throw new AuthenExeption(MESSAGE.VALIDATE.EMAIL_INVALID);
         String verifyCode = UUID.randomUUID().toString();
 
         resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());

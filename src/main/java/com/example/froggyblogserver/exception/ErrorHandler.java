@@ -71,9 +71,8 @@ public class ErrorHandler {
 
     @ExceptionHandler(AuthenExeption.class)
     public ResponseEntity<?> authException(AuthenExeption e){
-        response.setMessage(MESSAGE.RESPONSE.AUTH_ERROR);
+        response.setMessage(e.getMessage());
         response.setStatusCode(401);
-        response.setData(e.getErrors());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 

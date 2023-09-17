@@ -11,9 +11,5 @@ import java.util.Map;
 @AllArgsConstructor
 public class AuthenExeption extends RuntimeException{
     private String message;
-    Map<String, ExceptionDto> errors = new HashMap<>();
 
-    public AuthenExeption(Map<String, ExceptionDto> errors) {
-        this.errors = errors;
-    }
 }
