@@ -12,8 +12,6 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RefreshTokenDto {
-    @NotNull
-    @NotEmpty
-    @NotBlank
+
     private String refreshToken;
 }
