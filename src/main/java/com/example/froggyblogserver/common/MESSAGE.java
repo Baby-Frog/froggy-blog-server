@@ -30,6 +30,6 @@ public class MESSAGE {
         public static final String LOG_OUT_SUCCESS = "Logout successfully";
     }
     public static class TOKEN{
-        public static final String TOKEN_INVALID = "Your tokens are invalid, please try again later";
+        public static final String TOKEN_INVALID = "TOKEN INVALID";
     }
 }
