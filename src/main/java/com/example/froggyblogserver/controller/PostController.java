@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.controller;
 
+import com.example.froggyblogserver.dto.ApprovePost;
 import com.example.froggyblogserver.dto.PostDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.mapper.PostMapper;
@@ -50,4 +51,8 @@ public class PostController {
         return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
     }
 
+    @PostMapping("/changeStatus")
+    public ResponseEntity<?> changeStatus(@RequestBody ApprovePost req){
+        return ResponseEntity.ok().body(postService.changeStatusPost(req));
+    }
 }

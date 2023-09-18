@@ -2,6 +2,7 @@ package com.example.froggyblogserver.service.impl;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
+import com.example.froggyblogserver.dto.ApprovePost;
 import com.example.froggyblogserver.dto.PostDetailsDto;
 import com.example.froggyblogserver.dto.PostDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
@@ -78,6 +79,7 @@ public class PostServiceImpl implements PostService {
             post.setCreateId(info.getId());
         else post.setUpdateId(info.getId());
         post.setUserId(info.getId());
+        post.setStatus(CONSTANTS.POST_STATUS.PENDING);
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().stream()
@@ -121,5 +123,15 @@ public class PostServiceImpl implements PostService {
                 .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
                 .build();
         return new BaseResponse(pageRes);
+    }
+
+    @Override
+    public BaseResponse changeStatusPost(ApprovePost req) {
+        var found = postRepo.findById(req.getPostId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.POST_NOT_EXIST));
+        if (req.getStatus().equals(CONSTANTS.POST_STATUS.PUBLISHED) || req.getStatus().equals(CONSTANTS.POST_STATUS.ABORT)) {
+            found.setStatus(req.getStatus());
+            postRepo.save(found);
+            return new BaseResponse(req.getPostId());
+        } else throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
     }
 }

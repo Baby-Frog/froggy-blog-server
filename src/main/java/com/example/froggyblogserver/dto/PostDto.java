@@ -26,10 +26,6 @@ public class PostDto {
     @NonNull
     @NotEmpty
     @NotBlank
-    private String status;
-    @NonNull
-    @NotEmpty
-    @NotBlank
     private String credit;
     @NonNull
     @NotEmpty

@@ -6,6 +6,11 @@ public class CONSTANTS {
         public final static byte TRUE = 1;
         public final static byte FALSE = 0;
     }
+    public static class POST_STATUS{
+        public final static String PENDING = "PENDING";
+        public final static String ABORT = "ABORT";
+        public final static String PUBLISHED = "PUBLISHED";
+    }
 
     public static class PROPERTIES{
         public final static String EMAIL = "email";
