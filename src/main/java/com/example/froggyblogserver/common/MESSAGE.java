@@ -21,14 +21,14 @@ public class MESSAGE {
         public static final String REGISTER_SUCCESS = "Your account has been registered, please login to proceed.";
         public static final String REGISTER_FAIL = "Oops! Something happened, please try again later";
         public static final String FAIL = "Oops! Something happened, please try again later";
-        public static final String CHANGE_PASSWORD_SUCCESS = "Change password success!!!";
-        public static final String VALIDATE_ERROR = "Validate error!!!";
-        public static final String SYSTEM_ERROR = "System error!!!";
+        public static final String CHANGE_PASSWORD_SUCCESS = "Your password has been changed successfully!";
+        public static final String VALIDATE_ERROR = "Validation error";
+        public static final String SYSTEM_ERROR = "Oops! There's something wrong with our system. Please try again later";
         public static final String AUTH_ERROR = "Authentication error!!!";
-        public static final String FORBIDDEN = "You don't have access denied!!!";
-        public static final String LOG_OUT_SUCCESS = "Logout success!!!";
+        public static final String FORBIDDEN = "You don't have enough permissions to execute that";
+        public static final String LOG_OUT_SUCCESS = "Logout successfully";
     }
     public static class TOKEN{
-        public static final String TOKEN_INVALID = "Token invalid";
+        public static final String TOKEN_INVALID = "Your tokens are invalid, please try again later";
     }
 }
