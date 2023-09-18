@@ -2,8 +2,9 @@ package com.example.froggyblogserver.utils;
 
 import java.util.Date;
 
+import com.example.froggyblogserver.common.MESSAGE;
+import com.example.froggyblogserver.exception.AuthenExeption;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -57,16 +58,20 @@ public class JwtHelper {
             return true;
         }catch (SignatureException e){
             log.error("Invalid JWT signature -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.SIGNATURE_INVALID);
         }catch (MalformedJwtException e){
             log.error("Invalid JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         }catch (ExpiredJwtException e){
             log.error("Expired JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_EXPIRES);
         }catch (UnsupportedJwtException e){
             log.error("Unsupported JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_UNSUPORTED);
         }catch (IllegalArgumentException e){
             log.error("JWT claim string is empty -> Message:{}", e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         }
-        return false;
 
     }
 
@@ -76,16 +81,20 @@ public class JwtHelper {
             return true;
         }catch (SignatureException e){
             log.error("Invalid JWT signature -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.SIGNATURE_INVALID);
         }catch (MalformedJwtException e){
             log.error("Invalid JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         }catch (ExpiredJwtException e){
             log.error("Expired JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_EXPIRES);
         }catch (UnsupportedJwtException e){
             log.error("Unsupported JWT token -> Message: {}",e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_UNSUPORTED);
         }catch (IllegalArgumentException e){
             log.error("JWT claim string is empty -> Message:{}", e.getMessage());
+            throw new AuthenExeption(MESSAGE.TOKEN.TOKEN_INVALID);
         }
-        return false;
 
     }
 
