@@ -31,10 +31,11 @@ public class AuthenEntryPoint implements AuthenticationEntryPoint {
             jwtHelper.validateJwtToken(authHeader.replace("Bearer ", ""));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
             ObjectMapper mapper = new ObjectMapper();
             writer.print(mapper.writeValueAsString(BaseResponse.builder().message(e.getMessage()).statusCode(401).build()));
-
+            writer.flush();
         }
     }
 
