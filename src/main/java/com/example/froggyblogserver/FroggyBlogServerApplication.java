@@ -20,8 +20,6 @@ public class FroggyBlogServerApplication extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(FroggyBlogServerApplication.class, args);
     }
-
-
     @Bean 
      PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder(5);

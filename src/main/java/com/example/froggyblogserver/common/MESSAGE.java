@@ -32,7 +32,7 @@ public class MESSAGE {
     public static class TOKEN{
         public static final String TOKEN_INVALID = "TOKEN INVALID";
         public static final String SIGNATURE_INVALID = "Your signature are invalid, please try again later";
-        public static final String TOKEN_EXPIRES = "Your jwt are expires, please login";
+        public static final String TOKEN_EXPIRES = "TOKEN EXPIRED";
         public static final String TOKEN_UNSUPORTED = "Our unsupported your jwt, please login";
     }
 }
