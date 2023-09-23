@@ -8,17 +8,17 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "likes")
+@Table(name = "images")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LikesEntity extends BaseEntity{
+public class ImageEntity extends BaseEntity{
     @Id
     private String id;
-    private String userId;
-    private String postId;
+    private String name;
+    private String url;
     @PrePersist
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
