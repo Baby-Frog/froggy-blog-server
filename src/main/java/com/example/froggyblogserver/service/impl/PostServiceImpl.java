@@ -80,6 +80,7 @@ public class PostServiceImpl implements PostService {
         else post.setUpdateId(info.getId());
         post.setUserId(info.getId());
         post.setStatus(CONSTANTS.POST_STATUS.PENDING);
+        post.setPublishDate(null);
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().stream()
