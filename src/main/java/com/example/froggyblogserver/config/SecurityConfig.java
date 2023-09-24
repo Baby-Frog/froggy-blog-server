@@ -54,9 +54,10 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("*/api/**")
+                registry.addMapping("/**")
                         .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .maxAge(3600)
                         .allowCredentials(false);
             }
         };
@@ -81,14 +82,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    OidcUserService oidcUserService() {
-        return new OidcUserService();
-    }
-
-    @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/**");
-        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
+
+        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().includeSubDomains(true);
         http.httpBasic().authenticationEntryPoint(new AuthenEntryPoint());
         http.authorizeHttpRequests().antMatchers("/api/post/findById/**","/api/image/get/**", "/login","/api/logout", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
                 .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);

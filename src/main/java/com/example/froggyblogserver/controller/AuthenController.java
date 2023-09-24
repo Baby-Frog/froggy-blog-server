@@ -21,7 +21,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("")
-@CrossOrigin("*")
 public class AuthenController {
     @Autowired
     private AuthenService authenService;

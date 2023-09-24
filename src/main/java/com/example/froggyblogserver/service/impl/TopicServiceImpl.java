@@ -32,6 +32,7 @@ public class TopicServiceImpl implements TopicService {
     private CurrentUserService currentUserService;
     @Autowired
     private TopicMapper topicMapper;
+
     @Override
     public BaseResponse findById(String id) {
         var found = topicRepo.findById(id);
@@ -44,7 +45,7 @@ public class TopicServiceImpl implements TopicService {
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(TopicEntity req) {
         var info = currentUserService.getInfo();
-        if(StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
+        if (StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
         else req.setUpdateId(info.getId());
         req.setTopicCode(StringHelper.convertToNonAccent(req.getTopicName()).toUpperCase());
         topicRepo.save(req);
@@ -52,14 +53,15 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public BaseResponse search(TopicSearchReq req,String orderName,String orderDate) {
+    public BaseResponse search(TopicSearchReq req, String orderName, String orderDate) {
 
-        var page = PageRequest.of(req.getPageNumber() - 1,req.getPageSize());
-        if(!StringHelper.isNullOrEmpty(orderName))
-            page = SortHelper.sort(page,orderName,"topicCode");
-        if(!StringHelper.isNullOrEmpty(orderDate))
-            page = SortHelper.sort(page,orderDate,"updateDate");
-
+        var page = PageRequest.of(req.getPageNumber() - 1, req.getPageSize());
+        if (!StringHelper.isNullOrEmpty(orderName))
+            page = SortHelper.sort(page, orderName, "topicCode");
+        if (!StringHelper.isNullOrEmpty(orderDate))
+            page = SortHelper.sort(page, orderDate, "updateDate");
+        else
+            page = SortHelper.sort(page, CONSTANTS.SORT.DESC, "createDate");
         var search = topicRepo.searchTopic(req, page);
         var response = PageResponse.builder()
                 .pageSize(req.getPageSize())

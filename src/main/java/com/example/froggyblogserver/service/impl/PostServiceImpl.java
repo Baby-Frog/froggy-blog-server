@@ -112,8 +112,9 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
         if (!StringHelper.isNullOrEmpty(orderName))
             pageReq = SortHelper.sort(pageReq, orderName, "title");
-        if (!StringHelper.isNullOrEmpty(orderDate))
-            pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        if (StringHelper.isNullOrEmpty(orderDate))
+            orderDate = CONSTANTS.SORT.DESC;
+        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
         var search = postRepo.search(request, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(request.getPageNumber())
@@ -133,5 +134,20 @@ public class PostServiceImpl implements PostService {
             postRepo.save(found);
             return new BaseResponse(req.getPostId());
         } else throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+    }
+
+    @Override
+    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize) {
+        var pageReq = PageRequest.of(pageNumber -1,pageSize);
+        pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        var search = postRepo.searchByTopicId(topicId,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .totalPage(search.getTotalPages())
+                .totalRecord(search.getTotalElements())
+                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageRes);
     }
 }

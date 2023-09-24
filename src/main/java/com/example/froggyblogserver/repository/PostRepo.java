@@ -15,4 +15,7 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
     @Query(value = "FROM PostEntity p WHERE (:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
             "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%) ")
     Page<PostEntity> search(@Param("req") PostSearchRequest req, Pageable pageable);
+
+    @Query(value = "SELECT p FROM PostEntity p INNER JOIN PostTopicEntity pt ON p.id = pt.postId AND pt.isDelete = 0 WHERE pt.topicId = :topicId")
+    Page<PostEntity> searchByTopicId(String topicId, Pageable pageable);
 }

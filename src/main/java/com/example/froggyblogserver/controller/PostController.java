@@ -51,8 +51,20 @@ public class PostController {
         return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
     }
 
+    @RequestMapping("findByTopicId/{topicId}")
+    public ResponseEntity<?> searchByTopicId (@PathVariable String topicId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+
+
+        return ResponseEntity.ok().body(postService.searchByTopicId(topicId,pageNumber,pageSize));
+    }
     @PostMapping("/changeStatus")
     public ResponseEntity<?> changeStatus(@RequestBody ApprovePost req){
         return ResponseEntity.ok().body(postService.changeStatusPost(req));
     }
+
+
 }

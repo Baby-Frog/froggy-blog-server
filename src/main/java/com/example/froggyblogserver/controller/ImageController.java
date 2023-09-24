@@ -14,7 +14,6 @@ public class ImageController {
 
     @Autowired
     private ImageService service;
-
     @PostMapping("upload")
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file){
         return ResponseEntity.ok().body(service.saveOrUpdate(ImageDto.builder().image(file).build()));
