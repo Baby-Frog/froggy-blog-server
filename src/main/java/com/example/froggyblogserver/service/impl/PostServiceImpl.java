@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,8 +80,8 @@ public class PostServiceImpl implements PostService {
             post.setCreateId(info.getId());
         else post.setUpdateId(info.getId());
         post.setUserId(info.getId());
-        post.setStatus(CONSTANTS.POST_STATUS.PENDING);
-        post.setPublishDate(null);
+        post.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
+        post.setPublishDate(LocalDateTime.now());
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().stream()
@@ -138,10 +139,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize) {
+    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize,String orderName,String orderDate) {
+        var pageReq = PageRequest.of(pageNumber -1,pageSize);
+        if (!StringHelper.isNullOrEmpty(orderName))
+            pageReq = SortHelper.sort(pageReq, orderName, "title");
+        if (StringHelper.isNullOrEmpty(orderDate))
+            orderDate = CONSTANTS.SORT.DESC;
+        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        var search = postRepo.searchByTopicId(topicId,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .totalPage(search.getTotalPages())
+                .totalRecord(search.getTotalElements())
+                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageRes);
+    }
+
+    @Override
+    public BaseResponse searchByUserId( int pageNumber, int pageSize,String orderName,String orderDate) {
+        var info = currentUserService.getInfo();
         var pageReq = PageRequest.of(pageNumber -1,pageSize);
         pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
-        var search = postRepo.searchByTopicId(topicId,pageReq);
+        var search = postRepo.searchByUserId(info.getId(),pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)

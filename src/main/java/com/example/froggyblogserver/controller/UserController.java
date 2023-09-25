@@ -4,16 +4,14 @@ import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.service.CurrentUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.service.UserService;
 
 @RestController
-@RequestMapping("api/v1/user")
+@RequestMapping("api/user")
 @CrossOrigin("*")
 @Slf4j
 public class UserController {
@@ -26,6 +24,11 @@ public class UserController {
     @PostMapping("/saveOrUpdate")
     public ResponseEntity<?> saveOrUpdate(@RequestBody UserEntity req ){
         return ResponseEntity.ok().body(userService.saveOrUpdate(req));
+    }
+
+    @PostMapping("/savePost/{postId}")
+    public ResponseEntity<?> savePost(@PathVariable String postId){
+        return ResponseEntity.ok().body(userService.savePost(postId));
     }
 
     @RequestMapping("/search")

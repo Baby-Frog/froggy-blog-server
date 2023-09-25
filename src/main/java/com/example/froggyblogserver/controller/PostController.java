@@ -59,8 +59,20 @@ public class PostController {
             pageSize = 10;
 
 
-        return ResponseEntity.ok().body(postService.searchByTopicId(topicId,pageNumber,pageSize));
+        return ResponseEntity.ok().body(postService.searchByTopicId(topicId,pageNumber,pageSize,orderName,orderDate));
     }
+
+    @RequestMapping("findPostUserSaved")
+    public ResponseEntity<?> searchByUserId (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+
+
+        return ResponseEntity.ok().body(postService.searchByUserId(pageNumber,pageSize,orderName,orderDate));
+    }
+
     @PostMapping("/changeStatus")
     public ResponseEntity<?> changeStatus(@RequestBody ApprovePost req){
         return ResponseEntity.ok().body(postService.changeStatusPost(req));

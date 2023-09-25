@@ -1,10 +1,10 @@
 package com.example.froggyblogserver.service.impl;
 
 import com.example.froggyblogserver.dto.UserDto;
-import com.example.froggyblogserver.dto.request.UserPostDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.entity.AccountEntity;
 import com.example.froggyblogserver.entity.AccountsRolesEntity;
+import com.example.froggyblogserver.entity.UserPostEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateInputException;
@@ -15,7 +15,6 @@ import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -107,8 +106,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponse savePost(UserPostDto dto) {
-        return null;
+    public BaseResponse savePost(String postId) {
+        var info = currentUserService.getInfo();
+        var save = userPostRepo.save(UserPostEntity.builder().userId(info.getId()).postId(postId).build());
+        return new BaseResponse(save.getId());
     }
 
     @Override

@@ -9,25 +9,21 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Table(name = "user_post")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserPostEntity extends BaseEntity {
     @Id
     private String id;
     private String userId;
-    private Long postId; 
-    
-    public UserPostEntity(String userId, Long postId) {
-        this.userId = userId;
-        this.postId = postId;
-    }
+    private String postId;
 
     @PrePersist
     private void beforeInsert(){

@@ -13,9 +13,12 @@ import org.springframework.stereotype.Repository;
 public interface PostRepo extends JpaRepository<PostEntity, String> {
 
     @Query(value = "FROM PostEntity p WHERE (:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
-            "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%) ")
+            "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
     Page<PostEntity> search(@Param("req") PostSearchRequest req, Pageable pageable);
 
-    @Query(value = "SELECT p FROM PostEntity p INNER JOIN PostTopicEntity pt ON p.id = pt.postId AND pt.isDelete = 0 WHERE pt.topicId = :topicId")
+    @Query(value = "SELECT p FROM PostEntity p LEFT JOIN PostTopicEntity pt ON p.id = pt.postId AND pt.isDelete = 0 WHERE pt.topicId = :topicId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
     Page<PostEntity> searchByTopicId(String topicId, Pageable pageable);
+
+    @Query(value = "SELECT p.id ,p.content,p.thumbnail ,p.title ,p.status ,p.credit ,p.userId ,p.publishDate,up.createDate ,p.createId ,p.updateDate ,p.updateId ,p.isDelete FROM PostEntity p LEFT JOIN UserPostEntity up ON p.id = up.postId AND up.isDelete = 0 WHERE up.userId = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
+    Page<PostEntity> searchByUserId(String userId,Pageable pageable);
 }

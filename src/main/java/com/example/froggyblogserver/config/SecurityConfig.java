@@ -85,10 +85,11 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/**");
 
-        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().includeSubDomains(true);
+        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
         http.httpBasic().authenticationEntryPoint(new AuthenEntryPoint());
         http.authorizeHttpRequests().antMatchers("/api/post/findById/**","/api/image/get/**", "/login","/api/logout", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
-                .anyRequest().authenticated().and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
+                .anyRequest().authenticated();
+//                .and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
         http.csrf().disable();
         http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler(new AuthenAccessDeniedExceptionHandler());

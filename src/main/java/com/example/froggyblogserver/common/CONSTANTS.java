@@ -7,7 +7,7 @@ public class CONSTANTS {
         public final static byte FALSE = 0;
     }
     public static class POST_STATUS{
-        public final static String PENDING = "PENDING";
+        public final static String BANNED = "BANNED";
         public final static String ABORT = "ABORT";
         public final static String PUBLISHED = "PUBLISHED";
     }

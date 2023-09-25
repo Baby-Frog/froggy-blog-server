@@ -22,6 +22,10 @@ public class PostDto {
     @NonNull
     @NotEmpty
     @NotBlank
+    private String thumbnail;
+    @NonNull
+    @NotEmpty
+    @NotBlank
     private String title;
     @NonNull
     @NotEmpty

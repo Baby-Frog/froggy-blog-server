@@ -28,7 +28,9 @@ public class PostEntity extends BaseEntity {
 
     @Id
     private String id;
+    @Lob
     private String content;
+    private String thumbnail;
     private String title;
     private String status;
     private String credit;
