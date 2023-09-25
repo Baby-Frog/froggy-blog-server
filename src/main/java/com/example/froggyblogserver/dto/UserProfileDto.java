@@ -2,14 +2,15 @@ package com.example.froggyblogserver.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserDto {
+public class UserProfileDto {
     private String id;
     @NotNull
     @NotEmpty
@@ -18,22 +19,9 @@ public class UserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private String email;
-    @NotNull
-    @NotEmpty
-    @NotBlank
     private String birthDay;
     @NotNull
     @NotEmpty
     @NotBlank
-    private String phoneNumber;
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    private String address;
-    @NotNull
-    @NotEmpty
-    @NotBlank
     private String avatarPath;
-
 }

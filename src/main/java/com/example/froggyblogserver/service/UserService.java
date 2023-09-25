@@ -12,4 +12,5 @@ public interface UserService  extends GeneralService<UserEntity> {
     BaseResponse savePost(String postId);
     void OAuthLogin(String name,String email);
     UserDto findByEmail(String email);
+    BaseResponse getProfile();
 }

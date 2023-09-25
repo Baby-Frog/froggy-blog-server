@@ -56,7 +56,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BaseResponse findById(String id) {
-        return new BaseResponse(repo.findById(id).orElse(null));
+        var found = repo.findById(id).orElse(null);
+        if (found == null)
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
+        return new BaseResponse(userMapper.entityToProfile(found));
+
     }
 
     @Override
@@ -65,7 +69,7 @@ public class UserServiceImpl implements UserService {
         if (!StringHelper.isNullOrEmpty(req.getEmail())) {
             var checkEmail = accountRepo.findByEmail(req.getEmail());
             if (checkEmail != null)
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL,MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST,req.getEmail());
+                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL, MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST, req.getEmail());
             var user = currentUserService.getInfo();
             if (user.getProvider().equals(CONSTANTS.PROVIDER.SYSTEM)) {
                 var account = accountRepo.findByEmail(user.getEmail());
@@ -78,12 +82,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponse search(UserSearchRequest request,String orderName,String orderDate) {
+    public BaseResponse search(UserSearchRequest request, String orderName, String orderDate) {
         var page = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
-        if(!StringHelper.isNullOrEmpty(orderName) )
-            page = SortHelper.sort(page,orderName,"fullName");
-        if(!StringHelper.isNullOrEmpty(orderDate) )
-            page = SortHelper.sort(page,orderDate,"createDate");
+        if (!StringHelper.isNullOrEmpty(orderName))
+            page = SortHelper.sort(page, orderName, "fullName");
+        if (!StringHelper.isNullOrEmpty(orderDate))
+            page = SortHelper.sort(page, orderDate, "createDate");
         var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
                 .data(exec.get().map(e -> userMapper.entityToDto(e)).collect(Collectors.toList()))
@@ -97,12 +101,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteById(String id) {
-            Optional<UserEntity> found = repo.findById(id);
-            if (!found.isPresent())
-                throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-            found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
-            repo.save(found.get());
-            return new BaseResponse(id);
+        Optional<UserEntity> found = repo.findById(id);
+        if (!found.isPresent())
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
+        found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
+        repo.save(found.get());
+        return new BaseResponse(id);
     }
 
     @Override
@@ -114,10 +118,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void OAuthLogin(String name, String email) {
-        var checkExist = repo.findByEmailanAndProvider(email,null);
-        if (checkExist.isEmpty()){
+        var checkExist = repo.findByEmailanAndProvider(email, null);
+        if (checkExist.isEmpty()) {
             var newUser = UserEntity.builder().fullName(name).email(email).provider(CONSTANTS.PROVIDER.GOOGLE).build();
-            var execNewUser =  repo.save(newUser);
+            var execNewUser = repo.save(newUser);
             var newAccount = AccountEntity.builder().userId(execNewUser.getId()).email(email).password(passwordEncoder.encode(UUID.randomUUID().toString())).build();
             var saveNewAccount = accountRepo.save(newAccount);
             var roleUser = roleRepo.findByCode(CONSTANTS.ROLE.USER);
@@ -127,9 +131,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findByEmail(String email) {
-        var found = repo.findByEmailanAndProvider(email,null).orElse(null);
+        var found = repo.findByEmailanAndProvider(email, null).orElse(null);
         if (found == null) return null;
         return userMapper.entityToDto(found);
+    }
+
+    @Override
+    public BaseResponse getProfile() {
+        var info = currentUserService.getInfo();
+        return new BaseResponse(userMapper.entityToDto(info));
     }
 
 

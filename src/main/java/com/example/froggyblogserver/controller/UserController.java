@@ -42,6 +42,10 @@ public class UserController {
         return ResponseEntity.ok().body(userService.search(req,orderName,orderDate));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> profile(){
+        return ResponseEntity.ok().body(userService.getProfile());
+    }
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){

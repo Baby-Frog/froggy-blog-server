@@ -4,7 +4,9 @@ import com.example.froggyblogserver.common.CONSTANTS;
 import javax.persistence.*;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,6 +23,8 @@ public class UserEntity extends BaseEntity {
     @Id
     private String id;
     private String fullName;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate birthDay;
     @Column(unique = true)
     private String email;
     private String phoneNumber;
