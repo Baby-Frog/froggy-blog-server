@@ -76,7 +76,7 @@ public class PostServiceImpl implements PostService {
 
         var info = currentUserService.getInfo();
         var post = postMapper.dtoToEntity(req);
-        if (StringHelper.isNullOrEmpty(post.getId()))
+        if (!StringHelper.isNullOrEmpty(post.getId()))
             post.setCreateId(info.getId());
         else post.setUpdateId(info.getId());
         post.setUserId(info.getId());
