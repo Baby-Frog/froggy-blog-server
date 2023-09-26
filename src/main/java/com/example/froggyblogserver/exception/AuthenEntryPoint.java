@@ -23,8 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class AuthenEntryPoint implements AuthenticationEntryPoint {
 
-    @Autowired
-    JwtHelper jwtHelper;
+    JwtHelper jwtHelper = new JwtHelper();
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
