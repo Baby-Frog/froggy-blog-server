@@ -126,7 +126,7 @@ public class AuthenServiceImpl implements AuthenService {
         var findUser = refreshTokenRepo.findToken(dto.getRefreshToken(), email);
         if (findUser.isEmpty())
             throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
-        findUser.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
+        findUser.get().setDelete(CONSTANTS.IS_DELETE.TRUE);
         refreshTokenRepo.save(findUser.get());
         return new BaseResponse(MESSAGE.RESPONSE.LOG_OUT_SUCCESS);
     }

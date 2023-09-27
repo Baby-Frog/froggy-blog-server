@@ -87,7 +87,7 @@ public class SecurityConfig {
 
         http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
         http.httpBasic();
-        http.authorizeHttpRequests().antMatchers("/api/user/findById/**","/api/post/findById/**","/api/image/get/**", "/login","/api/logout", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
+        http.authorizeHttpRequests().antMatchers("/api/user/findById/**","/api/like/count/**","/api/post/findById/**","/api/image/get/**", "/login","/api/logout", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
                 .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(new AuthenEntryPoint())
                 .and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
         http.csrf().disable();

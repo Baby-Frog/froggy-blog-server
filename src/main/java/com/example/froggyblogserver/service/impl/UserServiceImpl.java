@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> found = repo.findById(id);
         if (!found.isPresent())
             throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        found.get().setIsDelete(CONSTANTS.IS_DELETE.TRUE);
+        found.get().setDelete(CONSTANTS.IS_DELETE.TRUE);
         repo.save(found.get());
         return new BaseResponse(id);
     }

@@ -21,5 +21,5 @@ public abstract class BaseEntity {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     protected LocalDateTime updateDate;
     protected String updateId;
-    protected byte isDelete;
+    protected boolean isDelete;
 }
