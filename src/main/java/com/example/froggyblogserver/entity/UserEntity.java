@@ -30,6 +30,8 @@ public class UserEntity extends BaseEntity {
     private String phoneNumber;
     private String address;
     private String avatarPath;
+    private String coverImgPath;
+    private String bio;
     private String provider;
 
     @PrePersist

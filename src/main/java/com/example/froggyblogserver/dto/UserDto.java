@@ -35,5 +35,13 @@ public class UserDto {
     @NotEmpty
     @NotBlank
     private String avatarPath;
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    private String coverImgPath;
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    private String bio;
 
 }
