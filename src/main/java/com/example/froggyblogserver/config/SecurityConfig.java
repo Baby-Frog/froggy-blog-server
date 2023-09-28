@@ -83,18 +83,45 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().ignoringAntMatchers("/**");
 
-        http.headers().contentSecurityPolicy("default-src 'self'").and().httpStrictTransportSecurity().maxAgeInSeconds(31536000).includeSubDomains(true);
-        http.httpBasic();
-        http.authorizeHttpRequests().antMatchers("/api/user/findById/**","/api/comment/search/**","/api/like/count/**","/api/post/findById/**","/api/image/get/**", "/login","/api/logout", "/register", "/refreshToken", "/forgotPassword", "/resetPassword", "/api/topic/search/**", "/api/post/search/**").permitAll()
-                .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(new AuthenEntryPoint())
-                .and().oauth2Login().userInfoEndpoint().userService(customOAuth2UserService).and().successHandler(successHandler);
+        http.headers()
+                .contentSecurityPolicy("default-src 'self'")
+                .and()
+                .httpStrictTransportSecurity()
+                    .maxAgeInSeconds(31536000)
+                    .includeSubDomains(true);
+
+        http.authorizeHttpRequests()
+                .antMatchers(
+                        "/api/user/findById/**"
+                        ,"/api/comment/search/**"
+                        ,"/api/like/count/**"
+                        ,"/api/post/findById/**"
+                        ,"/api/image/get/**"
+                        , "/login"
+                        ,"/api/logout"
+                        ,"/register"
+                        ,"/refreshToken"
+                        ,"/forgotPassword"
+                        ,"/resetPassword"
+                        ,"/api/topic/search/**",
+                        "/api/post/search/**")
+                    .permitAll()
+                .anyRequest().authenticated()
+                .and()
+                    .oauth2Login()
+                        .userInfoEndpoint()
+                        .userService(customOAuth2UserService)
+                .and()
+                    .successHandler(successHandler);
+        http.csrf().ignoringAntMatchers("/**");
         http.csrf().disable();
-        http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling().accessDeniedHandler(new AuthenAccessDeniedExceptionHandler());
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.cors(withDefaults());
+        http.addFilterBefore(authenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                    .authenticationEntryPoint(new AuthenEntryPoint())
+                    .accessDeniedHandler(new AuthenAccessDeniedExceptionHandler());
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         return http.build();
 
     }

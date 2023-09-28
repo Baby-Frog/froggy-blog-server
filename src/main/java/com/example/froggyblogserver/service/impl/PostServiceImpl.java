@@ -131,8 +131,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse changeStatusPost(ApprovePost req) {
         var found = postRepo.findById(req.getPostId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.POST_NOT_EXIST));
-        if (req.getStatus().equals(CONSTANTS.POST_STATUS.PUBLISHED) || req.getStatus().equals(CONSTANTS.POST_STATUS.ABORT)) {
-            found.setStatus(req.getStatus());
+        if (req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.PUBLISHED) || req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.BANNED)) {
+            found.setStatus(req.getStatus().toUpperCase());
             postRepo.save(found);
             return new BaseResponse(req.getPostId());
         } else throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
