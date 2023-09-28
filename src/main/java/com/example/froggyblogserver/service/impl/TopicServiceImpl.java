@@ -7,7 +7,6 @@ import com.example.froggyblogserver.entity.TopicEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
-import com.example.froggyblogserver.exception.ValidateInputException;
 import com.example.froggyblogserver.mapper.TopicMapper;
 import com.example.froggyblogserver.repository.TopicRepo;
 import com.example.froggyblogserver.response.BaseResponse;
@@ -18,7 +17,6 @@ import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

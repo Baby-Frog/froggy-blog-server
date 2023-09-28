@@ -16,21 +16,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.example.froggyblogserver.exception.AuthenEntryPoint;
-
 import static org.springframework.security.config.Customizer.withDefaults;
-
 import com.example.froggyblogserver.exception.AuthenAccessDeniedExceptionHandler;
 import com.example.froggyblogserver.filter.AuthenFilter;
 import com.example.froggyblogserver.service.AccountService;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.xml.bind.annotation.XmlType;
 
 @Configuration
 @EnableWebSecurity

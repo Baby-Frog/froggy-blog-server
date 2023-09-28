@@ -1,7 +1,6 @@
 package com.example.froggyblogserver.response;
 
 import com.example.froggyblogserver.dto.UserDto;
-import com.example.froggyblogserver.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

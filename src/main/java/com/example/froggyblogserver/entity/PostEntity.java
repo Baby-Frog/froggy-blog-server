@@ -7,8 +7,7 @@ import javax.persistence.*;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 
-import com.example.froggyblogserver.common.DateTimePartern;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

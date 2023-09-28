@@ -1,8 +1,7 @@
 package com.example.froggyblogserver.entity;
 
 import java.time.LocalDateTime;
-import com.example.froggyblogserver.common.DateTimePartern;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 import lombok.Getter;

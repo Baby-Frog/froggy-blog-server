@@ -3,7 +3,6 @@ package com.example.froggyblogserver.sercurity.handler;
 import com.example.froggyblogserver.response.LoginResponse;
 import com.example.froggyblogserver.sercurity.CustomOauth2User;
 import com.example.froggyblogserver.service.UserService;
-import com.example.froggyblogserver.service.impl.CustomOAuth2UserService;
 import com.example.froggyblogserver.utils.JwtHelper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;

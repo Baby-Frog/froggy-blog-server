@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.service.UserService;
 
@@ -18,8 +17,6 @@ public class UserController {
     
     @Autowired
     private UserService userService;
-    @Autowired
-    private CurrentUserService currentUserService;
 
     @PostMapping("/saveOrUpdate")
     public ResponseEntity<?> saveOrUpdate(@RequestBody UserEntity req ){

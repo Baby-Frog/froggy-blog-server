@@ -1,7 +1,6 @@
 package com.example.froggyblogserver.dto;
 
-import com.example.froggyblogserver.common.DateTimePartern;
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 

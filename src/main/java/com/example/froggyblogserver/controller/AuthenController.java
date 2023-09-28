@@ -1,14 +1,11 @@
 package com.example.froggyblogserver.controller;
 
 
-import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
