@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
                     .collect(Collectors.toList());
             postTopicRepo.saveAll(listTopic);
         }
-        return new BaseResponse();
+        return new BaseResponse(postMapper.entityToDto(savePost));
     }
 
     @Override

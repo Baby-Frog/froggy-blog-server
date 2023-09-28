@@ -24,9 +24,6 @@ public class PostDto {
     @NotEmpty
     @NotBlank
     private String title;
-    @NonNull
-    @NotEmpty
-    @NotBlank
     private String credit;
     @NonNull
     @NotEmpty
