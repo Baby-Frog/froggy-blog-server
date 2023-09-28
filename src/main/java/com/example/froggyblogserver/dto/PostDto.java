@@ -19,9 +19,6 @@ public class PostDto {
     @NotEmpty
     @NotBlank
     private String content;
-    @NonNull
-    @NotEmpty
-    @NotBlank
     private String thumbnail;
     @NonNull
     @NotEmpty
