@@ -25,12 +25,6 @@ spring:
     oauth2:
       client:
         registration:
-          facebook:
-            client-id: 516271610689759
-            client-secret: a4ad7a3d12fb07d26a36a4ba23f60738
-            redirect-uri: localhost:8080/login/oauth2/facebook
-            scope: email,public_profile,user_phone_numbers
-            client-name: Facebook
           google:
             clientId: 247004369428-vqr04dl1423u0lg6mmuna5ph85628c2t.apps.googleusercontent.com
             clientSecret: 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

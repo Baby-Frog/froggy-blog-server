@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,6 +28,8 @@ public class CommentEntity extends BaseEntity {
     private String id;
     private StringBuilder content;
     private String parentId;
+    @OneToMany(mappedBy = "parentId",fetch = FetchType.EAGER)
+    List<CommentEntity> child = new ArrayList<>();
     private String postId;
     private String userId;
 
