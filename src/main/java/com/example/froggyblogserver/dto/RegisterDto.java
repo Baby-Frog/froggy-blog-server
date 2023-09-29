@@ -32,6 +32,11 @@ public class RegisterDto {
     @NotEmpty
     @NotBlank
     private String rePassword;
+
+    @NotNull
+    @NotEmpty
+    @NotBlank
+    private String captcha;
     @AssertFalse(message = MESSAGE.VALIDATE.PASSWORD_INCORRECT)
     private boolean checkConfirmPassword(){
         return password.equals(rePassword);

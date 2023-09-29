@@ -14,6 +14,7 @@ import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,7 @@ import com.example.froggyblogserver.utils.StringHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 @Slf4j
@@ -82,7 +84,10 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse register(RegisterDto req) {
+    public BaseResponse register(RegisterDto req, HttpSession session) {
+        var secretCaptcha = session.getAttribute("captchaCode").toString();
+        if (secretCaptcha == null && !secretCaptcha.equalsIgnoreCase(req.getCaptcha()))
+            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(), null);
         if (checkEmail.isPresent())
             throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL, MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST, req.getEmail());

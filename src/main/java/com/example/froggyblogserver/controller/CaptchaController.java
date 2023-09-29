@@ -37,12 +37,12 @@ public class CaptchaController {
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).contentLength(byteArrayOutputStream.size()).body(byteArrayOutputStream.toByteArray());
     }
 
-    @PostMapping("verify")
-    public ResponseEntity<?> verifyCaptcha(HttpSession session, @RequestParam String captcha) {
-        var secretCaptcha = session.getAttribute("captchaCode").toString();
-        if (secretCaptcha != null && secretCaptcha.equalsIgnoreCase(captcha)) {
-            return ResponseEntity.ok().body(new BaseResponse());
-        }
-        throw new ValidateInputException(CONSTANTS.PROPERTIES.CAPTCHA, MESSAGE.TOKEN.CAPTCHA_INVALID, captcha);
-    }
+//    @PostMapping("verify")
+//    public ResponseEntity<?> verifyCaptcha(HttpSession session, @RequestParam String captcha) {
+//        var secretCaptcha = session.getAttribute("captchaCode").toString();
+//        if (secretCaptcha != null && secretCaptcha.equalsIgnoreCase(captcha)) {
+//            return ResponseEntity.ok().body(new BaseResponse());
+//        }
+//        throw new ValidateInputException(CONSTANTS.PROPERTIES.CAPTCHA, MESSAGE.TOKEN.CAPTCHA_INVALID, captcha);
+//    }
 }

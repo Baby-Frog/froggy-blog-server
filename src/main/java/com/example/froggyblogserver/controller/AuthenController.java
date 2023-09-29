@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.froggyblogserver.service.AuthenService;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RestController
@@ -31,8 +32,8 @@ public class AuthenController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto req) {
-        BaseResponse exec = authenService.register(req);
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto req, HttpSession session) {
+        BaseResponse exec = authenService.register(req,session);
         return ResponseEntity.ok().body(exec);
     }
 
