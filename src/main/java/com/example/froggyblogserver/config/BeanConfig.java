@@ -21,9 +21,8 @@ public class BeanConfig {
         DefaultKaptcha captchaProducer = new DefaultKaptcha();
         Properties properties = new Properties();
         // Cấu hình các thuộc tính của Captcha
-        properties.setProperty("kaptcha.border", "yes");
-        properties.setProperty("kaptcha.border.color", "105,179,90");
-        properties.setProperty("kaptcha.textproducer.font.color", "40,38,38");
+        properties.setProperty("kaptcha.border", "no");
+        properties.setProperty("kaptcha.textproducer.font.color", "0,0,0");
         properties.setProperty("kaptcha.image.width", "200");
         properties.setProperty("kaptcha.image.height", "60");
         properties.setProperty("kaptcha.textproducer.font.size", "40");
