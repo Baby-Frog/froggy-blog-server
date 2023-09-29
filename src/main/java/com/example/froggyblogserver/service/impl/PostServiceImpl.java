@@ -139,7 +139,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize,String orderName,String orderDate) {
+    public BaseResponse  searchByTopicId(String topicId, int pageNumber, int pageSize,String orderName,String orderDate) {
         var pageReq = PageRequest.of(pageNumber -1,pageSize);
         if (!StringHelper.isNullOrEmpty(orderName))
             pageReq = SortHelper.sort(pageReq, orderName, "title");

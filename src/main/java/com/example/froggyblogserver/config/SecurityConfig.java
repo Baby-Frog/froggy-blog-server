@@ -88,19 +88,20 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests()
                 .antMatchers(
-                        "/api/user/findById/**"
+                         "/api/user/findById/**"
                         ,"/api/comment/search/**"
                         ,"/api/like/count/**"
                         ,"/api/post/findById/**"
                         ,"/api/image/get/**"
-                        , "/login"
+                        ,"/api/captcha/**"
+                        ,"/login"
                         ,"/api/logout"
                         ,"/register"
                         ,"/refreshToken"
                         ,"/forgotPassword"
                         ,"/resetPassword"
-                        ,"/api/topic/search/**",
-                        "/api/post/search/**")
+                        ,"/api/topic/search/**"
+                        ,"/api/post/search/**")
                     .permitAll()
                 .anyRequest().authenticated()
                 .and()
