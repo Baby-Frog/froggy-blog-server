@@ -32,8 +32,8 @@ public class AuthenController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto req, HttpSession session) {
-        BaseResponse exec = authenService.register(req,session);
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterDto req) {
+        BaseResponse exec = authenService.register(req);
         return ResponseEntity.ok().body(exec);
     }
 

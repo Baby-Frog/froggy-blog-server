@@ -12,6 +12,7 @@ import com.example.froggyblogserver.entity.*;
 import com.example.froggyblogserver.exception.*;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
+import com.example.froggyblogserver.utils.RecaptchaUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,8 @@ public class AuthenServiceImpl implements AuthenService {
     private RefreshTokenRepo refreshTokenRepo;
     @Value("${avatar.path}")
     private String PATH_AVT;
-
+    @Autowired
+    private RecaptchaUtils recaptchaUtils;
 
     @Override
     public BaseResponse login(LoginDto req) {
@@ -84,9 +86,9 @@ public class AuthenServiceImpl implements AuthenService {
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse register(RegisterDto req, HttpSession session) {
-        var secretCaptcha = session.getAttribute("captchaCode");
-        if (secretCaptcha == null || !secretCaptcha.toString().equalsIgnoreCase(req.getCaptcha()))
+    public BaseResponse register(RegisterDto req) {
+
+        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
             throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(), null);
         if (checkEmail.isPresent())

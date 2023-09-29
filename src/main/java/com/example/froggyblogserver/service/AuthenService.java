@@ -8,7 +8,7 @@ import javax.servlet.http.HttpSession;
 
 public interface AuthenService {
     BaseResponse login(LoginDto req);
-    BaseResponse register(RegisterDto req, HttpSession session);
+    BaseResponse register(RegisterDto req);
     BaseResponse refreshToken(RefreshTokenDto req);
     BaseResponse logout(RefreshTokenDto dto);
     BaseResponse forgotPassword(ForgotPassword req);
