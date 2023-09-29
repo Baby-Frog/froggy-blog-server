@@ -85,8 +85,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req, HttpSession session) {
-        var secretCaptcha = session.getAttribute("captchaCode").toString();
-        if (secretCaptcha == null || !secretCaptcha.equalsIgnoreCase(req.getCaptcha()))
+        var secretCaptcha = session.getAttribute("captchaCode");
+        if (secretCaptcha == null || !secretCaptcha.toString().equalsIgnoreCase(req.getCaptcha()))
             throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(), null);
         if (checkEmail.isPresent())
