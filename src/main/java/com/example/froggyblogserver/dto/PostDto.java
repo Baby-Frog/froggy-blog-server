@@ -25,8 +25,6 @@ public class PostDto {
     @NotBlank
     private String title;
     private String credit;
-    @NonNull
-    @NotEmpty
     private List<TopicDto> listTopic = new ArrayList<>();
     @NonNull
     @NotEmpty
