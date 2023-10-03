@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -26,7 +27,11 @@ public class PostDto {
     private String credit;
     @NonNull
     @NotEmpty
-    private List<String> topicId;
+    private List<TopicDto> listTopic = new ArrayList<>();
+    @NonNull
+    @NotEmpty
+    private List<String> topicId = new ArrayList<>();
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime publishDate;
+    private UserDto author;
 }

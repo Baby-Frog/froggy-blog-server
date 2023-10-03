@@ -18,7 +18,9 @@ import java.util.UUID;
 public class PostTopicEntity extends BaseEntity{
     @Id
     private String id;
+    @Column(name = "post_id")
     private String postId;
+    @Column(name = "topic_id")
     private String topicId;
     @PrePersist
     private void beforeInsert(){

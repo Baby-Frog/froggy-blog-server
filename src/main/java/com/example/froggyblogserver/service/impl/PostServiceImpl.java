@@ -60,14 +60,14 @@ public class PostServiceImpl implements PostService {
         Optional<PostEntity> post = postRepo.findById(id);
         if (post.isEmpty())
             throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        var author = userRepo.findById(post.get().getUserId());
-        var listTopic = topicRepo.findTopicByPostId(post.get().getId());
-        ///mapper
-        var postMap = postMapper.entityToDto(post.get());
-        var authorMap = userMapper.entityToDto(author.get());
-        var listTopicPost = listTopic.stream().map(topic -> topicMapper.entityToDto(topic)).collect(Collectors.toList());
+//        var author = userRepo.findById(post.get().getUserId());
+//        var listTopic = topicRepo.findTopicByPostId(post.get().getId());
+//        ///mapper
+//        var postMap = postMapper.entityToDto(post.get());
+//        var authorMap = userMapper.entityToDto(author.get());
+//        var listTopicPost = listTopic.stream().map(topic -> topicMapper.entityToDto(topic)).collect(Collectors.toList());
 
-        return new BaseResponse(PostDetailsDto.builder().postDto(postMap).userDto(authorMap).topicDtos(listTopicPost).build());
+        return new BaseResponse(post);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class PostServiceImpl implements PostService {
         if (!StringHelper.isNullOrEmpty(post.getId()))
             post.setCreateId(info.getId());
         else post.setUpdateId(info.getId());
-        post.setUserId(info.getId());
+        post.setAuthor(info);
         post.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
         post.setPublishDate(LocalDateTime.now());
         var savePost = postRepo.save(post);

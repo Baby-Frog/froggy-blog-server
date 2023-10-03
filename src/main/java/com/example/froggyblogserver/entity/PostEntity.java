@@ -1,6 +1,8 @@
 package com.example.froggyblogserver.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.*;
@@ -33,10 +35,15 @@ public class PostEntity extends BaseEntity {
     private String title;
     private String status;
     private String credit;
-    private String userId;
+
+    @ManyToOne(fetch = FetchType.EAGER,targetEntity = UserEntity.class)
+    @JoinColumn(name = "author_id")
+    private UserEntity author;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime publishDate;
-
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "post_topic",joinColumns = {@JoinColumn(name = "post_id")},inverseJoinColumns = {@JoinColumn(name = "topic_id")})
+    private List<TopicEntity> listTopic = new ArrayList<>();
     @PrePersist
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
