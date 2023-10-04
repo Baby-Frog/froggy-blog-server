@@ -22,6 +22,7 @@ import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.service.PostService;
 import com.example.froggyblogserver.utils.DateTimeUtils;
+import com.example.froggyblogserver.utils.RecaptchaUtils;
 import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +42,11 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private CurrentUserService currentUserService;
     @Autowired
-    private UserRepo userRepo;
-    @Autowired
-    private TopicRepo topicRepo;
-    @Autowired
-    private UserMapper userMapper;
-    @Autowired
     private PostMapper postMapper;
     @Autowired
-    private TopicMapper topicMapper;
-    @Autowired
     private PostTopicRepo postTopicRepo;
-
+    @Autowired
+    private RecaptchaUtils recaptchaUtils;
 
     @Override
     public BaseResponse findById(String id) {
@@ -66,7 +60,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(PostDetailDto req) {
-
+        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
+            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var info = currentUserService.getInfo();
         var post = postMapper.dtoToEntity(req);
         if (!StringHelper.isNullOrEmpty(post.getId()))

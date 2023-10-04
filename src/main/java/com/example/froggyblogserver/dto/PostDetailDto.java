@@ -38,4 +38,5 @@ public class PostDetailDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime publishDate;
     private UserDto author;
+    private String captcha;
 }

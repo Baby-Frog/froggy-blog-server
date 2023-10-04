@@ -9,11 +9,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PostRepo extends JpaRepository<PostEntity, String> {
+    @Override
+    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.isDelete=0")
+    Optional<PostEntity> findById(String s);
 
-    @Query(value = "FROM PostEntity p WHERE (:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
-            "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
+    @Query(value = "FROM PostEntity p WHERE ((:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
+            "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%)) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
     Page<PostEntity> search(@Param("req") PostSearchRequest req, Pageable pageable);
 
     @Query(value = "SELECT p FROM PostEntity p LEFT JOIN PostTopicEntity pt ON p.id = pt.postId AND pt.isDelete = 0 WHERE pt.topicId = :topicId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
