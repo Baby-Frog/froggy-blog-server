@@ -50,6 +50,11 @@ public class PostController {
         return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
     }
 
+    @RequestMapping("/trending")
+    public ResponseEntity<?> trending () {
+        return ResponseEntity.ok().body(postService.trendingPost());
+    }
+
     @RequestMapping("findByTopicId/{topicId}")
     public ResponseEntity<?> searchByTopicId (@PathVariable String topicId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
         if (pageNumber == null)

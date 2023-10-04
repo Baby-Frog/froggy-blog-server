@@ -60,8 +60,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(PostDetailDto req) {
-        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
-            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
+//        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
+//            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var info = currentUserService.getInfo();
         var post = postMapper.dtoToEntity(req);
         if (!StringHelper.isNullOrEmpty(post.getId()))
@@ -163,5 +163,13 @@ public class PostServiceImpl implements PostService {
                 .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
                 .build();
         return new BaseResponse(pageRes);
+    }
+
+    @Override
+    public BaseResponse trendingPost() {
+        var endTime = LocalDateTime.now().plusDays(1);
+        var startTime = endTime.minusDays(7);
+        var listPost = postRepo.trendingPost(startTime,endTime);
+        return new BaseResponse(listPost);
     }
 }
