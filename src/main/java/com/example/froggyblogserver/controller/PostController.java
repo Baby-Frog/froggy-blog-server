@@ -1,7 +1,7 @@
 package com.example.froggyblogserver.controller;
 
 import com.example.froggyblogserver.dto.ApprovePost;
-import com.example.froggyblogserver.dto.PostDto;
+import com.example.froggyblogserver.dto.PostDetailDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.service.PostService;
@@ -25,8 +25,8 @@ public class PostController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveOrUpdate (@RequestBody @Valid PostDto postDto) {
-        return ResponseEntity.ok().body(postService.saveOrUpdate(postDto));
+    public ResponseEntity<?> saveOrUpdate (@RequestBody @Valid PostDetailDto postDetailDto) {
+        return ResponseEntity.ok().body(postService.saveOrUpdate(postDetailDto));
     }
 
     @GetMapping("/findById/{postId}")

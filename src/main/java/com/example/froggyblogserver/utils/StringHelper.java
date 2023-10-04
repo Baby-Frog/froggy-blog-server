@@ -19,4 +19,10 @@ public class StringHelper {
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(temp).replaceAll("").replace(" ","").replace("Đ","").replace("đ","");
     }
+
+    public static Integer totalCharacter(String input){
+        input = input.replace("\\s+"," ");
+        var temp = input.split(" ");
+        return temp.length;
+    }
 }

@@ -3,8 +3,7 @@ package com.example.froggyblogserver.service.impl;
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
 import com.example.froggyblogserver.dto.ApprovePost;
-import com.example.froggyblogserver.dto.PostDetailsDto;
-import com.example.froggyblogserver.dto.PostDto;
+import com.example.froggyblogserver.dto.PostDetailDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.entity.PostEntity;
 import com.example.froggyblogserver.entity.PostTopicEntity;
@@ -22,6 +21,7 @@ import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.service.PostService;
+import com.example.froggyblogserver.utils.DateTimeUtils;
 import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,19 +60,12 @@ public class PostServiceImpl implements PostService {
         Optional<PostEntity> post = postRepo.findById(id);
         if (post.isEmpty())
             throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-//        var author = userRepo.findById(post.get().getUserId());
-//        var listTopic = topicRepo.findTopicByPostId(post.get().getId());
-//        ///mapper
-//        var postMap = postMapper.entityToDto(post.get());
-//        var authorMap = userMapper.entityToDto(author.get());
-//        var listTopicPost = listTopic.stream().map(topic -> topicMapper.entityToDto(topic)).collect(Collectors.toList());
-
         return new BaseResponse(post);
     }
 
     @Override
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
-    public BaseResponse saveOrUpdate(PostDto req) {
+    public BaseResponse saveOrUpdate(PostDetailDto req) {
 
         var info = currentUserService.getInfo();
         var post = postMapper.dtoToEntity(req);
@@ -82,6 +75,8 @@ public class PostServiceImpl implements PostService {
         post.setAuthor(info);
         post.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
         post.setPublishDate(LocalDateTime.now());
+        var totalChar = StringHelper.totalCharacter(req.getRaw());
+        post.setTimeRead(DateTimeUtils.convertTimeRead(totalChar));
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().stream()
@@ -91,7 +86,9 @@ public class PostServiceImpl implements PostService {
                     .collect(Collectors.toList());
             postTopicRepo.saveAll(listTopic);
         }
-        return new BaseResponse(postMapper.entityToDto(savePost));
+        var response = postMapper.entityToDto(savePost);
+        response.setTopicId(req.getTopicId());
+        return new BaseResponse(response);
     }
 
     @Override

@@ -13,20 +13,24 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostDto {
+public class PostDetailDto {
     private String id;
     @NonNull
     @NotEmpty
     @NotBlank
     private String content;
+    @NonNull
+    @NotEmpty
+    @NotBlank
+    private String raw;
     private String thumbnail;
+    private String timeRead;
+
     @NonNull
     @NotEmpty
     @NotBlank
     private String title;
     private String credit;
-    @NonNull
-    @NotEmpty
     private List<TopicDto> listTopic = new ArrayList<>();
     @NonNull
     @NotEmpty
