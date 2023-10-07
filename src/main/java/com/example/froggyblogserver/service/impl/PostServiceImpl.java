@@ -11,12 +11,8 @@ import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.PostMapper;
-import com.example.froggyblogserver.mapper.TopicMapper;
-import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.PostRepo;
 import com.example.froggyblogserver.repository.PostTopicRepo;
-import com.example.froggyblogserver.repository.TopicRepo;
-import com.example.froggyblogserver.repository.UserRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
@@ -150,11 +146,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByUserId( int pageNumber, int pageSize,String orderName,String orderDate) {
+    public BaseResponse searchByUserSave(int pageNumber, int pageSize, String orderName, String orderDate) {
         var info = currentUserService.getInfo();
         var pageReq = PageRequest.of(pageNumber -1,pageSize);
         pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
-        var search = postRepo.searchByUserId(info.getId(),pageReq);
+        var search = postRepo.searchByUserSave(info.getId(),pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -171,5 +167,20 @@ public class PostServiceImpl implements PostService {
         var startTime = endTime.minusDays(7);
         var listPost = postRepo.trendingPost(startTime,endTime);
         return new BaseResponse(listPost);
+    }
+
+    @Override
+    public BaseResponse searchByUserId(String userId, int pageNumber, int pageSize, String orderName, String orderDate) {
+        var pageReq = PageRequest.of(pageNumber -1,pageSize);
+        pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        var search = postRepo.searchByUserId(userId,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .totalPage(search.getTotalPages())
+                .totalRecord(search.getTotalElements())
+                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageRes);
     }
 }

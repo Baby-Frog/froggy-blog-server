@@ -36,7 +36,7 @@ public class LikeServiceImpl implements LikeService {
             mapToEntity.setDelete(negative);
         }
         var save = repo.save(mapToEntity);
-        return new BaseResponse(save.getId());
+        return new BaseResponse(repo.countByPostId(req.getPostId()).orElse(0L));
     }
 
     @Override

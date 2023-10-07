@@ -98,6 +98,7 @@ public class SecurityConfig {
                         ,"/api/comment/search/**"
                         ,"/api/like/count/**"
                         ,"/api/post/findById/**"
+                        ,"/api/post/findPostByUserId/**"
                         ,"/api/post/trending"
                         ,"/api/image/get/**"
                         ,"/api/captcha/**"

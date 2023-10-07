@@ -27,8 +27,9 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
     Page<PostEntity> searchByTopicId(String topicId, Pageable pageable);
 
     @Query(value = "SELECT p FROM PostEntity p LEFT JOIN UserPostEntity up ON p.id = up.postId AND up.isDelete = 0 WHERE up.userId = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED' ORDER BY up.createDate")
-    Page<PostEntity> searchByUserId(String userId,Pageable pageable);
-
+    Page<PostEntity> searchByUserSave(String userId, Pageable pageable);
+    @Query(value = "SELECT p FROM PostEntity p  WHERE p.author.id = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED' ORDER BY p.createDate")
+    Page<PostEntity> searchByUserId(String userId, Pageable pageable);
     @Query(value = "WITH temp AS ( " +
             " WITH likesCount AS( " +
             " SELECT l.post_id,count(l.post_id) as totalLikes FROM likes l " +

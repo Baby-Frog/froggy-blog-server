@@ -67,14 +67,21 @@ public class PostController {
     }
 
     @RequestMapping("findPostUserSaved")
-    public ResponseEntity<?> searchByUserId (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> searchByUserSaved (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
+        return ResponseEntity.ok().body(postService.searchByUserSave(pageNumber,pageSize,orderName,orderDate));
+    }
 
-
-        return ResponseEntity.ok().body(postService.searchByUserId(pageNumber,pageSize,orderName,orderDate));
+    @RequestMapping("findPostByUserId/{userId}")
+    public ResponseEntity<?> searchByUserId (@PathVariable String userId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+        return ResponseEntity.ok().body(postService.searchByUserId(userId,pageNumber,pageSize,orderName,orderDate));
     }
 
     @PostMapping("/changeStatus")
