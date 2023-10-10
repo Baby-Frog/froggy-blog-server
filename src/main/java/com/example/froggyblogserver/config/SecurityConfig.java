@@ -82,11 +82,7 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http.headers()
-                .contentSecurityPolicy("default-src 'self';" +
-                        "script-src https://hcaptcha.com, https://*.hcaptcha.com ;" +
-                        "frame-src https://hcaptcha.com, https://*.hcaptcha.com;" +
-                        "style-src https://hcaptcha.com, https://*.hcaptcha.com;" +
-                        "connect-src https://hcaptcha.com, https://*.hcaptcha.com;")
+                .contentSecurityPolicy("default-src 'self';")
                 .and()
                 .httpStrictTransportSecurity()
                     .maxAgeInSeconds(31536000)

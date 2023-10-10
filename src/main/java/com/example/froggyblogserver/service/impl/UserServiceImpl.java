@@ -112,7 +112,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse savePost(String postId) {
         var info = currentUserService.getInfo();
-        var save = userPostRepo.save(UserPostEntity.builder().userId(info.getId()).postId(postId).build());
+        var favorite = UserPostEntity.builder().userId(info.getId()).postId(postId).build();
+        var checkExist = userPostRepo.findByUserIdAndPostId(info.getId(),postId);
+        if(checkExist.isPresent()) {
+            favorite.setId(checkExist.get().getId());
+            favorite.setDelete(!checkExist.get().isDelete());
+        }
+
+        var save = userPostRepo.save(favorite);
         return new BaseResponse(save.getId());
     }
 
