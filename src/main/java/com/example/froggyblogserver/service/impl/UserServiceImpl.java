@@ -120,7 +120,10 @@ public class UserServiceImpl implements UserService {
         }
 
         var save = userPostRepo.save(favorite);
-        return new BaseResponse(save.getId());
+        if(save.isDelete()){
+            return new BaseResponse(200,MESSAGE.RESPONSE.UN_SAVE_SUCCESS,save.getId());
+        }
+        return new BaseResponse(200,MESSAGE.RESPONSE.SAVE_SUCCESS,save.getId());
     }
 
     @Override

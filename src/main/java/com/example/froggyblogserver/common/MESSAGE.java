@@ -28,6 +28,9 @@ public class MESSAGE {
         public static final String AUTH_ERROR = "Authentication error!!!";
         public static final String FORBIDDEN = "You don't have enough permissions to execute that";
         public static final String LOG_OUT_SUCCESS = "Logout successfully";
+        public static final String SAVE_SUCCESS = "Save Success";
+        public static final String UN_SAVE_SUCCESS = " UnSave Success";
+
     }
     public static class TOKEN{
         public static final String TOKEN_INVALID = "TOKEN INVALID";
