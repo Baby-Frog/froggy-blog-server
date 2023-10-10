@@ -166,7 +166,7 @@ public class PostServiceImpl implements PostService {
         var endTime = LocalDateTime.now().plusDays(1);
         var startTime = endTime.minusDays(7);
         var listPost = postRepo.trendingPost(startTime,endTime);
-        return new BaseResponse(listPost);
+        return new BaseResponse(listPost.stream().map(postMapper::entityToDto).collect(Collectors.toList()));
     }
 
     @Override
