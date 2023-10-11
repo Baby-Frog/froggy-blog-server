@@ -118,14 +118,11 @@ public class UserServiceImpl implements UserService {
         var favorite = UserPostEntity.builder().userId(info.getId()).postId(postId).build();
         var checkExist = userPostRepo.findByUserIdAndPostId(info.getId(),postId);
         if(checkExist.isPresent()) {
-            favorite.setId(checkExist.get().getId());
-            favorite.setDelete(!checkExist.get().isDelete());
+            userPostRepo.deleteById(checkExist.get().getId());
+            return new BaseResponse(200,MESSAGE.RESPONSE.UN_SAVE_SUCCESS);
         }
-
+        favorite.setDelete(CONSTANTS.IS_DELETE.FALSE);
         var save = userPostRepo.save(favorite);
-        if(save.isDelete()){
-            return new BaseResponse(200,MESSAGE.RESPONSE.UN_SAVE_SUCCESS,save.getId());
-        }
         return new BaseResponse(200,MESSAGE.RESPONSE.SAVE_SUCCESS,save.getId());
     }
 

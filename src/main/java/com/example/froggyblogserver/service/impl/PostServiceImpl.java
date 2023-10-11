@@ -128,14 +128,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse  searchByTopicId(String topicId, int pageNumber, int pageSize,String orderName,String orderDate) {
-        var pageReq = PageRequest.of(pageNumber -1,pageSize);
+    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize, String orderName, String orderDate) {
+        var pageReq = PageRequest.of(pageNumber - 1, pageSize);
         if (!StringHelper.isNullOrEmpty(orderName))
             pageReq = SortHelper.sort(pageReq, orderName, "title");
         if (StringHelper.isNullOrEmpty(orderDate))
             orderDate = CONSTANTS.SORT.DESC;
         pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
-        var search = postRepo.searchByTopicId(topicId,pageReq);
+        var search = postRepo.searchByTopicId(topicId, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -149,9 +149,13 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse searchByUserSave(int pageNumber, int pageSize, String orderName, String orderDate) {
         var info = currentUserService.getInfo();
-        var pageReq = PageRequest.of(pageNumber -1,pageSize);
-        pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
-        var search = postRepo.searchByUserSave(info.getId(),pageReq);
+        var pageReq = PageRequest.of(pageNumber - 1, pageSize);
+        if (!StringHelper.isNullOrEmpty(orderName))
+            pageReq = SortHelper.sort(pageReq, orderName, "title");
+        if (StringHelper.isNullOrEmpty(orderDate))
+            orderDate = CONSTANTS.SORT.DESC;
+        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        var search = postRepo.searchByUserSave(info.getId(), pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -166,15 +170,19 @@ public class PostServiceImpl implements PostService {
     public BaseResponse trendingPost() {
         var endTime = LocalDateTime.now().plusDays(1);
         var startTime = endTime.minusDays(7);
-        var listPost = postRepo.trendingPost(startTime,endTime);
+        var listPost = postRepo.trendingPost(startTime, endTime);
         return new BaseResponse(listPost.stream().map(postMapper::entityToDto).collect(Collectors.toList()));
     }
 
     @Override
     public BaseResponse searchByUserId(String userId, int pageNumber, int pageSize, String orderName, String orderDate) {
-        var pageReq = PageRequest.of(pageNumber -1,pageSize);
-        pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
-        var search = postRepo.searchByUserId(userId,pageReq);
+        var pageReq = PageRequest.of(pageNumber - 1, pageSize);
+        if (!StringHelper.isNullOrEmpty(orderName))
+            pageReq = SortHelper.sort(pageReq, orderName, "title");
+        if (StringHelper.isNullOrEmpty(orderDate))
+            orderDate = CONSTANTS.SORT.DESC;
+        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        var search = postRepo.searchByUserId(userId, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
