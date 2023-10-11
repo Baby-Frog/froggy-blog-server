@@ -154,7 +154,7 @@ public class PostServiceImpl implements PostService {
             pageReq = SortHelper.sort(pageReq, orderName, "title");
         if (StringHelper.isNullOrEmpty(orderDate))
             orderDate = CONSTANTS.SORT.DESC;
-        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        pageReq = SortHelper.sortWithFieldLeftJoin(pageReq, orderDate, "up.createDate ");
         var search = postRepo.searchByUserSave(info.getId(), pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
