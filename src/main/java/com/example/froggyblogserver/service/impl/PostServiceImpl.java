@@ -117,6 +117,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse changeStatusPost(ApprovePost req) {
         var found = postRepo.findById(req.getPostId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.POST_NOT_EXIST));
         if (req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.PUBLISHED) || req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.BANNED)) {

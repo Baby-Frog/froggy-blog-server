@@ -1,6 +1,8 @@
 package com.example.froggyblogserver.service.impl;
 
 import com.example.froggyblogserver.dto.CommentDto;
+import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.CommentMapper;
 import com.example.froggyblogserver.repository.CommentRepo;
 import com.example.froggyblogserver.response.BaseResponse;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +31,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(CommentDto req) {
         var entity = commentMapper.dtoToEntity(req);
         var save = commentRepo.save(entity);

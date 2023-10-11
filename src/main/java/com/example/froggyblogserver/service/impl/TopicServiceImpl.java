@@ -72,6 +72,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse deleteById(String id) {
         var found = topicRepo.findById(id);
         if (found.isEmpty())

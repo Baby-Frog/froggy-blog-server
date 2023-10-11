@@ -1,6 +1,8 @@
 package com.example.froggyblogserver.service.impl;
 
 import com.example.froggyblogserver.dto.LikeDto;
+import com.example.froggyblogserver.exception.CheckedException;
+import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.LikeMapper;
 import com.example.froggyblogserver.repository.LikeRepo;
 import com.example.froggyblogserver.response.BaseResponse;
@@ -9,6 +11,8 @@ import com.example.froggyblogserver.service.LikeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 
 @Service
 @Slf4j
@@ -25,6 +29,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(LikeDto req) {
         var info = currentUserService.getInfo();
         req.setUserId(info.getId());

@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.controller;
 
+import com.example.froggyblogserver.dto.UserDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.service.CurrentUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +19,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/saveOrUpdate")
-    public ResponseEntity<?> saveOrUpdate(@RequestBody UserEntity req ){
-        return ResponseEntity.ok().body(userService.saveOrUpdate(req));
+    @PostMapping("/profile/update")
+    public ResponseEntity<?> saveOrUpdate(@RequestBody UserDto req ){
+        return ResponseEntity.ok().body(userService.updateProfile(req));
     }
 
     @PostMapping("/savePost/{postId}")

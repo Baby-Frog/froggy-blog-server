@@ -65,20 +65,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse saveOrUpdate(UserEntity req) {
-        if (!StringHelper.isNullOrEmpty(req.getEmail())) {
-            var checkEmail = accountRepo.findByEmail(req.getEmail());
-            if (checkEmail != null)
-                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL, MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST, req.getEmail());
-            var user = currentUserService.getInfo();
-            if (user.getProvider().equals(CONSTANTS.PROVIDER.SYSTEM)) {
-                var account = accountRepo.findByEmail(user.getEmail());
-                account.setEmail(req.getEmail());
-                account.setUpdateId(user.getId());
-                accountRepo.save(account);
-            }
-        }
-        return new BaseResponse(repo.save(req).getId());
+    public BaseResponse saveOrUpdate(UserDto req) {
+//        if (!StringHelper.isNullOrEmpty(req.getEmail())) {
+//            var checkEmail = accountRepo.findByEmail(req.getEmail());
+//            if (checkEmail != null)
+//                throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL, MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST, req.getEmail());
+//            var user = currentUserService.getInfo();
+//            if (user.getProvider().equals(CONSTANTS.PROVIDER.SYSTEM)) {
+//                var account = accountRepo.findByEmail(user.getEmail());
+//                account.setEmail(req.getEmail());
+//                account.setUpdateId(user.getId());
+//                accountRepo.save(account);
+//            }
+//        }
+//        return new BaseResponse(repo.save(req).getId());
+        //COMING SOON
+        return null;
     }
 
     @Override
@@ -110,6 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse savePost(String postId) {
         var info = currentUserService.getInfo();
         var favorite = UserPostEntity.builder().userId(info.getId()).postId(postId).build();
@@ -127,6 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public void OAuthLogin(String name, String email) {
         var checkExist = repo.findByEmailanAndProvider(email, null);
         if (checkExist.isEmpty()) {
@@ -150,6 +154,21 @@ public class UserServiceImpl implements UserService {
     public BaseResponse getProfile() {
         var info = currentUserService.getInfo();
         return new BaseResponse(userMapper.entityToDto(info));
+    }
+
+    @Override
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
+    public BaseResponse updateProfile(UserDto dto) {
+        if(StringHelper.isNullOrEmpty(dto.getId()))
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
+        var found = repo.findById(dto.getId());
+        if (found.isEmpty())
+            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
+        var convertToEntity = userMapper.dtoToEntity(dto);
+        convertToEntity.setEmail(found.get().getEmail());
+        var update = repo.save(convertToEntity);
+
+        return new BaseResponse(userMapper.entityToDto(update));
     }
 
 

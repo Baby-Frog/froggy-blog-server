@@ -3,6 +3,7 @@ package com.example.froggyblogserver.dto;
 import lombok.*;
 
 import javax.validation.constraints.*;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class UserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private String birthDay;
+    private LocalDate birthDay;
     @NotNull
     @NotEmpty
     @NotBlank
