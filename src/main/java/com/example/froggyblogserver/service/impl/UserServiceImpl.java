@@ -88,8 +88,9 @@ public class UserServiceImpl implements UserService {
         var page = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
         if (!StringHelper.isNullOrEmpty(orderName))
             page = SortHelper.sort(page, orderName, "fullName");
-        if (!StringHelper.isNullOrEmpty(orderDate))
-            page = SortHelper.sort(page, orderDate, "createDate");
+        if (StringHelper.isNullOrEmpty(orderDate))
+            orderDate = CONSTANTS.SORT.DESC;
+        page = SortHelper.sort(page, orderDate, "createDate");
         var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
                 .data(exec.get().map(e -> userMapper.entityToDto(e)).collect(Collectors.toList()))
