@@ -22,7 +22,7 @@ public class TopicController {
     }
 
     @RequestMapping("/search")
-    public ResponseEntity<?> search(@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate){
+    public ResponseEntity<?> search(@RequestParam(required = false) String keyword, @RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String column, @RequestParam(required = false) String orderBy){
         var builder = TopicSearchReq.builder();
         if(!StringHelper.isNullOrEmpty(keyword))
             builder.topicName(keyword);
@@ -30,7 +30,7 @@ public class TopicController {
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
-        return ResponseEntity.ok().body(topicService.search(builder.pageNumber(pageNumber).pageSize(pageSize).build(),orderName,orderDate));
+        return ResponseEntity.ok().body(topicService.search(builder.pageNumber(pageNumber).pageSize(pageSize).build(), column,orderBy));
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable String id){

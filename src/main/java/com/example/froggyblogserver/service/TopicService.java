@@ -6,6 +6,6 @@ import com.example.froggyblogserver.generic.GeneralService;
 import com.example.froggyblogserver.response.BaseResponse;
 
 public interface TopicService extends GeneralService<TopicEntity> {
-    BaseResponse search(TopicSearchReq req,String orderName,String orderDate);
+    BaseResponse search(TopicSearchReq req,String column,String orderBy);
     BaseResponse deleteById(String id);
 }

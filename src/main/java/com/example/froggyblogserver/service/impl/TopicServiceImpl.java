@@ -51,15 +51,12 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public BaseResponse search(TopicSearchReq req, String orderName, String orderDate) {
+    public BaseResponse search(TopicSearchReq req, String column, String orderBy) {
 
         var page = PageRequest.of(req.getPageNumber() - 1, req.getPageSize());
-        if (!StringHelper.isNullOrEmpty(orderName))
-            page = SortHelper.sort(page, orderName, "topicCode");
-        if (!StringHelper.isNullOrEmpty(orderDate))
-            page = SortHelper.sort(page, orderDate, "updateDate");
-        else
-            page = SortHelper.sort(page, CONSTANTS.SORT.DESC, "createDate");
+        if(!StringHelper.isNullOrEmpty(column))
+            page = SortHelper.sort(page,orderBy,column);
+        else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"updateDate");
         var search = topicRepo.searchTopic(req, page);
         var response = PageResponse.builder()
                 .pageSize(req.getPageSize())
