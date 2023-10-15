@@ -91,6 +91,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests()
                 .antMatchers(
                          "/api/user/findById/**"
+                        ,"/api/user/search"
                         ,"/api/comment/search/**"
                         ,"/api/like/count/**"
                         ,"/api/post/findById/**"
