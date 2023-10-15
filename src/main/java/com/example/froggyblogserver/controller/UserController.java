@@ -30,14 +30,24 @@ public class UserController {
     }
 
     @RequestMapping("/search")
-    public ResponseEntity<?> search(@RequestParam(required = false) String keyword, @RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String orderName, @RequestParam(required = false) String orderDate ){
+    public ResponseEntity<?> search(@RequestParam(required = false) String keyword, @RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String column, @RequestParam(required = false) String orderBy ){
         if(pageNumber == null)
             pageNumber = 1;
         if(pageSize == null)
             pageSize = 10;
         var req = UserSearchRequest.builder().pageNumber(pageNumber).pageSize(pageSize).name(keyword).build();
 
-        return ResponseEntity.ok().body(userService.search(req,orderName,orderDate));
+        return ResponseEntity.ok().body(userService.search(req,column,orderBy));
+    }
+    @RequestMapping("/searchAdmin")
+    public ResponseEntity<?> searchAdmin(@RequestParam(required = false) String keyword, @RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String column, @RequestParam(required = false) String orderBy ){
+        if(pageNumber == null)
+            pageNumber = 1;
+        if(pageSize == null)
+            pageSize = 10;
+        var req = UserSearchRequest.builder().pageNumber(pageNumber).pageSize(pageSize).name(keyword).build();
+
+        return ResponseEntity.ok().body(userService.searchAdmin(req,column,orderBy));
     }
 
     @GetMapping("/me")

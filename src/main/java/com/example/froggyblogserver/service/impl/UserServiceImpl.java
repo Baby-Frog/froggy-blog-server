@@ -84,16 +84,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseResponse search(UserSearchRequest request, String orderName, String orderDate) {
+    public BaseResponse search(UserSearchRequest request, String column, String orderBy) {
         var page = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
-        if (!StringHelper.isNullOrEmpty(orderName))
-            page = SortHelper.sort(page, orderName, "fullName");
-        if (StringHelper.isNullOrEmpty(orderDate))
-            orderDate = CONSTANTS.SORT.DESC;
-        page = SortHelper.sort(page, orderDate, "createDate");
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            page = SortHelper.sort(page,orderBy,column);
+        else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"createDate");
         var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
-                .data(exec.get().map(e -> userMapper.entityToDto(e)).collect(Collectors.toList()))
+                .data(exec.getContent().stream().map(userMapper::entityToProfile).collect(Collectors.toList()))
                 .pageNumber(request.getPageNumber())
                 .pageSize(request.getPageSize())
                 .totalPage(exec.getTotalPages())
@@ -167,6 +165,22 @@ public class UserServiceImpl implements UserService {
         var update = repo.save(convertToEntity);
 
         return new BaseResponse(userMapper.entityToDto(update));
+    }
+
+    @Override
+    public BaseResponse searchAdmin(UserSearchRequest request, String column, String orderBy) {
+        var page = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            page = SortHelper.sort(page,orderBy,column);
+        else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"createDate");
+        var exec = repo.search(request, page);
+        return new BaseResponse(PageResponse.builder()
+                .data(exec.getContent().stream().map(userMapper::entityToDto).collect(Collectors.toList()))
+                .pageNumber(request.getPageNumber())
+                .pageSize(request.getPageSize())
+                .totalPage(exec.getTotalPages())
+                .totalRecord(exec.getTotalElements())
+                .build());
     }
 
 

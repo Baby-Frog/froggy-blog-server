@@ -54,7 +54,7 @@ public class TopicServiceImpl implements TopicService {
     public BaseResponse search(TopicSearchReq req, String column, String orderBy) {
 
         var page = PageRequest.of(req.getPageNumber() - 1, req.getPageSize());
-        if(!StringHelper.isNullOrEmpty(column))
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             page = SortHelper.sort(page,orderBy,column);
         else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"updateDate");
         var search = topicRepo.searchTopic(req, page);

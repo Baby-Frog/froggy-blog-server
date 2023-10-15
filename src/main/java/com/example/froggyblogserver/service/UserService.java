@@ -15,4 +15,5 @@ public interface UserService  extends GeneralService<UserDto> {
     UserDto findByEmail(String email);
     BaseResponse getProfile();
     BaseResponse updateProfile(UserDto dto);
+    BaseResponse searchAdmin(UserSearchRequest request,String orderName,String orderDate);
 }
