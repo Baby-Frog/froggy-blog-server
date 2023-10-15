@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class UserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private LocalDate birthDay;
+    private LocalDateTime birthDay;
     @NotNull
     @NotEmpty
     @NotBlank

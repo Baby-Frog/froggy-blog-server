@@ -26,7 +26,7 @@ public class UserEntity extends BaseEntity {
     private String id;
     private String fullName;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate birthDay;
+    private LocalDateTime birthDay;
     @Column(unique = true)
     private String email;
     private String phoneNumber;
