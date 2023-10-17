@@ -20,7 +20,7 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
     Optional<PostEntity> findById(String s);
 
     @Query(value = "FROM PostEntity p WHERE ((:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
-            "OR (:#{#req.keyword} IS NULL OR p.content LIKE %:#{#req.keyword}%)) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
+            "OR (:#{#req.keyword} IS NULL OR p.raw LIKE %:#{#req.keyword}%)) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
     Page<PostEntity> search(@Param("req") PostSearchRequest req, Pageable pageable);
 
     @Query(value = "SELECT p FROM PostEntity p LEFT JOIN PostTopicEntity pt ON p.id = pt.postId AND pt.isDelete = 0 WHERE pt.topicId = :topicId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
