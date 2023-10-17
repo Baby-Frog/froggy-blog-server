@@ -51,7 +51,7 @@ public class AuthenFilter extends OncePerRequestFilter {
 
             }
         } catch (Exception e) {
-            logger.error("Can NOT set uer authentication -> Message:{}", e);
+            logger.error("Can NOT set uer authentication -> Message: "+e.getMessage());
         }
         filterChain.doFilter(request, response);
 

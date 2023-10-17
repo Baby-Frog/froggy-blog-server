@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <appender name="INFO" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>-->%clr(%d{HH:mm:ss.SSS}){yellow} %clr([%thread]){magenta} %clr(%-5level){green} %cyan(%logger{15}) - %clr(%msg){blue} %highlight(%exception %n){red} </pattern>
+        </encoder>
+    </appender>
+    <appender name="DEBUG_LEVEL" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>-->%clr(%d{HH:mm:ss.SSS}){yellow} %clr([%thread]){magenta} %clr(%-5level){green} %cyan(%logger{15}) - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ERROR_LEVEL" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>-->%clr(%d{HH:mm:ss.SSS}){yellow} %clr([%thread]){magenta} %clr(%-5level){red} %cyan(%logger{15}) - %clr(%msg){blue} %highlight(%exception %n){red}</pattern>
+        </encoder>
+    </appender>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--		<file>/Volumes/DATAS/Project/CRM2/log/project-service.log</file>-->
+        <file>C:/FroggyBlog/Log_Server_%d.%i.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>--> %d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>C:/FroggyBlog/Log_Server_%d.%i.log.zip</FileNamePattern>
+            <MinIndex>1</MinIndex>
+            <MaxIndex>10</MaxIndex>
+        </rollingPolicy>
+
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="INFO" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.springframework" level="ERROR" additivity="false">
+        <appender-ref ref="ERROR_LEVEL" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.hibernate" level="INFO" additivity="false">
+        <appender-ref ref="INFO" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.springframework.security" level="INFO" additivity="false">
+        <appender-ref ref="INFO" />
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="org.apache" level="WARN" additivity="false">
+        <appender-ref ref="ERROR_LEVEL" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+     By default, the level of the root level is set to DEBUG
+    <root level="DEBUG">
+        <appender-ref ref="INFO" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
