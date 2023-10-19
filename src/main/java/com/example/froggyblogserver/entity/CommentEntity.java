@@ -28,8 +28,6 @@ public class CommentEntity extends BaseEntity {
     private String id;
     private StringBuilder content;
     private String parentId;
-    @OneToMany(mappedBy = "parentId",fetch = FetchType.EAGER)
-    List<CommentEntity> child = new ArrayList<>();
     private String postId;
     private String userId;
 

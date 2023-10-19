@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.service.impl;
 
+import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.CommentDto;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
@@ -38,20 +39,50 @@ public class CommentServiceImpl implements CommentService {
         return new BaseResponse(save.getId());
     }
 
-
     @Override
-    public BaseResponse search(String postId, int pageNumber, int pageSize, String orderDate) {
+    public BaseResponse search(String postId, int pageNumber, int pageSize, String column, String orderBy) {
         var page = PageRequest.of(pageNumber -1,pageSize);
-        if(!StringHelper.isNullOrEmpty(orderDate))
-            page = SortHelper.sort(page,orderDate,"createDate");
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            page = SortHelper.sort(page,orderBy,column);
+        else page = SortHelper.sort(page, CONSTANTS.SORT.DESC,"createDate");
         var search = commentRepo.findByPostId(postId,page);
         var pageResponse = PageResponse.builder()
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
-                .data(search.getContent().stream().map(commentMapper::entityToDto).collect(Collectors.toList()))
+                .data(search.getContent().stream().map(comment ->{
+                    var dto = commentMapper.entityToDto(comment);
+                    dto.setChildCount(commentRepo.countByParentId(comment.getId()).orElse(0));
+                    return dto;
+                }).collect(Collectors.toList()))
                 .build();
         return new BaseResponse(pageResponse);
+    }
+
+    @Override
+    public BaseResponse searchByParentId(String parentId, int pageNumber, int pageSize,String column,String orderBy) {
+        var page = PageRequest.of(pageNumber -1,pageSize);
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            page = SortHelper.sort(page,orderBy,column);
+        else page = SortHelper.sort(page, CONSTANTS.SORT.DESC,"createDate");
+        var search = commentRepo.findByParentId(parentId,page);
+        var pageResponse = PageResponse.builder()
+                .totalPage(search.getTotalPages())
+                .totalRecord(search.getTotalElements())
+                .pageSize(pageSize)
+                .pageNumber(pageNumber)
+                .data(search.getContent().stream().map(comment ->{
+                    var dto = commentMapper.entityToDto(comment);
+                    dto.setChildCount(commentRepo.countByParentId(comment.getId()).orElse(0));
+                    return dto;
+                }).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageResponse);
+    }
+
+    @Override
+    public BaseResponse countByPostId(String postId) {
+        return new BaseResponse(commentRepo.countByPostId(postId).orElse(0));
     }
 }

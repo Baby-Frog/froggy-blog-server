@@ -93,6 +93,7 @@ public class SecurityConfig {
                          "/api/user/findById/**"
                         ,"/api/user/search"
                         ,"/api/comment/search/**"
+                        ,"/api/comment/count/**"
                         ,"/api/like/count/**"
                         ,"/api/post/findById/**"
                         ,"/api/post/findPostByUserId/**"

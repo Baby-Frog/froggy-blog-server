@@ -17,12 +17,17 @@ public class CommentController {
     }
 
     @RequestMapping("search/{postId}")
-    public ResponseEntity<?> search(@PathVariable String postId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderDate){
+    public ResponseEntity<?> search(@PathVariable String postId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy){
         if(pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
 
-        return ResponseEntity.ok().body(service.search(postId,pageNumber,pageSize,orderDate));
+        return ResponseEntity.ok().body(service.search(postId,pageNumber,pageSize,column,orderBy));
+    }
+
+    @GetMapping("count/{postId}")
+    public ResponseEntity<?> count (@PathVariable String postId){
+        return ResponseEntity.ok().body(service.countByPostId(postId));
     }
 }

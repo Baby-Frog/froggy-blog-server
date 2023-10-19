@@ -13,6 +13,7 @@ import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.repository.PostRepo;
 import com.example.froggyblogserver.repository.PostTopicRepo;
+import com.example.froggyblogserver.repository.TopicRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
@@ -43,7 +44,8 @@ public class PostServiceImpl implements PostService {
     private PostTopicRepo postTopicRepo;
     @Autowired
     private RecaptchaUtils recaptchaUtils;
-
+    @Autowired
+    private TopicRepo topicRepo;
     @Override
     public BaseResponse findById(String id) {
 
@@ -71,9 +73,12 @@ public class PostServiceImpl implements PostService {
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().stream()
-                    .map(topic -> PostTopicEntity.builder()
-                            .postId(savePost.getId())
-                            .topicId(topic).build())
+                    .map(topic -> {
+                        topicRepo.findById(topic).orElseThrow(() ->new ValidateException(MESSAGE.VALIDATE.TOPIC_INVALID));
+                        return PostTopicEntity.builder()
+                                .postId(savePost.getId())
+                                .topicId(topic).build();
+                    })
                     .collect(Collectors.toList());
             postTopicRepo.saveAll(listTopic);
         }

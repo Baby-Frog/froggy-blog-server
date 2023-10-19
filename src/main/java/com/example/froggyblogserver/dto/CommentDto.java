@@ -29,5 +29,5 @@ public class CommentDto {
     @NotEmpty
     @NotBlank
     private String userId;
-    private List<CommentDto> child = new ArrayList<>();
+    private Integer childCount;
 }
