@@ -7,7 +7,6 @@ import com.example.froggyblogserver.entity.AccountsRolesEntity;
 import com.example.froggyblogserver.entity.UserPostEntity;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
-import com.example.froggyblogserver.exception.ValidateInputException;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.response.PageResponse;
@@ -105,7 +104,7 @@ public class UserServiceImpl implements UserService {
         Optional<UserEntity> found = repo.findById(id);
         if (!found.isPresent())
             throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        found.get().setDelete(CONSTANTS.IS_DELETE.TRUE);
+        found.get().setDelete(CONSTANTS.BOOLEAN.TRUE);
         repo.save(found.get());
         return new BaseResponse(id);
     }
@@ -120,7 +119,7 @@ public class UserServiceImpl implements UserService {
             userPostRepo.deleteById(checkExist.get().getId());
             return new BaseResponse(200,MESSAGE.RESPONSE.UN_SAVE_SUCCESS);
         }
-        favorite.setDelete(CONSTANTS.IS_DELETE.FALSE);
+        favorite.setDelete(CONSTANTS.BOOLEAN.FALSE);
         var save = userPostRepo.save(favorite);
         return new BaseResponse(200,MESSAGE.RESPONSE.SAVE_SUCCESS,save.getId());
     }

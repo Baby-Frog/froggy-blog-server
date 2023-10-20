@@ -23,7 +23,7 @@ public class ResetPassword extends BaseEntity{
     private void beforeInsert(){
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
-        this.isDelete = CONSTANTS.IS_DELETE.FALSE;
+        this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 
     @PreUpdate

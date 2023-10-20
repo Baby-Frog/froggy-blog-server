@@ -29,4 +29,5 @@ public class CommentDto {
     private UserProfileDto profileDto;
     private Integer childCount;
     private LocalDateTime createDate;
+    private LocalDateTime updateDate;
 }

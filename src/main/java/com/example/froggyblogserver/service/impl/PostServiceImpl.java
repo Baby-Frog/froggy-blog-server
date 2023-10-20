@@ -96,7 +96,7 @@ public class PostServiceImpl implements PostService {
         if (found.isEmpty()) {
             throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         }
-        found.get().setDelete(CONSTANTS.IS_DELETE.TRUE);
+        found.get().setDelete(CONSTANTS.BOOLEAN.TRUE);
         postRepo.save(found.get());
 
         return new BaseResponse();

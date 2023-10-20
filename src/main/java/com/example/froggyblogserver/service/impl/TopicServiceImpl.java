@@ -74,7 +74,7 @@ public class TopicServiceImpl implements TopicService {
         var found = topicRepo.findById(id);
         if (found.isEmpty())
             throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        found.get().setDelete(CONSTANTS.IS_DELETE.TRUE);
+        found.get().setDelete(CONSTANTS.BOOLEAN.TRUE);
         topicRepo.save(found.get());
         return new BaseResponse();
     }

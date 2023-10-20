@@ -16,6 +16,11 @@ public class CommentController {
         return ResponseEntity.ok().body(service.saveOrUpdate(dto));
     }
 
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable String id){
+        return ResponseEntity.ok().body(service.deleteComment(id));
+    }
+
     @RequestMapping("search/{postId}")
     public ResponseEntity<?> search(@PathVariable String postId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy){
         if(pageNumber == null)

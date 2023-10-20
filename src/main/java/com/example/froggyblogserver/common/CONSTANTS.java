@@ -2,7 +2,7 @@ package com.example.froggyblogserver.common;
 
 public class CONSTANTS {
 
-    public static class IS_DELETE{
+    public static class BOOLEAN {
         public final static boolean TRUE = true;
         public final static boolean FALSE = false;
     }

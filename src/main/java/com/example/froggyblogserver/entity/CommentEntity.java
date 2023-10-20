@@ -11,8 +11,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -36,7 +34,7 @@ public class CommentEntity extends BaseEntity {
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
-        this.isDelete = CONSTANTS.IS_DELETE.FALSE;
+        this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 
     @PreUpdate

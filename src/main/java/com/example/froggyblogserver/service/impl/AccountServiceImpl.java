@@ -47,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
             AccountEntity found = repo.findById(id).orElse(null);
             if (found == null)
                 throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-            found.setDelete(CONSTANTS.IS_DELETE.TRUE);
+            found.setDelete(CONSTANTS.BOOLEAN.TRUE);
             repo.save(found);
             return new BaseResponse();
     }

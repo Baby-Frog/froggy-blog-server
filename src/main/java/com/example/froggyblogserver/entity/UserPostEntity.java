@@ -30,6 +30,6 @@ public class UserPostEntity extends BaseEntity {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
         this.createId = this.userId;
-        this.isDelete = CONSTANTS.IS_DELETE.FALSE;
+        this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 }

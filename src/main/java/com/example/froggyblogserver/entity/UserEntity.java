@@ -6,10 +6,7 @@ import javax.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -40,7 +37,7 @@ public class UserEntity extends BaseEntity {
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
-        this.isDelete = CONSTANTS.IS_DELETE.FALSE;
+        this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 
     @PreUpdate
