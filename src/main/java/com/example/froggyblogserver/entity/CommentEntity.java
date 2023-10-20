@@ -29,8 +29,9 @@ public class CommentEntity extends BaseEntity {
     private StringBuilder content;
     private String parentId;
     private String postId;
-    private String userId;
-
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private UserEntity profileDto;
     @PrePersist
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();

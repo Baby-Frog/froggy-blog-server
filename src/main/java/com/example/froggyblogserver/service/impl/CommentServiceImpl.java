@@ -9,6 +9,7 @@ import com.example.froggyblogserver.repository.CommentRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CommentService;
+import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.utils.SortHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepo commentRepo;
     @Autowired
     private CommentMapper commentMapper;
+    @Autowired
+    private CurrentUserService currentUserService;
     @Override
     public BaseResponse findById(String id) {
         return null;
@@ -34,7 +37,9 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(CommentDto req) {
+        var info = currentUserService.getInfo();
         var entity = commentMapper.dtoToEntity(req);
+        entity.setProfileDto(info);
         var save = commentRepo.save(entity);
         return new BaseResponse(save.getId());
     }

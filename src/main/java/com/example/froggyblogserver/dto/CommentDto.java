@@ -25,9 +25,6 @@ public class CommentDto {
     @NotEmpty
     @NotBlank
     private String postId;
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    private String userId;
+    private UserProfileDto profileDto;
     private Integer childCount;
 }
