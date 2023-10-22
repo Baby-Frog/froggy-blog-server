@@ -38,7 +38,7 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
             " GROUP BY l.post_id " +
             " ORDER BY totalLikes desc " +
             " ) SELECT c.totalLikes, row_number() over (order by c.totalLikes desc ) as ranks,p.* FROM likesCount c JOIN posts p ON p.id = c.post_id " +
-            " )SELECT t.id,t.content,t.update_date,t.author_id,t.create_date,t.credit,t.publish_date,t.thumbnail,t.title,t.status,t.is_delete,t.create_id,t.update_id,t.raw,t.time_read FROM temp t WHERE t.ranks < 6 AND t.status = 'PUBLISHED' AND t.is_delete = 0 LIMIT 6 ",nativeQuery = true)
+            " )SELECT t.id,t.content,t.update_date,t.author_id,t.create_date,t.credit,t.publish_date,t.thumbnail,t.title,t.status,t.is_delete,t.create_id,t.update_id,t.raw,t.time_read FROM temp t WHERE t.ranks <= 6 AND t.status = 'PUBLISHED' AND t.is_delete = 0 LIMIT 6 ",nativeQuery = true)
     List<PostEntity> trendingPost(LocalDateTime startTime,LocalDateTime endTime);
     @Query(value = "FROM PostEntity p WHERE p.status = :status AND p.isDelete = 0 ")
     Page<PostEntity> searchPostWaitApproval(String status ,Pageable pageable);
