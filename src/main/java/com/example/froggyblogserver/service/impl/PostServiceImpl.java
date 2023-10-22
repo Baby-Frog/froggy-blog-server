@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class PostServiceImpl implements PostService {
             post.setCreateId(info.getId());
         else post.setUpdateId(info.getId());
         post.setAuthor(info);
-        post.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
+        post.setStatus(CONSTANTS.POST_STATUS.PENDING);
         post.setPublishDate(LocalDateTime.now());
         var totalChar = StringHelper.totalCharacter(req.getRaw());
         post.setTimeRead(DateTimeUtils.convertTimeRead(totalChar));
@@ -197,4 +198,36 @@ public class PostServiceImpl implements PostService {
                 .build();
         return new BaseResponse(pageRes);
     }
+
+    @Override
+    public BaseResponse searchPostWaitApproval( int page, int size, String column, String orderBy) {
+        var pageReq = PageRequest.of(page -1,size);
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq,orderBy,column);
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        var exec = postRepo.searchPostWaitApproval(CONSTANTS.POST_STATUS.PENDING,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(page)
+                .pageSize(size)
+                .totalPage(exec.getTotalPages())
+                .totalRecord(exec.getTotalElements())
+                .data(exec.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageRes) ;
+    }
+
+    @Override
+    public BaseResponse changeStatus(String postId, String status, HttpServletRequest request) {
+        var found = postRepo.findById(postId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        switch (status.toUpperCase()){
+            case CONSTANTS.POST_STATUS.BANNED -> found.setStatus(CONSTANTS.POST_STATUS.BANNED);
+            case CONSTANTS.POST_STATUS.PUBLISHED -> found.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
+            default -> throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
+        }
+        var info = currentUserService.getInfo();
+        found.setUpdateId(info.getId());
+        postRepo.save(found);
+        return new BaseResponse(postMapper.entityToDto(found));
+    }
+
 }

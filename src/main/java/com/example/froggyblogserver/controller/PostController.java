@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -50,6 +51,17 @@ public class PostController {
         return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
     }
 
+
+    @RequestMapping("/postWaitApproval")
+    public ResponseEntity<?> postWaitApproval (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+
+        return ResponseEntity.ok().body(postService.searchPostWaitApproval(pageNumber,pageSize,orderName,orderDate));
+    }
+
     @RequestMapping("/trending")
     public ResponseEntity<?> trending () {
         return ResponseEntity.ok().body(postService.trendingPost());
@@ -85,8 +97,8 @@ public class PostController {
     }
 
     @PostMapping("/changeStatus")
-    public ResponseEntity<?> changeStatus(@RequestBody ApprovePost req){
-        return ResponseEntity.ok().body(postService.changeStatusPost(req));
+    public ResponseEntity<?> changeStatus(@RequestBody ApprovePost req, HttpServletRequest request){
+        return ResponseEntity.ok().body(postService.changeStatus(req.getPostId(), req.getStatus(),request ));
     }
 
 

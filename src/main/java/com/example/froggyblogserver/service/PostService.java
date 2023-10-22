@@ -6,6 +6,8 @@ import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.generic.GeneralService;
 import com.example.froggyblogserver.response.BaseResponse;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface PostService extends GeneralService<PostDetailDto> {
 
     BaseResponse deleteById(String id);
@@ -15,4 +17,6 @@ public interface PostService extends GeneralService<PostDetailDto> {
     BaseResponse searchByUserSave(int pageNumber, int pageSize, String orderName, String orderDate);
     BaseResponse trendingPost();
     BaseResponse searchByUserId(String userId,int pageNumber,int pageSize,String orderName,String orderDate);
+    BaseResponse searchPostWaitApproval(int page, int size, String column, String orderBy);
+    BaseResponse changeStatus(String postId, String status, HttpServletRequest request);
 }

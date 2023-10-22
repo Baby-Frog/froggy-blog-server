@@ -10,6 +10,7 @@ public class CONSTANTS {
         public final static String BANNED = "BANNED";
         public final static String ABORT = "ABORT";
         public final static String PUBLISHED = "PUBLISHED";
+        public final static String PENDING = "PENDING";
     }
 
     public static class PROPERTIES{
