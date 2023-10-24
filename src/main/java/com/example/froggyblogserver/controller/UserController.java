@@ -54,6 +54,10 @@ public class UserController {
     public ResponseEntity<?> profile(){
         return ResponseEntity.ok().body(userService.getProfile());
     }
+    @GetMapping("/chart")
+    public ResponseEntity<?> chart(@RequestParam Integer period){
+        return ResponseEntity.ok().body(userService.chartUser(period));
+    }
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<?> findById(@PathVariable String id){

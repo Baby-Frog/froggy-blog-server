@@ -16,4 +16,5 @@ public interface UserService  extends GeneralService<UserDto> {
     BaseResponse getProfile();
     BaseResponse updateProfile(UserDto dto);
     BaseResponse searchAdmin(UserSearchRequest request,String orderName,String orderDate);
+    BaseResponse chartUser(Integer period);
 }

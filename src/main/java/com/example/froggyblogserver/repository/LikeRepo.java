@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -13,4 +14,6 @@ public interface LikeRepo extends JpaRepository<LikesEntity,String> {
     LikesEntity findByUserIdAndPostId(String userId,String postId);
     @Query(value = "SELECT count(l) FROM LikesEntity l WHERE l.postId = :postId AND l.isDelete = false ")
     Optional<Long> countByPostId(@Param("postId") String postId);
+    @Query(value = "SELECT count(l) FROM LikesEntity l WHERE l.postId = :postId AND l.isDelete = false AND l.createDate >= :startDate AND l.createDate <=:endDate")
+    Optional<Long> countByUser(@Param("postId") String postId, LocalDateTime startDate, LocalDateTime endDate);
 }

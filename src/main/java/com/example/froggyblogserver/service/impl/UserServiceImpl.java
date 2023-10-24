@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.service.impl;
 
+import com.example.froggyblogserver.dto.ChartUserDto;
 import com.example.froggyblogserver.dto.UserDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.entity.AccountEntity;
@@ -28,6 +29,11 @@ import com.example.froggyblogserver.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -52,6 +58,12 @@ public class UserServiceImpl implements UserService {
     private RoleRepo roleRepo;
     @Autowired
     private AccountRoleRepo accountRoleRepo;
+    @Autowired
+    private PostRepo postRepo;
+    @Autowired
+    private LikeRepo likeRepo;
+    @Autowired
+    private CommentRepo commentRepo;
 
     @Override
     public BaseResponse findById(String id) {
@@ -180,6 +192,28 @@ public class UserServiceImpl implements UserService {
                 .totalPage(exec.getTotalPages())
                 .totalRecord(exec.getTotalElements())
                 .build());
+    }
+
+    @Override
+    public BaseResponse chartUser(Integer period) {
+        var info = currentUserService.getInfo();
+        var allPost = postRepo.getAllPostByAuthor(info.getId());
+        var now = LocalDateTime.now();
+        var pastTime = now.minusDays(period);
+        LocalDateTime tempDate;
+        List<ChartUserDto> chartUserDto = new ArrayList<>();
+        for (var temp = pastTime; !temp.isAfter(now); temp = temp.plusDays(1)){
+            var minTempDate = temp.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+            var maxTempDate = temp.toLocalDate().atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toLocalDateTime();
+            var countsComment  = 0L;
+            var countsLike = 0L;
+            for (var post: allPost) {
+                countsLike += likeRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
+                countsComment += commentRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
+            }
+            chartUserDto.add(ChartUserDto.builder().date(minTempDate).comments(countsComment).likes(countsLike).build());
+        }
+        return new BaseResponse(chartUserDto);
     }
 
 

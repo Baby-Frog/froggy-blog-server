@@ -18,4 +18,5 @@ public interface UserRepo extends JpaRepository<UserEntity, String> {
 
     @Query(value = "from UserEntity u WHERE (:email IS NULL OR u.email = :email) AND (:provider IS NULL OR u.provider = :provider)")
     Optional<UserEntity> findByEmailanAndProvider(@Param("email") String email,@Param("provider") String provider);
+
 }

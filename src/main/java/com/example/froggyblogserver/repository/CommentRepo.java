@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,6 @@ public interface CommentRepo extends JpaRepository<CommentEntity, String> {
     Optional<Integer> countByParentId(String id);
     @Query(value = "SELECT COUNT(c) FROM CommentEntity c WHERE c.postId = :postId AND c.isDelete = 0")
     Optional<Integer> countByPostId(String postId);
+    @Query(value = "SELECT COUNT(c) FROM CommentEntity c WHERE c.postId = :postId AND c.isDelete = 0 AND c.createDate >= :startDate AND c.createDate <=:endDate" )
+    Optional<Long> countByUser(String postId, LocalDateTime startDate,LocalDateTime endDate);
 }
