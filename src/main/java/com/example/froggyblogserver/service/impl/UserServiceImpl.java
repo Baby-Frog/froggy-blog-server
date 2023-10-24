@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
         var info = currentUserService.getInfo();
         var allPost = postRepo.getAllPostByAuthor(info.getId());
         var now = LocalDateTime.now();
-        var pastTime = now.minusDays(period);
+        var pastTime = now.minusDays(period - 1);
         LocalDateTime tempDate;
         List<ChartUserDto> chartUserDto = new ArrayList<>();
         for (var temp = pastTime; !temp.isAfter(now); temp = temp.plusDays(1)){
