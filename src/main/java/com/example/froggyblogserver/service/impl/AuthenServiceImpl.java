@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.*;
@@ -74,12 +75,14 @@ public class AuthenServiceImpl implements AuthenService {
                 throw new ValidateException(MESSAGE.VALIDATE.USER_NOT_EXIST);
             var refreshToken = jwtHelper.generateRefreshToken(req.getEmail());
             var accessToken = jwtHelper.generateAccessToken(req.getEmail());
-            var getUserProfile = userRepo.findById(foundAcc.getUserId());
+            var getUserProfile = userRepo.findById(foundAcc.getUserId()).orElseThrow(()-> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+            var profileDto = userMapper.entityToDto(getUserProfile);
+            profileDto.setRoles(foundAcc.getRoles().stream().map(RoleEntity::getCode).collect(Collectors.toList()));
             refreshTokenRepo.save(RefreshToken.builder().email(foundAcc.getEmail()).refreshToken(refreshToken).build());
             return new BaseResponse(
                     LoginResponse.builder()
                             .accessToken(accessToken).refreshToken(refreshToken)
-                            .profile(userMapper.entityToDto(getUserProfile.get())).build());
+                            .profile(profileDto).build());
         }
         throw new AuthenExeption(MESSAGE.VALIDATE.EMAIL_PASSWORD_INVALID);
     }
@@ -116,10 +119,15 @@ public class AuthenServiceImpl implements AuthenService {
             var findToken = refreshTokenRepo.findToken(req.getRefreshToken(),email);
             if (findToken.isEmpty())
                 throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);
+            var profile = userRepo.findByEmailanAndProvider(email,null).orElseThrow(()->new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID));
+            var account = accountRepo.findByEmail(email);
+            var profileDto = userMapper.entityToDto(profile);
+            profileDto.setRoles(account.getRoles().stream().map(RoleEntity::getCode).collect(Collectors.toList()));
             return new BaseResponse(
                     LoginResponse.builder()
                             .accessToken(jwtHelper.generateAccessToken(email))
                             .refreshToken(req.getRefreshToken())
+                            .profile(profileDto)
                             .build());
         }
         throw new ValidateException(MESSAGE.TOKEN.TOKEN_INVALID);

@@ -104,13 +104,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse search(PostSearchRequest request, String orderName, String orderDate) {
+    public BaseResponse search(PostSearchRequest request, String column, String orderBy) {
         var pageReq = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
-        if (!StringHelper.isNullOrEmpty(orderName))
-            pageReq = SortHelper.sort(pageReq, orderName, "title");
-        if (StringHelper.isNullOrEmpty(orderDate))
-            orderDate = CONSTANTS.SORT.DESC;
-        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq,orderBy,column);
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.search(request, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(request.getPageNumber())
@@ -134,13 +132,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize, String orderName, String orderDate) {
+    public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize, String column, String orderBy) {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
-        if (!StringHelper.isNullOrEmpty(orderName))
-            pageReq = SortHelper.sort(pageReq, orderName, "title");
-        if (StringHelper.isNullOrEmpty(orderDate))
-            orderDate = CONSTANTS.SORT.DESC;
-        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq,orderBy,column);
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.searchByTopicId(topicId, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
@@ -153,14 +149,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByUserSave(int pageNumber, int pageSize, String orderName, String orderDate) {
+    public BaseResponse searchByUserSave(int pageNumber, int pageSize, String column, String orderBy) {
         var info = currentUserService.getInfo();
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
-        if (!StringHelper.isNullOrEmpty(orderName))
-            pageReq = SortHelper.sort(pageReq, orderName, "title");
-        if (StringHelper.isNullOrEmpty(orderDate))
-            orderDate = CONSTANTS.SORT.DESC;
-        pageReq = SortHelper.sortWithFieldLeftJoin(pageReq, orderDate, "up.createDate ");
+        if (!StringHelper.isNullOrEmpty(column))
+            pageReq = SortHelper.sort(pageReq, column, "title");
+        if (StringHelper.isNullOrEmpty(orderBy))
+            orderBy = CONSTANTS.SORT.DESC;
+        pageReq = SortHelper.sortWithFieldLeftJoin(pageReq, orderBy, "up.createDate ");
         var search = postRepo.searchByUserSave(info.getId(), pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
@@ -181,13 +177,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchByUserId(String userId, int pageNumber, int pageSize, String orderName, String orderDate) {
+    public BaseResponse searchByUserId(String userId, int pageNumber, int pageSize, String column, String orderBy) {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
-        if (!StringHelper.isNullOrEmpty(orderName))
-            pageReq = SortHelper.sort(pageReq, orderName, "title");
-        if (StringHelper.isNullOrEmpty(orderDate))
-            orderDate = CONSTANTS.SORT.DESC;
-        pageReq = SortHelper.sort(pageReq, orderDate, "createDate");
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq,orderBy,column);
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.searchByUserId(userId, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
@@ -206,6 +200,24 @@ public class PostServiceImpl implements PostService {
             pageReq = SortHelper.sort(pageReq,orderBy,column);
         else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var exec = postRepo.searchPostWaitApproval(CONSTANTS.POST_STATUS.PENDING,pageReq);
+        var pageRes = PageResponse.builder()
+                .pageNumber(page)
+                .pageSize(size)
+                .totalPage(exec.getTotalPages())
+                .totalRecord(exec.getTotalElements())
+                .data(exec.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .build();
+        return new BaseResponse(pageRes) ;
+    }
+
+    @Override
+    public BaseResponse getPostApproval(int page, int size, String column, String orderBy) {
+        var info = currentUserService.getInfo();
+        var pageReq = PageRequest.of(page -1,size);
+        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq,orderBy,column);
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        var exec = postRepo.getPostApproval(CONSTANTS.POST_STATUS.PENDING,info.getId(),pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(page)
                 .pageSize(size)

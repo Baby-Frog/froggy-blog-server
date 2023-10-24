@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.controller;
 
+import com.example.froggyblogserver.dto.AddRoleUserDto;
 import com.example.froggyblogserver.entity.AccountsRolesEntity;
 import com.example.froggyblogserver.entity.RoleEntity;
 import com.example.froggyblogserver.service.RoleService;
@@ -23,7 +24,11 @@ public class RoleController {
     }
 
     @PostMapping("addRole")
-    public ResponseEntity<?> addRole(@RequestBody AccountsRolesEntity dto){
+    public ResponseEntity<?> addRole(@RequestBody AddRoleUserDto dto){
         return ResponseEntity.ok().body(roleService.addRoleToUser(dto));
+    }
+    @RequestMapping("gets")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.ok().body(roleService.getAllRole());
     }
 }

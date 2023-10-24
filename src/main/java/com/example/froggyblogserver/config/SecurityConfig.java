@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.config;
 
+import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.sercurity.handler.OAuthSuccessHandler;
 import com.example.froggyblogserver.service.impl.CustomOAuth2UserService;
 import com.example.froggyblogserver.utils.JwtHelper;
@@ -98,6 +99,7 @@ public class SecurityConfig {
                         ,"/api/like/count/**"
                         ,"/api/post/findById/**"
                         ,"/api/post/findPostByUserId/**"
+                        ,"/api/post/findByTopicId/**"
                         ,"/api/post/trending"
                         ,"/api/image/get/**"
                         ,"/api/captcha/**"
@@ -110,6 +112,19 @@ public class SecurityConfig {
                         ,"/api/topic/search/**"
                         ,"/api/post/search/**")
                     .permitAll()
+                .antMatchers(
+                        "/api/report/search",
+                        "/api/report/accept/**",
+                        "/api/post/changeStatus",
+                        "/api/post/postWaitApproval"
+                )
+                    .hasAnyAuthority(CONSTANTS.ROLE.ADMINISTRATOR,CONSTANTS.ROLE.MODERATOR)
+                .antMatchers(
+                        "/api/role/**",
+                        "/api/topic/save",
+                        "/api/user/searchAdmin"
+                        )
+                    .hasAuthority(CONSTANTS.ROLE.ADMINISTRATOR)
                 .anyRequest().authenticated()
                 .and()
                     .oauth2Login()

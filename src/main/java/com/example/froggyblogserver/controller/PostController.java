@@ -41,25 +41,35 @@ public class PostController {
     }
 
     @RequestMapping("/search")
-    public ResponseEntity<?> search (@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> search (@RequestParam(required = false) String keyword,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
 
         var builder = PostSearchRequest.builder().keyword(keyword).pageNumber(pageNumber).pageSize(pageSize).build();
-        return ResponseEntity.ok().body(postService.search(builder,orderName,orderDate));
+        return ResponseEntity.ok().body(postService.search(builder,column,orderBy));
     }
 
 
     @RequestMapping("/postWaitApproval")
-    public ResponseEntity<?> postWaitApproval (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> postWaitApproval (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
 
-        return ResponseEntity.ok().body(postService.searchPostWaitApproval(pageNumber,pageSize,orderName,orderDate));
+        return ResponseEntity.ok().body(postService.searchPostWaitApproval(pageNumber,pageSize,column,orderBy));
+    }
+
+    @RequestMapping("/me/postWaitApproval")
+    public ResponseEntity<?> postApproval (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
+        if (pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+
+        return ResponseEntity.ok().body(postService.getPostApproval(pageNumber,pageSize,column,orderBy));
     }
 
     @RequestMapping("/trending")
@@ -68,32 +78,32 @@ public class PostController {
     }
 
     @RequestMapping("findByTopicId/{topicId}")
-    public ResponseEntity<?> searchByTopicId (@PathVariable String topicId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> searchByTopicId (@PathVariable String topicId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
 
 
-        return ResponseEntity.ok().body(postService.searchByTopicId(topicId,pageNumber,pageSize,orderName,orderDate));
+        return ResponseEntity.ok().body(postService.searchByTopicId(topicId,pageNumber,pageSize,column,orderBy));
     }
 
     @RequestMapping("findPostUserSaved")
-    public ResponseEntity<?> searchByUserSaved (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> searchByUserSaved (@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
-        return ResponseEntity.ok().body(postService.searchByUserSave(pageNumber,pageSize,orderName,orderDate));
+        return ResponseEntity.ok().body(postService.searchByUserSave(pageNumber,pageSize,column,orderBy));
     }
 
     @RequestMapping("findPostByUserId/{userId}")
-    public ResponseEntity<?> searchByUserId (@PathVariable String userId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String orderName,@RequestParam(required = false) String orderDate) {
+    public ResponseEntity<?> searchByUserId (@PathVariable String userId,@RequestParam(required = false) Integer pageNumber,@RequestParam(required = false) Integer pageSize,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy) {
         if (pageNumber == null)
             pageNumber = 1;
         if (pageSize == null)
             pageSize = 10;
-        return ResponseEntity.ok().body(postService.searchByUserId(userId,pageNumber,pageSize,orderName,orderDate));
+        return ResponseEntity.ok().body(postService.searchByUserId(userId,pageNumber,pageSize,column,orderBy));
     }
 
     @PostMapping("/changeStatus")

@@ -5,6 +5,7 @@ import lombok.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -45,5 +46,5 @@ public class UserDto {
     @NotEmpty
     @NotBlank
     private String bio;
-
+    private List<String> roles;
 }

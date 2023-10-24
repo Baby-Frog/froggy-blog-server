@@ -24,6 +24,7 @@ public class CONSTANTS {
         public static final String USER = "USER";
         public static final String PUBLISHER = "PUBLISHER";
         public static final String ADMINISTRATOR = "ADMINISTRATOR";
+        public static final String MODERATOR = "MODERATOR";
     }
     public  static class PROVIDER{
         public static final String FACEBOOK = "FACEBOOK";

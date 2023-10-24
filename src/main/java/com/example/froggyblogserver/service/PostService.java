@@ -11,12 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 public interface PostService extends GeneralService<PostDetailDto> {
 
     BaseResponse deleteById(String id);
-    BaseResponse search(PostSearchRequest request,String orderName,String orderDate);
+    BaseResponse search(PostSearchRequest request,String column,String orderBy);
     BaseResponse changeStatusPost(ApprovePost req);
-    BaseResponse searchByTopicId(String topicId,int pageNumber,int pageSize,String orderName,String orderDate);
-    BaseResponse searchByUserSave(int pageNumber, int pageSize, String orderName, String orderDate);
+    BaseResponse searchByTopicId(String topicId,int pageNumber,int pageSize,String column,String orderBy);
+    BaseResponse searchByUserSave(int pageNumber, int pageSize, String column, String orderBy);
     BaseResponse trendingPost();
-    BaseResponse searchByUserId(String userId,int pageNumber,int pageSize,String orderName,String orderDate);
+    BaseResponse searchByUserId(String userId,int pageNumber,int pageSize,String column,String orderBy);
     BaseResponse searchPostWaitApproval(int page, int size, String column, String orderBy);
+    BaseResponse getPostApproval(int page, int size, String column, String orderBy);
     BaseResponse changeStatus(String postId, String status, HttpServletRequest request);
 }

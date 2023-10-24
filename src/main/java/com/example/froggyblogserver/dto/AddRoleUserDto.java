@@ -13,7 +13,7 @@ public class AddRoleUserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private String accountId;
+    private String email;
     @NotNull
     @NotEmpty
     @NotBlank
