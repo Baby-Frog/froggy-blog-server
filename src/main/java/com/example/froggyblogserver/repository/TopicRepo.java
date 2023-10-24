@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface TopicRepo extends JpaRepository<TopicEntity, String> {
-    @Query(value = "FROM TopicEntity t WHERE :#{#req.topicName} IS NULL OR t.topicName LIKE %:#{#req.topicName}% ")
+    @Query(value = "FROM TopicEntity t WHERE (:#{#req.topicName} IS NULL OR t.topicName LIKE %:#{#req.topicName}%) AND t.isDelete = 0")
     Page<TopicEntity> searchTopic(@Param("req") TopicSearchReq req, Pageable pageable);
 
     @Query(value = "SELECT t FROM PostTopicEntity p LEFT join TopicEntity t ON t.id = p.topicId AND t.isDelete = 0 WHERE p.postId = :postId")

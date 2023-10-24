@@ -95,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public BaseResponse countByPostId(String postId) {
-        return new BaseResponse(commentRepo.countByPostId(postId).orElse(0));
+        return new BaseResponse(commentRepo.countByPostId(postId).orElse(0L));
     }
 
     @Override

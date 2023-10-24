@@ -39,4 +39,7 @@ public class PostDetailDto {
     private LocalDateTime publishDate;
     private UserDto author;
     private String captcha;
+    private Long likes;
+    private Long comments;
+
 }

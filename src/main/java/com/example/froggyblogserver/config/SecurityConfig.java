@@ -97,6 +97,7 @@ public class SecurityConfig {
                         ,"/api/comment/searchByParentId/**"
                         ,"/api/comment/count/**"
                         ,"/api/like/count/**"
+                        ,"/api/topic/findById/**"
                         ,"/api/post/findById/**"
                         ,"/api/post/findPostByUserId/**"
                         ,"/api/post/findByTopicId/**"
@@ -113,6 +114,7 @@ public class SecurityConfig {
                         ,"/api/post/search/**")
                     .permitAll()
                 .antMatchers(
+                        "/api/topic/delete/**",
                         "/api/report/search",
                         "/api/report/accept/**",
                         "/api/post/changeStatus",

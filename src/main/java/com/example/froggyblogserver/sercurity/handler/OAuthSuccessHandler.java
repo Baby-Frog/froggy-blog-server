@@ -4,6 +4,7 @@ import com.example.froggyblogserver.response.LoginResponse;
 import com.example.froggyblogserver.sercurity.CustomOauth2User;
 import com.example.froggyblogserver.service.UserService;
 import com.example.froggyblogserver.utils.JwtHelper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -33,7 +34,8 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
-        writer.print(new Gson().toJson(loginResponse));
+        ObjectMapper mapper = new ObjectMapper();
+        writer.print(mapper.writeValueAsString(loginResponse));
 //        writer.print(loginResponse);
 
     }

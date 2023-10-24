@@ -33,10 +33,8 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public BaseResponse findById(String id) {
-        var found = topicRepo.findById(id);
-        if (found.isEmpty())
-            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        return new BaseResponse(found);
+        var found = topicRepo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        return new BaseResponse(topicMapper.entityToDto(found));
     }
 
     @Override

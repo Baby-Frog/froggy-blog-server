@@ -11,9 +11,7 @@ import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.PostMapper;
-import com.example.froggyblogserver.repository.PostRepo;
-import com.example.froggyblogserver.repository.PostTopicRepo;
-import com.example.froggyblogserver.repository.TopicRepo;
+import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
@@ -47,6 +45,10 @@ public class PostServiceImpl implements PostService {
     private RecaptchaUtils recaptchaUtils;
     @Autowired
     private TopicRepo topicRepo;
+    @Autowired
+    private LikeRepo likeRepo;
+    @Autowired
+    private CommentRepo commentRepo;
     @Override
     public BaseResponse findById(String id) {
 
@@ -110,12 +112,18 @@ public class PostServiceImpl implements PostService {
             pageReq = SortHelper.sort(pageReq,orderBy,column);
         else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.search(request, pageReq);
+        var listDto = search.getContent().stream().map(post -> {
+            var dto = postMapper.entityToDto(post);
+            dto.setLikes(likeRepo.countByPostId(post.getId()).orElse(0L));
+            dto.setComments(commentRepo.countByPostId(post.getId()).orElse(0L));
+            return dto;
+        }).collect(Collectors.toList());
         var pageRes = PageResponse.builder()
                 .pageNumber(request.getPageNumber())
                 .pageSize(request.getPageSize())
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .data(listDto)
                 .build();
         return new BaseResponse(pageRes);
     }
@@ -138,12 +146,18 @@ public class PostServiceImpl implements PostService {
             pageReq = SortHelper.sort(pageReq,orderBy,column);
         else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.searchByTopicId(topicId, pageReq);
+        var listDto = search.getContent().stream().map(post -> {
+            var dto = postMapper.entityToDto(post);
+            dto.setLikes(likeRepo.countByPostId(post.getId()).orElse(0L));
+            dto.setComments(commentRepo.countByPostId(post.getId()).orElse(0L));
+            return dto;
+        }).collect(Collectors.toList());
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .data(listDto)
                 .build();
         return new BaseResponse(pageRes);
     }
@@ -158,12 +172,18 @@ public class PostServiceImpl implements PostService {
             orderBy = CONSTANTS.SORT.DESC;
         pageReq = SortHelper.sortWithFieldLeftJoin(pageReq, orderBy, "up.createDate ");
         var search = postRepo.searchByUserSave(info.getId(), pageReq);
+        var listDto = search.getContent().stream().map(post -> {
+            var dto = postMapper.entityToDto(post);
+            dto.setLikes(likeRepo.countByPostId(post.getId()).orElse(0L));
+            dto.setComments(commentRepo.countByPostId(post.getId()).orElse(0L));
+            return dto;
+        }).collect(Collectors.toList());
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .data(listDto)
                 .build();
         return new BaseResponse(pageRes);
     }
@@ -183,12 +203,18 @@ public class PostServiceImpl implements PostService {
             pageReq = SortHelper.sort(pageReq,orderBy,column);
         else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var search = postRepo.searchByUserId(userId, pageReq);
+        var listDto = search.getContent().stream().map(post -> {
+            var dto = postMapper.entityToDto(post);
+            dto.setLikes(likeRepo.countByPostId(post.getId()).orElse(0L));
+            dto.setComments(commentRepo.countByPostId(post.getId()).orElse(0L));
+            return dto;
+        }).collect(Collectors.toList());
         var pageRes = PageResponse.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .totalPage(search.getTotalPages())
                 .totalRecord(search.getTotalElements())
-                .data(search.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
+                .data(listDto)
                 .build();
         return new BaseResponse(pageRes);
     }
