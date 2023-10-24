@@ -24,7 +24,8 @@ public class CommentEntity extends BaseEntity {
 
     @Id
     private String id;
-    private StringBuilder content;
+    @Lob
+    private String content;
     private String parentId;
     private String postId;
     @OneToOne(fetch = FetchType.EAGER)

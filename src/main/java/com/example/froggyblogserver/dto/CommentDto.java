@@ -19,7 +19,7 @@ public class CommentDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private StringBuilder content;
+    private String content;
 
     private String parentId;
     @NotNull
