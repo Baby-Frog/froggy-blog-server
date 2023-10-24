@@ -48,4 +48,6 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
     Page<PostEntity> searchPostWaitApproval(String status ,Pageable pageable);
     @Query(value = "FROM PostEntity p WHERE p.status = :status AND p.author.id = :userId AND p.isDelete = 0 ")
     Page<PostEntity> getPostApproval(String status,String userId ,Pageable pageable);
+    @Query(value = "SELECT count(p) FROM PostEntity p WHERE p.author.id = :userId AND p.isDelete = false AND p.createDate >= :startDate AND p.createDate <=:endDate")
+    Optional<Long> countByUser(String userId, LocalDateTime startDate,LocalDateTime endDate);
 }

@@ -200,18 +200,19 @@ public class UserServiceImpl implements UserService {
         var allPost = postRepo.getAllPostByAuthor(info.getId());
         var now = LocalDateTime.now();
         var pastTime = now.minusDays(period - 1);
-        LocalDateTime tempDate;
         List<ChartUserDto> chartUserDto = new ArrayList<>();
         for (var temp = pastTime; !temp.isAfter(now); temp = temp.plusDays(1)){
             var minTempDate = temp.toLocalDate().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
             var maxTempDate = temp.toLocalDate().atTime(LocalTime.MAX).atZone(ZoneId.systemDefault()).toLocalDateTime();
             var countsComment  = 0L;
             var countsLike = 0L;
+            var countPost = 0L;
             for (var post: allPost) {
+                countPost += postRepo.countByUser(info.getId(),minTempDate,maxTempDate).orElse(0L);
                 countsLike += likeRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
                 countsComment += commentRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
             }
-            chartUserDto.add(ChartUserDto.builder().date(minTempDate).comments(countsComment).likes(countsLike).build());
+            chartUserDto.add(ChartUserDto.builder().date(minTempDate).posts(countPost).comments(countsComment).likes(countsLike).build());
         }
         return new BaseResponse(chartUserDto);
     }

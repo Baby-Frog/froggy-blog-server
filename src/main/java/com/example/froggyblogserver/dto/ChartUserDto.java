@@ -11,5 +11,6 @@ import java.time.LocalDateTime;
 public class ChartUserDto {
     private LocalDateTime date;
     private Long likes;
+    private Long posts;
     private Long comments;
 }
