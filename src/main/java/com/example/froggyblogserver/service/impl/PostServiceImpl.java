@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
         post.setTimeRead(DateTimeUtils.convertTimeRead(totalChar));
         var savePost = postRepo.save(post);
         if (!req.getTopicId().isEmpty()) {
-            var listTopic = req.getTopicId().stream()
+            var listTopic = req.getTopicId().parallelStream()
                     .map(topic -> {
                         topicRepo.findById(topic).orElseThrow(() ->new ValidateException(MESSAGE.VALIDATE.TOPIC_INVALID));
                         return PostTopicEntity.builder()
@@ -95,14 +95,12 @@ public class PostServiceImpl implements PostService {
     public BaseResponse deleteById(String id) {
 
 
-        var found = postRepo.findById(id);
-        if (found.isEmpty()) {
-            throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-        }
-        found.get().setDelete(CONSTANTS.BOOLEAN.TRUE);
-        postRepo.save(found.get());
+        var found = postRepo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
 
-        return new BaseResponse();
+        found.setDelete(CONSTANTS.BOOLEAN.TRUE);
+        postRepo.save(found);
+
+        return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 
     @Override

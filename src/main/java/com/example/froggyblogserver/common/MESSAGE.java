@@ -31,7 +31,7 @@ public class MESSAGE {
         public static final String LOG_OUT_SUCCESS = "Logout successfully";
         public static final String SAVE_SUCCESS = "Saved story to saved list successfully";
         public static final String UN_SAVE_SUCCESS = "Removed story from saved list successfully";
-        public static final String MANIPULATE_SUCCESS = "Manipulate success";
+        public static final String ACTIONS_SUCCESS = "Action successfully";
 
     }
     public static class TOKEN{

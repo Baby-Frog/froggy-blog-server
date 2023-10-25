@@ -115,8 +115,7 @@ public class SecurityConfig {
                     .permitAll()
                 .antMatchers(
                         "/api/topic/delete/**",
-                        "/api/report/search",
-                        "/api/report/accept/**",
+                        "/api/report/**",
                         "/api/post/changeStatus",
                         "/api/post/postWaitApproval"
                 )

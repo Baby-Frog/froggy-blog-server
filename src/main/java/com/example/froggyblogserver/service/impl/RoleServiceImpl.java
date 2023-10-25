@@ -15,7 +15,6 @@ import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
 import com.example.froggyblogserver.service.RoleService;
 import com.example.froggyblogserver.utils.StringHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,7 @@ public class RoleServiceImpl implements RoleService {
         var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
         build.setCreateId(info.getId());
         accountRoleRepo.save(build);
-        return new BaseResponse(MESSAGE.RESPONSE.MANIPULATE_SUCCESS);
+        return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 
     @Override

@@ -17,9 +17,14 @@ public class ReportController {
         return ResponseEntity.ok().body(service.saveOrUpdate(dto));
     }
 
-    @PostMapping("accept/{id}")
+    @DeleteMapping("accept/{id}")
     public ResponseEntity<?> accept(@PathVariable String id){
         return ResponseEntity.ok().body(service.acceptReport(id));
+    }
+
+    @DeleteMapping("abort/{id}")
+    public ResponseEntity<?> abort(@PathVariable String id){
+        return ResponseEntity.ok().body(service.abortReport(id));
     }
 
     @RequestMapping("search")

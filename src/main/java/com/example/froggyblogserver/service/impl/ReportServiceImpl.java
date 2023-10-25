@@ -73,4 +73,12 @@ public class ReportServiceImpl implements ReportService {
         commentRepo.save(deleteComment);
         return new BaseResponse();
     }
+
+    @Override
+    public BaseResponse abortReport(String id) {
+        var found = repo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        found.setDelete(CONSTANTS.BOOLEAN.TRUE);
+        repo.save(found);
+        return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
+    }
 }
