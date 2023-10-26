@@ -23,6 +23,7 @@ public class LikeServiceImpl implements LikeService {
     private LikeMapper likeMapper;
     @Autowired
     private CurrentUserService currentUserService;
+
     @Override
     public BaseResponse findById(String id) {
         return null;
@@ -34,13 +35,12 @@ public class LikeServiceImpl implements LikeService {
         var info = currentUserService.getInfo();
         req.setUserId(info.getId());
         var found = repo.findByUserIdAndPostId(req.getUserId(), req.getPostId());
-        var mapToEntity = likeMapper.dtoToEntity(req);
         if (found != null) {
-            mapToEntity.setId(found.getId());
-            boolean negative = !found.isDelete();
-            mapToEntity.setDelete(negative);
+            repo.deleteById(found.getId());
+        } else {
+            var mapToEntity = likeMapper.dtoToEntity(req);
+            repo.save(mapToEntity);
         }
-        var save = repo.save(mapToEntity);
         return new BaseResponse(repo.countByPostId(req.getPostId()).orElse(0L));
     }
 

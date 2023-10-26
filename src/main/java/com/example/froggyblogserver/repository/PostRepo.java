@@ -32,17 +32,15 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
     Page<PostEntity> searchByUserId(String userId, Pageable pageable);
     @Query(value = "SELECT p FROM PostEntity p  WHERE p.author.id = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
     List<PostEntity> getAllPostByAuthor(String userId);
-    @Query(value = "WITH temp AS ( " +
-            " WITH likesCount AS( " +
-            " SELECT l.post_id,count(l.post_id) as totalLikes FROM likes l " +
-            " WHERE ((l.create_date BETWEEN  :startTime AND :endTime) OR (l.update_date BETWEEN  :startTime AND :endTime) ) " +
-            " AND l.is_delete = 0 " +
-            " GROUP BY l.post_id " +
-            " ORDER BY totalLikes desc " +
-            " ) SELECT c.totalLikes, row_number() over (order by c.totalLikes desc,p.id ) as ranks,p.* FROM likesCount c JOIN posts p ON p.id = c.post_id " +
-            " )SELECT t.id,t.content,t.update_date,t.author_id,t.create_date,t.credit,t.publish_date,t.thumbnail,t.title,t.status,t.is_delete,t.create_id,t.update_id,t.raw,t.time_read " +
-            "FROM temp t WHERE t.ranks <= 6 AND" +
-            " t.status = 'PUBLISHED' AND t.is_delete = 0 LIMIT 6 ",nativeQuery = true)
+    @Query(value = "WITH temp AS (" +
+            "             SELECT l.post_id,count(l.post_id) as totalLikes,p.* FROM likes l " +
+            "             JOIN posts p ON p.id = l.post_id " +
+            "             WHERE (l.create_date BETWEEN  :startTime AND :endTime) " +
+            "             AND l.is_delete = 0  AND p.status = 'PUBLISHED' AND p.is_delete = 0 " +
+            "             GROUP BY l.post_id " +
+            "             ORDER BY totalLikes desc  LIMIT 6 " +
+            "             )SELECT t.id,t.content,t.update_date,t.author_id,t.create_date,t.credit,t.publish_date,t.thumbnail,t.title,t.status,t.is_delete,t.create_id,t.update_id,t.raw,t.time_read " +
+            "            FROM temp t ORDER BY totalLikes desc,t.id ",nativeQuery = true)
     List<PostEntity> trendingPost(LocalDateTime startTime,LocalDateTime endTime);
     @Query(value = "FROM PostEntity p WHERE p.status = :status AND p.isDelete = 0 ")
     Page<PostEntity> searchPostWaitApproval(String status ,Pageable pageable);
