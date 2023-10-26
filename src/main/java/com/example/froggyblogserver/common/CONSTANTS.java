@@ -18,6 +18,9 @@ public class CONSTANTS {
         public final static String PASSWORD = "password";
         public final static String TOKEN = "token";
         public final static String CAPTCHA = "captcha";
+        public final static String CREATE_DATE = "createDate";
+        public final static String UPDATE_DATE = "updateDate";
+        public final static String PUBLISH_DATE = "publishDate";
     }
 
     public static class ROLE{

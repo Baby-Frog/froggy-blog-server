@@ -20,9 +20,10 @@ public class ResetPassword extends BaseEntity{
     private String accountId;
     private String verifyCode;
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

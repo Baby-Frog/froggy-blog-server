@@ -35,6 +35,7 @@ public class CommentEntity extends BaseEntity {
     private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

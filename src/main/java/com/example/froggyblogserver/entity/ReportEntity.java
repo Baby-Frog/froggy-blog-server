@@ -21,9 +21,10 @@ public class ReportEntity extends BaseEntity{
     private String idComment;
     private boolean status;
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

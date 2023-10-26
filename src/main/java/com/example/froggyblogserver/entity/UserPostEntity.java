@@ -26,10 +26,11 @@ public class UserPostEntity extends BaseEntity {
     private String postId;
 
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
-        this.createId = this.userId;
+        this.updateDate = LocalDateTime.now();
+        this.createId = userId;
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 }

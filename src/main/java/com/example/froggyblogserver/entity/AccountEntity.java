@@ -30,11 +30,12 @@ public class AccountEntity extends BaseEntity{
             joinColumns = {@JoinColumn(name="account_id")},
             inverseJoinColumns = {@JoinColumn(name="role_id")})
     private Set<RoleEntity> roles = new HashSet<>();
-    
+
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

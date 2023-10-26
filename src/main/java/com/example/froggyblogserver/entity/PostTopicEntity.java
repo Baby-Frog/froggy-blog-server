@@ -23,9 +23,10 @@ public class PostTopicEntity extends BaseEntity{
     @Column(name = "topic_id")
     private String topicId;
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

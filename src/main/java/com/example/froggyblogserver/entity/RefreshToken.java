@@ -21,9 +21,10 @@ public class RefreshToken extends BaseEntity{
     @Column(length = 500)
     private String refreshToken;
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 

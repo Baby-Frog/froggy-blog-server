@@ -108,7 +108,7 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
         if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.search(request, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -142,7 +142,7 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
         if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.searchByTopicId(topicId, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -205,7 +205,7 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
         if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.searchByUserId(userId, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -228,7 +228,7 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(page -1,size);
         if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var exec = postRepo.searchPostWaitApproval(CONSTANTS.POST_STATUS.PENDING,pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(page)
@@ -246,7 +246,7 @@ public class PostServiceImpl implements PostService {
         var pageReq = PageRequest.of(page -1,size);
         if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
             pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
+        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var exec = postRepo.getPostApproval(CONSTANTS.POST_STATUS.PENDING,info.getId(),pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(page)

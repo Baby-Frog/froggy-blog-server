@@ -23,9 +23,10 @@ public class AccountsRolesEntity extends BaseEntity{
     @Column(name = "role_id")
     private String roleId;
     @PrePersist
-    private void beforeInsert(){
+    private void beforeInsert() {
         this.id = UUID.randomUUID().toString();
         this.createDate = LocalDateTime.now();
+        this.updateDate = LocalDateTime.now();
         this.isDelete = CONSTANTS.BOOLEAN.FALSE;
     }
 
