@@ -12,7 +12,6 @@ public interface PostService extends GeneralService<PostDetailDto> {
 
     BaseResponse deleteById(String id);
     BaseResponse search(PostSearchRequest request,String column,String orderBy);
-    BaseResponse changeStatusPost(ApprovePost req);
     BaseResponse searchByTopicId(String topicId,int pageNumber,int pageSize,String column,String orderBy);
     BaseResponse searchByUserSave(int pageNumber, int pageSize, String column, String orderBy);
     BaseResponse trendingPost();

@@ -133,16 +133,6 @@ public class PostServiceImpl implements PostService {
         return new BaseResponse(pageRes);
     }
 
-    @Override
-    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
-    public BaseResponse changeStatusPost(ApprovePost req) {
-        var found = postRepo.findById(req.getPostId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.POST_NOT_EXIST));
-        if (req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.PUBLISHED) || req.getStatus().equalsIgnoreCase(CONSTANTS.POST_STATUS.BANNED)) {
-            found.setStatus(req.getStatus().toUpperCase());
-            postRepo.save(found);
-            return new BaseResponse(req.getPostId());
-        } else throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
-    }
 
     @Override
     public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize, String column, String orderBy) {
@@ -266,8 +256,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(rollbackOn = {UncheckedException.class,CheckedException.class})
     public BaseResponse changeStatus(String postId, String status, HttpServletRequest request) {
-        var found = postRepo.findById(postId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var found = postRepo.findByIdAndStatus(postId,CONSTANTS.POST_STATUS.PENDING).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         switch (status.toUpperCase()) {
             case CONSTANTS.POST_STATUS.BANNED -> found.setStatus(CONSTANTS.POST_STATUS.BANNED);
             case CONSTANTS.POST_STATUS.PUBLISHED -> found.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
