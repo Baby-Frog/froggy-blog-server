@@ -16,8 +16,11 @@ import java.util.Optional;
 @Repository
 public interface PostRepo extends JpaRepository<PostEntity, String> {
     @Override
-    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.isDelete=0")
+    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.status = 'PUBLISHED' AND p.isDelete=0")
     Optional<PostEntity> findById(String s);
+
+    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.status = :status AND p.isDelete=0")
+    Optional<PostEntity> findByIdAndStatus(String s, String status);
 
     @Query(value = "FROM PostEntity p WHERE ((:#{#req.keyword} IS NULL OR p.title LIKE %:#{#req.keyword}%) " +
             "OR (:#{#req.keyword} IS NULL OR p.raw LIKE %:#{#req.keyword}%)) AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
@@ -28,10 +31,13 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
 
     @Query(value = "SELECT p FROM PostEntity p LEFT JOIN UserPostEntity up ON p.id = up.postId AND up.isDelete = 0 WHERE up.userId = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED' ")
     Page<PostEntity> searchByUserSave(String userId, Pageable pageable);
+
     @Query(value = "SELECT p FROM PostEntity p  WHERE p.author.id = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
     Page<PostEntity> searchByUserId(String userId, Pageable pageable);
+
     @Query(value = "SELECT p FROM PostEntity p  WHERE p.author.id = :userId AND p.isDelete = 0 AND p.status = 'PUBLISHED'")
     List<PostEntity> getAllPostByAuthor(String userId);
+
     @Query(value = "WITH temp AS (" +
             "             SELECT l.post_id,count(l.post_id) as totalLikes,p.* FROM likes l " +
             "             JOIN posts p ON p.id = l.post_id " +
@@ -40,12 +46,15 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
             "             GROUP BY l.post_id " +
             "             ORDER BY totalLikes desc  LIMIT 6 " +
             "             )SELECT t.id,t.content,t.update_date,t.author_id,t.create_date,t.credit,t.publish_date,t.thumbnail,t.title,t.status,t.is_delete,t.create_id,t.update_id,t.raw,t.time_read " +
-            "            FROM temp t ORDER BY totalLikes desc,t.id ",nativeQuery = true)
-    List<PostEntity> trendingPost(LocalDateTime startTime,LocalDateTime endTime);
+            "            FROM temp t ORDER BY totalLikes desc,t.id ", nativeQuery = true)
+    List<PostEntity> trendingPost(LocalDateTime startTime, LocalDateTime endTime);
+
     @Query(value = "FROM PostEntity p WHERE p.status = :status AND p.isDelete = 0 ")
-    Page<PostEntity> searchPostWaitApproval(String status ,Pageable pageable);
+    Page<PostEntity> searchPostWaitApproval(String status, Pageable pageable);
+
     @Query(value = "FROM PostEntity p WHERE p.status = :status AND p.author.id = :userId AND p.isDelete = 0 ")
-    Page<PostEntity> getPostApproval(String status,String userId ,Pageable pageable);
+    Page<PostEntity> getPostApproval(String status, String userId, Pageable pageable);
+
     @Query(value = "SELECT count(p) FROM PostEntity p WHERE p.author.id = :userId AND p.isDelete = false AND p.createDate >= :startDate AND p.createDate <=:endDate")
-    Optional<Long> countByUser(String userId, LocalDateTime startDate,LocalDateTime endDate);
+    Optional<Long> countByUser(String userId, LocalDateTime startDate, LocalDateTime endDate);
 }

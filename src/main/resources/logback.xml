@@ -12,7 +12,6 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <!--		<file>/Volumes/DATAS/Project/CRM2/log/project-service.log</file>-->
         <file>C:/FroggyBlog/Log_Server_%d.%i.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>--> %d{yyyy-MM-dd_HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
@@ -50,7 +49,7 @@
         <appender-ref ref="FILE" />
     </logger>
 
-     By default, the level of the root level is set to DEBUG
+<!--     By default, the level of the root level is set to DEBUG-->
     <root level="DEBUG">
         <appender-ref ref="INFO" />
         <appender-ref ref="FILE" />

@@ -1,10 +1,12 @@
 package com.example.froggyblogserver.controller;
 
+import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.dto.ApprovePost;
 import com.example.froggyblogserver.dto.PostDetailDto;
 import com.example.froggyblogserver.dto.request.PostSearchRequest;
 import com.example.froggyblogserver.mapper.PostMapper;
 import com.example.froggyblogserver.service.PostService;
+import com.example.froggyblogserver.utils.StringHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,13 @@ public class PostController {
     @GetMapping("/findById/{postId}")
     public ResponseEntity<?> findById (@PathVariable String postId) {
         return ResponseEntity.ok().body(postService.findById(postId));
+    }
+
+    @GetMapping("/findByIdAndStatus/{postId}")
+    public ResponseEntity<?> findByIdAndStatus (@PathVariable String postId,@RequestParam(required = false) String status) {
+        if(StringHelper.isNullOrEmpty(status))
+            status = CONSTANTS.POST_STATUS.PENDING;
+        return ResponseEntity.ok().body(postService.findPostByIdAndStatus(postId,status));
     }
 
     @DeleteMapping("/delete/{id}")

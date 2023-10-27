@@ -20,4 +20,5 @@ public interface PostService extends GeneralService<PostDetailDto> {
     BaseResponse searchPostWaitApproval(int page, int size, String column, String orderBy);
     BaseResponse getPostApproval(int page, int size, String column, String orderBy);
     BaseResponse changeStatus(String postId, String status, HttpServletRequest request);
+    BaseResponse findPostByIdAndStatus(String id, String status);
 }

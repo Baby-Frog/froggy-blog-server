@@ -32,6 +32,7 @@ public class MESSAGE {
         public static final String SAVE_SUCCESS = "Saved story to saved list successfully";
         public static final String UN_SAVE_SUCCESS = "Removed story from saved list successfully";
         public static final String ACTIONS_SUCCESS = "Action successfully";
+        public static final String COMING_SOON = "Coming soon";
 
     }
     public static class TOKEN{

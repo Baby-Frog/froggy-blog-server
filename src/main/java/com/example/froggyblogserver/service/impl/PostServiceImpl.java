@@ -49,13 +49,12 @@ public class PostServiceImpl implements PostService {
     private LikeRepo likeRepo;
     @Autowired
     private CommentRepo commentRepo;
+
     @Override
     public BaseResponse findById(String id) {
 
-        Optional<PostEntity> post = postRepo.findById(id);
-        if (post.isEmpty())
-            throw new ValidateException(MESSAGE.VALIDATE.ID_INVALID);
-        return new BaseResponse(post);
+        var post = postRepo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));;
+        return new BaseResponse(postMapper.entityToDto(post));
     }
 
     @Override
@@ -77,13 +76,21 @@ public class PostServiceImpl implements PostService {
         if (!req.getTopicId().isEmpty()) {
             var listTopic = req.getTopicId().parallelStream()
                     .map(topic -> {
-                        topicRepo.findById(topic).orElseThrow(() ->new ValidateException(MESSAGE.VALIDATE.TOPIC_INVALID));
+                        topicRepo.findById(topic).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.TOPIC_INVALID));
                         return PostTopicEntity.builder()
                                 .postId(savePost.getId())
                                 .topicId(topic).build();
                     })
                     .collect(Collectors.toList());
-            postTopicRepo.saveAll(listTopic);
+            var listPostTopic = postTopicRepo.findByPostId(savePost.getId());
+            if (!listPostTopic.isEmpty()) {
+                var listRemove = listPostTopic.parallelStream().filter(item -> listTopic.parallelStream().noneMatch(topic -> topic.getTopicId().equals(item.getTopicId()))).map(PostTopicEntity::getId).toList();
+                var listAdd = listTopic.parallelStream().filter(item -> listPostTopic.parallelStream().noneMatch(topic -> topic.getTopicId().equals(item.getTopicId()))).toList();
+                postTopicRepo.saveAll(listAdd);
+                postTopicRepo.deleteAllById(listRemove);
+            }else {
+                postTopicRepo.saveAll(listTopic);
+            }
         }
         var response = postMapper.entityToDto(savePost);
         response.setTopicId(req.getTopicId());
@@ -106,9 +113,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse search(PostSearchRequest request, String column, String orderBy) {
         var pageReq = PageRequest.of(request.getPageNumber() - 1, request.getPageSize());
-        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
-            pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
+        if (!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq, orderBy, column);
+        else pageReq = SortHelper.sort(pageReq, CONSTANTS.SORT.DESC, CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.search(request, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -140,9 +147,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse searchByTopicId(String topicId, int pageNumber, int pageSize, String column, String orderBy) {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
-        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
-            pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
+        if (!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq, orderBy, column);
+        else pageReq = SortHelper.sort(pageReq, CONSTANTS.SORT.DESC, CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.searchByTopicId(topicId, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -193,8 +200,8 @@ public class PostServiceImpl implements PostService {
         var listPost = postRepo.trendingPost(startTime, endTime);
         var listDto = listPost.stream().map(post -> {
             var dto = postMapper.entityToDto(post);
-            dto.setLikes(likeRepo.countByUser(post.getId(),startTime,endTime).orElse(0L));
-            dto.setComments(commentRepo.countByUser(post.getId(),startTime,endTime).orElse(0L));
+            dto.setLikes(likeRepo.countByUser(post.getId(), startTime, endTime).orElse(0L));
+            dto.setComments(commentRepo.countByUser(post.getId(), startTime, endTime).orElse(0L));
             return dto;
         }).toList();
         return new BaseResponse(listDto);
@@ -203,9 +210,9 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse searchByUserId(String userId, int pageNumber, int pageSize, String column, String orderBy) {
         var pageReq = PageRequest.of(pageNumber - 1, pageSize);
-        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
-            pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
+        if (!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq, orderBy, column);
+        else pageReq = SortHelper.sort(pageReq, CONSTANTS.SORT.DESC, CONSTANTS.PROPERTIES.PUBLISH_DATE);
         var search = postRepo.searchByUserId(userId, pageReq);
         var listDto = search.getContent().stream().map(post -> {
             var dto = postMapper.entityToDto(post);
@@ -224,12 +231,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public BaseResponse searchPostWaitApproval( int page, int size, String column, String orderBy) {
-        var pageReq = PageRequest.of(page -1,size);
-        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
-            pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
-        var exec = postRepo.searchPostWaitApproval(CONSTANTS.POST_STATUS.PENDING,pageReq);
+    public BaseResponse searchPostWaitApproval(int page, int size, String column, String orderBy) {
+        var pageReq = PageRequest.of(page - 1, size);
+        if (!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq, orderBy, column);
+        else pageReq = SortHelper.sort(pageReq, CONSTANTS.SORT.DESC, CONSTANTS.PROPERTIES.PUBLISH_DATE);
+        var exec = postRepo.searchPostWaitApproval(CONSTANTS.POST_STATUS.PENDING, pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(page)
                 .pageSize(size)
@@ -237,17 +244,17 @@ public class PostServiceImpl implements PostService {
                 .totalRecord(exec.getTotalElements())
                 .data(exec.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
                 .build();
-        return new BaseResponse(pageRes) ;
+        return new BaseResponse(pageRes);
     }
 
     @Override
     public BaseResponse getPostApproval(int page, int size, String column, String orderBy) {
         var info = currentUserService.getInfo();
-        var pageReq = PageRequest.of(page -1,size);
-        if(!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
-            pageReq = SortHelper.sort(pageReq,orderBy,column);
-        else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,CONSTANTS.PROPERTIES.PUBLISH_DATE);
-        var exec = postRepo.getPostApproval(CONSTANTS.POST_STATUS.PENDING,info.getId(),pageReq);
+        var pageReq = PageRequest.of(page - 1, size);
+        if (!StringHelper.isNullOrEmpty(column) && !StringHelper.isNullOrEmpty(orderBy))
+            pageReq = SortHelper.sort(pageReq, orderBy, column);
+        else pageReq = SortHelper.sort(pageReq, CONSTANTS.SORT.DESC, CONSTANTS.PROPERTIES.PUBLISH_DATE);
+        var exec = postRepo.getPostApproval(CONSTANTS.POST_STATUS.PENDING, info.getId(), pageReq);
         var pageRes = PageResponse.builder()
                 .pageNumber(page)
                 .pageSize(size)
@@ -255,13 +262,13 @@ public class PostServiceImpl implements PostService {
                 .totalRecord(exec.getTotalElements())
                 .data(exec.getContent().stream().map(post -> postMapper.entityToDto(post)).collect(Collectors.toList()))
                 .build();
-        return new BaseResponse(pageRes) ;
+        return new BaseResponse(pageRes);
     }
 
     @Override
     public BaseResponse changeStatus(String postId, String status, HttpServletRequest request) {
         var found = postRepo.findById(postId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-        switch (status.toUpperCase()){
+        switch (status.toUpperCase()) {
             case CONSTANTS.POST_STATUS.BANNED -> found.setStatus(CONSTANTS.POST_STATUS.BANNED);
             case CONSTANTS.POST_STATUS.PUBLISHED -> found.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);
             default -> throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
@@ -269,6 +276,12 @@ public class PostServiceImpl implements PostService {
         var info = currentUserService.getInfo();
         found.setUpdateId(info.getId());
         postRepo.save(found);
+        return new BaseResponse(postMapper.entityToDto(found));
+    }
+
+    @Override
+    public BaseResponse findPostByIdAndStatus(String id, String status) {
+        var found = postRepo.findByIdAndStatus(id,status).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         return new BaseResponse(postMapper.entityToDto(found));
     }
 
