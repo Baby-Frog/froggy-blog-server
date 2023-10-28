@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService {
             var countsLike = 0L;
             var countPost = 0L;
             for (var post: allPost) {
-                countPost += postRepo.countByUser(info.getId(),minTempDate,maxTempDate).orElse(0L);
+                countPost = postRepo.countByUser(info.getId(),minTempDate,maxTempDate).orElse(0L);
                 countsLike += likeRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
                 countsComment += commentRepo.countByUser(post.getId(),minTempDate,maxTempDate).orElse(0L);
             }
