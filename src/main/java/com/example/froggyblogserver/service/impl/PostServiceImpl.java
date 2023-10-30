@@ -53,7 +53,8 @@ public class PostServiceImpl implements PostService {
     @Override
     public BaseResponse findById(String id) {
 
-        var post = postRepo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));;
+        var post = postRepo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        ;
         return new BaseResponse(postMapper.entityToDto(post));
     }
 
@@ -63,11 +64,17 @@ public class PostServiceImpl implements PostService {
 //        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
 //            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var info = currentUserService.getInfo();
+        if (!StringHelper.isNullOrEmpty(req.getId())) {
+            var checkPost = postRepo.findById(req.getId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+            if (!checkPost.getAuthor().getId().equals(info.getId()))
+                throw new ValidateException(MESSAGE.VALIDATE.AUTHOR_INVALID);
+        }
         var post = postMapper.dtoToEntity(req);
-        if (!StringHelper.isNullOrEmpty(post.getId()))
+        if (!StringHelper.isNullOrEmpty(post.getId())) {
             post.setCreateId(info.getId());
+            post.setAuthor(info);
+        }
         else post.setUpdateId(info.getId());
-        post.setAuthor(info);
         post.setStatus(CONSTANTS.POST_STATUS.PENDING);
         post.setPublishDate(LocalDateTime.now());
         var totalChar = StringHelper.totalCharacter(req.getRaw());
@@ -88,7 +95,7 @@ public class PostServiceImpl implements PostService {
                 var listAdd = listTopic.parallelStream().filter(item -> listPostTopic.parallelStream().noneMatch(topic -> topic.getTopicId().equals(item.getTopicId()))).toList();
                 postTopicRepo.saveAll(listAdd);
                 postTopicRepo.deleteAllById(listRemove);
-            }else {
+            } else {
                 postTopicRepo.saveAll(listTopic);
             }
         }
@@ -256,9 +263,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional(rollbackOn = {UncheckedException.class,CheckedException.class})
+    @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse changeStatus(String postId, String status, HttpServletRequest request) {
-        var found = postRepo.findByIdAndStatus(postId,CONSTANTS.POST_STATUS.PENDING).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var found = postRepo.findByIdAndStatus(postId, CONSTANTS.POST_STATUS.PENDING).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         switch (status.toUpperCase()) {
             case CONSTANTS.POST_STATUS.BANNED -> found.setStatus(CONSTANTS.POST_STATUS.BANNED);
             case CONSTANTS.POST_STATUS.PUBLISHED -> found.setStatus(CONSTANTS.POST_STATUS.PUBLISHED);

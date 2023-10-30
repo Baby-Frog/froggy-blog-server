@@ -7,6 +7,7 @@ import com.example.froggyblogserver.utils.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -46,6 +47,7 @@ public class SecurityConfig {
     CustomOAuth2UserService customOAuth2UserService;
     @Autowired
     OAuthSuccessHandler successHandler;
+
 
     @Bean
     WebMvcConfigurer webMvcConfigurer() {

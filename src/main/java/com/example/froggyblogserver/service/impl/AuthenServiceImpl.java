@@ -3,6 +3,8 @@ package com.example.froggyblogserver.service.impl;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -14,11 +16,10 @@ import com.example.froggyblogserver.exception.*;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.utils.RecaptchaUtils;
+import com.nimbusds.jose.util.StandardCharset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +33,12 @@ import com.example.froggyblogserver.utils.JwtHelper;
 import com.example.froggyblogserver.utils.StringHelper;
 
 import lombok.extern.slf4j.Slf4j;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import javax.servlet.http.HttpSession;
+import javax.mail.Message;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 
 @Slf4j
@@ -45,8 +50,6 @@ public class AuthenServiceImpl implements AuthenService {
     private AccountRepo accountRepo;
     @Autowired
     private AccountRoleRepo accountRoleRepo;
-    @Autowired
-    private JavaMailSender mailSender;
     @Autowired
     private JwtHelper jwtHelper;
     @Autowired
@@ -65,7 +68,10 @@ public class AuthenServiceImpl implements AuthenService {
     private String PATH_AVT;
     @Autowired
     private RecaptchaUtils recaptchaUtils;
-
+    @Autowired
+    private MimeMessage mailSender;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
     @Override
     public BaseResponse login(LoginDto req) {
 
@@ -91,8 +97,8 @@ public class AuthenServiceImpl implements AuthenService {
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse register(RegisterDto req) {
 
-        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
-            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
+//        if(!recaptchaUtils.verifyCaptcha(req.getCaptcha()))
+//            throw new ValidateException(MESSAGE.TOKEN.CAPTCHA_INVALID);
         var checkEmail = userRepo.findByEmailanAndProvider(req.getEmail(), null);
         if (checkEmail.isPresent())
             throw new ValidateInputException(CONSTANTS.PROPERTIES.EMAIL, MESSAGE.VALIDATE.EMAIL_ALREADY_EXIST, req.getEmail());
@@ -146,23 +152,28 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    public BaseResponse forgotPassword(ForgotPassword req) {
-        AccountEntity getAccount = accountRepo.findByEmail(req.getEmail());
-        if (getAccount == null)
-            throw new AuthenExeption(MESSAGE.VALIDATE.EMAIL_INVALID);
+    public BaseResponse forgotPassword(ForgotPassword req)  {
+        var getUser = userRepo.findByEmailanAndProvider(req.getEmail(),null).orElseThrow(() ->  new AuthenExeption(MESSAGE.VALIDATE.EMAIL_INVALID));
+        var account = accountRepo.findByEmail(req.getEmail());
         String verifyCode = UUID.randomUUID().toString();
-
-        resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(getAccount.getId()).build());
+        resetPasswordRepo.save(ResetPassword.builder().verifyCode(verifyCode).accountId(account.getId()).build());
         String subject = "Verify reset password";
         String PATH_RESET = "confirm-required";
         String url = req.getUrl() + "/" + PATH_RESET + '/' + verifyCode;
-        String text = "You have requested a password change. If this wasn't you, please do not click on the link below: " + url;
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(req.getEmail());
-        message.setSubject(subject);
-        message.setText(text);
-
-        mailSender.send(message);
+        Context context = new Context();
+        Map<String,Object> params = new HashMap<>();
+        params.put("url",url);
+        params.put("name",StringHelper.convertToNonAccent(getUser.getFullName()));
+        context.setVariables(params);
+        var content = templateEngine.process("forgot-password",context);
+        try {
+            mailSender.addRecipients(Message.RecipientType.TO,req.getEmail());
+            mailSender.setSubject(subject, StandardCharset.UTF_8.name());
+            mailSender.setContent(content, MediaType.TEXT_HTML_VALUE);
+            Transport.send(mailSender);
+        } catch (Exception e) {
+            throw new ValidateException(e.getMessage());
+        }
         return new BaseResponse();
     }
 
@@ -172,7 +183,7 @@ public class AuthenServiceImpl implements AuthenService {
         if (!check.isPresent())
             throw new ValidateException(MESSAGE.VALIDATE.INPUT_INVALID);
         Duration checkTimeExpires = Duration.between(check.get().getCreateDate(), LocalDateTime.now());
-        if (checkTimeExpires.toMinutes() > 15)
+        if (checkTimeExpires.toMinutes() > 30)
             throw new ValidateException(MESSAGE.VALIDATE.VERIFY_EXPIRES);
         AccountEntity getAccount = accountRepo.findById(check.get().getAccountId()).orElse(null);
         assert getAccount != null;

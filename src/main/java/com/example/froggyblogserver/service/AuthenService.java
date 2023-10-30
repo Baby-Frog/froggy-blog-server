@@ -4,6 +4,7 @@ import com.example.froggyblogserver.dto.*;
 import com.example.froggyblogserver.entity.ResetPassword;
 import com.example.froggyblogserver.response.BaseResponse;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 
 public interface AuthenService {
@@ -11,7 +12,7 @@ public interface AuthenService {
     BaseResponse register(RegisterDto req);
     BaseResponse refreshToken(RefreshTokenDto req);
     BaseResponse logout(RefreshTokenDto dto);
-    BaseResponse forgotPassword(ForgotPassword req);
+    BaseResponse forgotPassword(ForgotPassword req) ;
     BaseResponse resetPassword(ResetPasswordDto req);
     BaseResponse changePassword(ChangePasswordDto req);
 }

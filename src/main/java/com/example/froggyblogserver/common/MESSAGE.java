@@ -16,6 +16,8 @@ public class MESSAGE {
         public static final String PAGE_SIZE_INVALID = "Page size invalid!!!";
         public static final String POST_NOT_EXIST = "Post not exist!!!";
         public static final String TOPIC_INVALID = "Topic invalid!!!";
+        public static final String AUTHOR_INVALID = "Sorry,you are not an author!!!";
+
 
     }
 

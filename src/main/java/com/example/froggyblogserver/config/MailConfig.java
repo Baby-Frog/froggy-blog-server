@@ -8,6 +8,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
+
 @Configuration
 public class MailConfig {
     @Value("${mail.port}")
@@ -20,20 +26,27 @@ public class MailConfig {
     private String PASSWORD ;
 
     @Bean
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(HOST);
-        mailSender.setPort(PORT);
+    Authenticator authenticator (){
+        return new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(USERNAME,PASSWORD);
+            }
+        };
+    }
 
-        mailSender.setUsername(USERNAME);
-        mailSender.setPassword(PASSWORD);
+    @Bean
+    public MimeMessage getJavaMailSender() throws MessagingException {
+        Properties properties = new Properties();
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.debug", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.host", HOST);
+        properties.put("mail.smtp.port", PORT);
+        Session session= Session.getInstance(properties,authenticator());
 
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
+        MimeMessage mailSender = new MimeMessage(session);
+        mailSender.setFrom(USERNAME);
         return mailSender;
     }
 }
