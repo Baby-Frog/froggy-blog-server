@@ -106,6 +106,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>net.sf.uadetector</groupId>
+            <artifactId>uadetector-resources</artifactId>
+            <version>2014.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jwebmp</groupId>
+            <artifactId>uadetector-core</artifactId>
+            <version>0.66.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

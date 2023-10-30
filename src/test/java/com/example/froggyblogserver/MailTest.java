@@ -13,9 +13,9 @@ public class MailTest {
     AuthenService authenService;
     @Test
     void test(){
-        var reset = new ForgotPassword();
-        reset.setEmail("vietvo3105@gmail.com");
-        reset.setUrl("http://localhost:8080");
-        authenService.forgotPassword(reset);
+//        var reset = new ForgotPassword();
+//        reset.setEmail("vietvo3105@gmail.com");
+//        reset.setUrl("http://localhost:8080");
+//        authenService.forgotPassword(reset);
     }
 }

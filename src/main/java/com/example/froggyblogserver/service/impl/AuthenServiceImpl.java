@@ -16,10 +16,12 @@ import com.example.froggyblogserver.exception.*;
 import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.*;
 import com.example.froggyblogserver.utils.RecaptchaUtils;
+import com.example.froggyblogserver.utils.RequestHelper;
 import com.nimbusds.jose.util.StandardCharset;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,8 +39,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import javax.mail.Message;
-import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Slf4j
@@ -69,7 +71,9 @@ public class AuthenServiceImpl implements AuthenService {
     @Autowired
     private RecaptchaUtils recaptchaUtils;
     @Autowired
-    private MimeMessage mailSender;
+    private MimeMessage mimeMessage;
+    @Autowired
+    private JavaMailSender mailSender;
     @Autowired
     private SpringTemplateEngine templateEngine;
     @Override
@@ -152,7 +156,7 @@ public class AuthenServiceImpl implements AuthenService {
     }
 
     @Override
-    public BaseResponse forgotPassword(ForgotPassword req)  {
+    public BaseResponse forgotPassword(ForgotPassword req, HttpServletRequest request)  {
         var getUser = userRepo.findByEmailanAndProvider(req.getEmail(),null).orElseThrow(() ->  new AuthenExeption(MESSAGE.VALIDATE.EMAIL_INVALID));
         var account = accountRepo.findByEmail(req.getEmail());
         String verifyCode = UUID.randomUUID().toString();
@@ -164,13 +168,16 @@ public class AuthenServiceImpl implements AuthenService {
         Map<String,Object> params = new HashMap<>();
         params.put("url",url);
         params.put("name",StringHelper.convertToNonAccent(getUser.getFullName()));
+        params.put("prod","Froggy Blog");
+        params.put("browser", RequestHelper.getBrowser(request));
+        params.put("operating",RequestHelper.getOperating(request));
         context.setVariables(params);
         var content = templateEngine.process("forgot-password",context);
         try {
-            mailSender.addRecipients(Message.RecipientType.TO,req.getEmail());
-            mailSender.setSubject(subject, StandardCharset.UTF_8.name());
-            mailSender.setContent(content, MediaType.TEXT_HTML_VALUE);
-            Transport.send(mailSender);
+            mimeMessage.addRecipients(Message.RecipientType.TO,req.getEmail());
+            mimeMessage.setSubject(subject, StandardCharset.UTF_8.name());
+            mimeMessage.setContent(content, MediaType.TEXT_HTML_VALUE);
+            mailSender.send(mimeMessage);
         } catch (Exception e) {
             throw new ValidateException(e.getMessage());
         }

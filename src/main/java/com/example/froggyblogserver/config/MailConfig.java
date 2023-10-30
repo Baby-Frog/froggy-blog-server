@@ -24,29 +24,30 @@ public class MailConfig {
     private String USERNAME ;
     @Value("${mail.password}")
     private String PASSWORD ;
+    private final String[] LANGUAGE = {"en","vi"};
 
     @Bean
-    Authenticator authenticator (){
-        return new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(USERNAME,PASSWORD);
-            }
-        };
-    }
+    public JavaMailSender getJavaMailSender() throws MessagingException {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(HOST);
+        mailSender.setPort(PORT);
 
-    @Bean
-    public MimeMessage getJavaMailSender() throws MessagingException {
-        Properties properties = new Properties();
+        mailSender.setUsername(USERNAME);
+        mailSender.setPassword(PASSWORD);
+        Properties properties = mailSender.getJavaMailProperties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.debug", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.host", HOST);
         properties.put("mail.smtp.port", PORT);
-        Session session= Session.getInstance(properties,authenticator());
-
-        MimeMessage mailSender = new MimeMessage(session);
-        mailSender.setFrom(USERNAME);
         return mailSender;
+    }
+
+    @Bean
+    MimeMessage mimeMessage() throws MessagingException {
+        MimeMessage mimeMessage = getJavaMailSender().createMimeMessage();
+        mimeMessage.setFrom(USERNAME);
+        mimeMessage.setContentLanguage(LANGUAGE);
+        return mimeMessage;
     }
 }

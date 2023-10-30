@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.froggyblogserver.service.AuthenService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -55,8 +56,8 @@ public class AuthenController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPassword req) {
-        return ResponseEntity.ok().body(authenService.forgotPassword(req));
+    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPassword req, HttpServletRequest request) {
+        return ResponseEntity.ok().body(authenService.forgotPassword(req,request));
     }
 
     @PostMapping("/resetPassword")
