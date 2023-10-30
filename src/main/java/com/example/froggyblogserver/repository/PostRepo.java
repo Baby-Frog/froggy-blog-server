@@ -57,4 +57,8 @@ public interface PostRepo extends JpaRepository<PostEntity, String> {
 
     @Query(value = "SELECT count(p) FROM PostEntity p WHERE p.author.id = :userId AND p.isDelete = 0 AND p.publishDate >= :startDate AND p.publishDate <=:endDate")
     Optional<Long> countByUser(String userId, LocalDateTime startDate, LocalDateTime endDate);
+    @Query(value = "SELECT count(p) FROM PostTopicEntity p WHERE p.isDelete = 0 AND p.createDate >= :startDate AND p.createDate <= :endDate")
+    Optional<Long> countByDate(LocalDateTime startDate, LocalDateTime endDate);
+    @Query(value = "SELECT count(p) FROM PostTopicEntity p WHERE p.isDelete = 0")
+    Optional<Long> countAll();
 }
