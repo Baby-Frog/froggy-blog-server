@@ -37,13 +37,6 @@ public class PostController {
         return ResponseEntity.ok().body(postService.findById(postId));
     }
 
-    @GetMapping("/findByIdAndStatus/{postId}")
-    public ResponseEntity<?> findByIdAndStatus (@PathVariable String postId,@RequestParam(required = false) String status) {
-        if(StringHelper.isNullOrEmpty(status))
-            status = CONSTANTS.POST_STATUS.PENDING;
-        return ResponseEntity.ok().body(postService.findPostByIdAndStatus(postId,status));
-    }
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteById (@PathVariable String id) {
         return ResponseEntity.ok().body(postService.deleteById(id));

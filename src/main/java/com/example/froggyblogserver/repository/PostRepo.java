@@ -16,7 +16,7 @@ import java.util.Optional;
 @Repository
 public interface PostRepo extends JpaRepository<PostEntity, String> {
     @Override
-    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.status = 'PUBLISHED' AND p.isDelete=0")
+    @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.isDelete=0")
     Optional<PostEntity> findById(String s);
 
     @Query(value = "FROM PostEntity p WHERE p.id = :s AND p.status = :status AND p.isDelete=0")

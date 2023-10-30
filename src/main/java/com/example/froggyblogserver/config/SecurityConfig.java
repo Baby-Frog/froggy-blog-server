@@ -117,7 +117,7 @@ public class SecurityConfig {
                         "/api/topic/delete/**",
                         "/api/report/**",
                         "/api/post/changeStatus",
-                        "/api/post/findByIdAndStatus/**",
+//                        "/api/post/findByIdAndStatus/**",
                         "/api/post/postWaitApproval"
                 )
                     .hasAnyAuthority(CONSTANTS.ROLE.ADMINISTRATOR,CONSTANTS.ROLE.MODERATOR)

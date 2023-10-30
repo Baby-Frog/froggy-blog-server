@@ -270,10 +270,4 @@ public class PostServiceImpl implements PostService {
         return new BaseResponse(postMapper.entityToDto(found));
     }
 
-    @Override
-    public BaseResponse findPostByIdAndStatus(String id, String status) {
-        var found = postRepo.findByIdAndStatus(id,status).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-        return new BaseResponse(postMapper.entityToDto(found));
-    }
-
 }
