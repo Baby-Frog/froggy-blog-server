@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
         else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"createDate");
         var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
-                .data(exec.getContent().stream().map(userMapper::entityToDto).collect(Collectors.toList()))
+                .data(exec.getContent())
                 .pageNumber(request.getPageNumber())
                 .pageSize(request.getPageSize())
                 .totalPage(exec.getTotalPages())
