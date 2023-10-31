@@ -1,5 +1,6 @@
 package com.example.froggyblogserver.repository;
 
+import com.example.froggyblogserver.dto.RankedAuthorDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.entity.UserEntity;
 import org.springframework.data.domain.Page;
@@ -18,5 +19,6 @@ public interface UserRepo extends JpaRepository<UserEntity, String> {
 
     @Query(value = "from UserEntity u WHERE (:email IS NULL OR u.email = :email) AND (:provider IS NULL OR u.provider = :provider)")
     Optional<UserEntity> findByEmailanAndProvider(@Param("email") String email,@Param("provider") String provider);
-
+    @Query(value = "SELECT u FROM UserEntity u INNER JOIN PostEntity p on u.id = p.author.id GROUP BY u.fullName ORDER BY COUNT(p.id) DESC,u.id ")
+    Page<UserEntity> rankAuthor(Pageable pageable);
 }

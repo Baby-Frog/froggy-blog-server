@@ -26,7 +26,7 @@ public class ErrorHandler {
     public ResponseEntity<?> validateException(ValidateException e) {
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage(e.getMessage());
-        log.error(e.getMessage(), e);
+        log.error(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }
 
@@ -34,7 +34,7 @@ public class ErrorHandler {
     public ResponseEntity<?> uncheckedException(Exception e) {
         response.setStatusCode(HttpStatus.BAD_REQUEST.value());
         response.setMessage(MESSAGE.RESPONSE.SYSTEM_ERROR);
-        log.error(e.getMessage(), e);
+        log.error(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }
 

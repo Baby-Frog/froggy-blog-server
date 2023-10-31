@@ -216,5 +216,19 @@ public class UserServiceImpl implements UserService {
         return new BaseResponse(chartUserDto);
     }
 
+    @Override
+    public BaseResponse rankAuthor(Integer page, Integer size) {
+        var pageReq = PageRequest.of(page -1,size);
+        var exec = repo.rankAuthor(pageReq);
+        var pageRes = PageResponse.builder()
+                .data(exec.getContent())
+                .totalRecord(exec.getTotalElements())
+                .totalPage(exec.getTotalPages())
+                .pageNumber(page)
+                .pageSize(size)
+                .build();
+        return new BaseResponse(pageRes);
+    }
+
 
 }

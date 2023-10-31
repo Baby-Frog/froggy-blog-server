@@ -63,6 +63,15 @@ public class UserController {
     public ResponseEntity<?> findById(@PathVariable String id){
         return ResponseEntity.ok().body(userService.findById(id));
     }
+
+    @GetMapping("/rankedAuthor")
+    public ResponseEntity<?> rankedAuthor(@RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize){
+        if(pageNumber == null)
+            pageNumber = 1;
+        if(pageSize == null)
+            pageSize = 10;
+        return ResponseEntity.ok().body(userService.rankAuthor(pageNumber,pageSize));
+    }
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<?> deleteById(@PathVariable String id){
         return ResponseEntity.ok().body(userService.deleteById(id));

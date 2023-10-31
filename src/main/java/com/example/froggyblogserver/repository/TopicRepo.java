@@ -18,4 +18,5 @@ public interface TopicRepo extends JpaRepository<TopicEntity, String> {
 
     @Query(value = "SELECT t FROM PostTopicEntity p LEFT join TopicEntity t ON t.id = p.topicId AND t.isDelete = 0 WHERE p.postId = :postId")
     List<TopicEntity> findTopicByPostId(String postId);
+    boolean existsByTopicCode(String topicCode);
 }

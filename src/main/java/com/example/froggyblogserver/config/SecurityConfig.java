@@ -95,6 +95,7 @@ public class SecurityConfig {
                 .antMatchers(
                          "/api/user/findById/**"
                         ,"/api/user/search"
+                        ,"/api/user/rankedAuthor"
                         ,"/api/comment/search/**"
                         ,"/api/comment/searchByParentId/**"
                         ,"/api/comment/count/**"

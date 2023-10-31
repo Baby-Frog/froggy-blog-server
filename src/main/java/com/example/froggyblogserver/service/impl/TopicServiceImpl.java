@@ -41,6 +41,8 @@ public class TopicServiceImpl implements TopicService {
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(TopicEntity req) {
         var info = currentUserService.getInfo();
+        var checkExist = topicRepo.existsByTopicCode(StringHelper.convertToNonAccent(req.getTopicName().toUpperCase()));
+        if (checkExist) throw new ValidateException(MESSAGE.VALIDATE.TOPIC_EXIST);
         if (StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
         else req.setUpdateId(info.getId());
         req.setTopicCode(StringHelper.convertToNonAccent(req.getTopicName()).toUpperCase());

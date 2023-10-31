@@ -7,8 +7,10 @@ import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.mapper.ReportMapper;
+import com.example.froggyblogserver.mapper.UserMapper;
 import com.example.froggyblogserver.repository.CommentRepo;
 import com.example.froggyblogserver.repository.ReportRepo;
+import com.example.froggyblogserver.repository.UserRepo;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.response.PageResponse;
 import com.example.froggyblogserver.service.CurrentUserService;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -31,6 +34,10 @@ public class ReportServiceImpl implements ReportService {
     private ReportRepo repo;
     @Autowired
     private CommentRepo commentRepo;
+    @Autowired
+    private UserRepo userRepo;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public BaseResponse findById(String id) {
         return null;
@@ -55,12 +62,18 @@ public class ReportServiceImpl implements ReportService {
             pageReq = SortHelper.sort(pageReq,orderBy,column);
         else pageReq = SortHelper.sort(pageReq,CONSTANTS.SORT.DESC,"createDate");
         var exec = repo.findAll(pageReq);
+        var dtoList = exec.getContent().stream().map(report ->{
+           var dto = mapper.entityToDto(report);
+           var userReport = userRepo.findById(report.getCreateId()).orElseThrow(() -> new ValidateException(MESSAGE.RESPONSE.SYSTEM_ERROR));
+           dto.setUserDto(userMapper.entityToDto(userReport));
+           return dto;
+        }).toList();
         var pageRes = PageResponse.builder()
                 .pageNumber(page)
                 .pageSize(size)
                 .totalPage(exec.getTotalPages())
                 .totalRecord(exec.getTotalElements())
-                .data(exec.getContent())
+                .data(dtoList)
                 .build();
         return new BaseResponse(pageRes);
     }
