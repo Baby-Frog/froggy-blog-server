@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService {
         var pageReq = PageRequest.of(page -1,size);
         var exec = repo.rankAuthor(pageReq);
         var pageRes = PageResponse.builder()
-                .data(exec.getContent())
+                .data(exec.getContent().stream().map(userMapper::entityToProfile))
                 .totalRecord(exec.getTotalElements())
                 .totalPage(exec.getTotalPages())
                 .pageNumber(page)

@@ -1,6 +1,5 @@
 package com.example.froggyblogserver.repository;
 
-import com.example.froggyblogserver.dto.RankedAuthorDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
 import com.example.froggyblogserver.entity.UserEntity;
 import org.springframework.data.domain.Page;
