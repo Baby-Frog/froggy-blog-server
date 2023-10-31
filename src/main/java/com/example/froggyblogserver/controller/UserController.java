@@ -69,7 +69,7 @@ public class UserController {
         if(pageNumber == null)
             pageNumber = 1;
         if(pageSize == null)
-            pageSize = 10;
+            pageSize = 5;
         return ResponseEntity.ok().body(userService.rankAuthor(pageNumber,pageSize));
     }
     @DeleteMapping("/deleteById/{id}")
