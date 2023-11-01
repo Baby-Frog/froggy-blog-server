@@ -28,12 +28,12 @@ public class ReportController {
     }
 
     @RequestMapping("search")
-    public ResponseEntity<?> search(@RequestParam(required = false) Integer page,@RequestParam(required = false) Integer size,@RequestParam(required = false) String column,@RequestParam(required = false) String orderBy ){
-        if(page == null)
-            page = 1;
-        if (size == null)
-            size = 10;
-        return ResponseEntity.ok().body(service.search(page,size,column,orderBy));
+    public ResponseEntity<?> search(@RequestParam(required = false) Integer pageNumber, @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String column, @RequestParam(required = false) String orderBy ){
+        if(pageNumber == null)
+            pageNumber = 1;
+        if (pageSize == null)
+            pageSize = 10;
+        return ResponseEntity.ok().body(service.search(pageNumber, pageSize,column,orderBy));
     }
 
 }
