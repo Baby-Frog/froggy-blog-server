@@ -6,10 +6,7 @@ import com.example.froggyblogserver.entity.RoleEntity;
 import com.example.froggyblogserver.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/role")
@@ -27,7 +24,7 @@ public class RoleController {
     public ResponseEntity<?> addRole(@RequestBody AddRoleUserDto dto){
         return ResponseEntity.ok().body(roleService.addRoleToUser(dto));
     }
-    @PostMapping("removeRole")
+    @DeleteMapping("removeRole")
     public ResponseEntity<?> removeRole(@RequestBody AddRoleUserDto dto){
         return ResponseEntity.ok().body(roleService.removeRoleToUser(dto));
     }
