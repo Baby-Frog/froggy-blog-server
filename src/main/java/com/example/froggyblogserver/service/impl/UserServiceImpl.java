@@ -3,9 +3,7 @@ package com.example.froggyblogserver.service.impl;
 import com.example.froggyblogserver.dto.ChartUserDto;
 import com.example.froggyblogserver.dto.UserDto;
 import com.example.froggyblogserver.dto.request.UserSearchRequest;
-import com.example.froggyblogserver.entity.AccountEntity;
-import com.example.froggyblogserver.entity.AccountsRolesEntity;
-import com.example.froggyblogserver.entity.UserPostEntity;
+import com.example.froggyblogserver.entity.*;
 import com.example.froggyblogserver.exception.CheckedException;
 import com.example.froggyblogserver.exception.UncheckedException;
 import com.example.froggyblogserver.mapper.UserMapper;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.froggyblogserver.common.CONSTANTS;
 import com.example.froggyblogserver.common.MESSAGE;
-import com.example.froggyblogserver.entity.UserEntity;
 import com.example.froggyblogserver.exception.ValidateException;
 import com.example.froggyblogserver.response.BaseResponse;
 import com.example.froggyblogserver.service.UserService;
@@ -174,8 +171,10 @@ public class UserServiceImpl implements UserService {
         var convertToEntity = userMapper.dtoToEntity(dto);
         convertToEntity.setEmail(found.get().getEmail());
         var update = repo.save(convertToEntity);
-
-        return new BaseResponse(userMapper.entityToDto(update));
+        var dtoRes = userMapper.entityToDto(update);
+         var account = accountRepo.findByEmail(update.getEmail());
+        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getName).collect(Collectors.toList()));
+        return new BaseResponse(dtoRes);
     }
 
     @Override
