@@ -157,7 +157,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse getProfile() {
         var info = currentUserService.getInfo();
-        return new BaseResponse(userMapper.entityToDto(info));
+        var dtoRes = userMapper.entityToDto(info);
+        var account = accountRepo.findByEmail(info.getEmail());
+        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getName).collect(Collectors.toList()));
+        return new BaseResponse(dtoRes);
     }
 
     @Override
