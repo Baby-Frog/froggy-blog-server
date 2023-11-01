@@ -70,7 +70,7 @@ public class PostServiceImpl implements PostService {
                 throw new ValidateException(MESSAGE.VALIDATE.AUTHOR_INVALID);
         }
         var post = postMapper.dtoToEntity(req);
-        if (!StringHelper.isNullOrEmpty(post.getId())) {
+        if (StringHelper.isNullOrEmpty(post.getId())) {
             post.setCreateId(info.getId());
             post.setAuthor(info);
         }
