@@ -18,5 +18,5 @@ public class AddRoleUserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private List<String> listRoleId;
+    private String roleId;
 }

@@ -58,16 +58,10 @@ public class RoleServiceImpl implements RoleService {
         var info = currentUserService.getInfo();
         var checkAccount = accountRepo.findByEmail(req.getEmail());
         if (checkAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
-        List<AccountsRolesEntity> listAccountRole = new ArrayList<>();
-        req.getListRoleId().parallelStream().forEach(roleId ->
-                {
-                    var checkRole = repo.findById(roleId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-                    var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
-                    build.setCreateId(info.getId());
-                    listAccountRole.add(build);
-                }
-        );
-        accountRoleRepo.saveAll(listAccountRole);
+        var checkRole = repo.findById(req.getRoleId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
+        build.setCreateId(info.getId());
+        accountRoleRepo.save(build);
         return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 
@@ -82,15 +76,10 @@ public class RoleServiceImpl implements RoleService {
         if(info.getEmail().equals(req.getEmail())) throw new ValidateException(MESSAGE.VALIDATE.CANNOT_REMOVE_ROLE_SELF);
         var checkAccount = accountRepo.findByEmail(req.getEmail());
         if (checkAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
-        List<AccountsRolesEntity> listAccountRole = new ArrayList<>();
-        req.getListRoleId().parallelStream().forEach(roleId ->
-                {
-                    var checkRole = repo.findById(roleId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-                    var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
-                    listAccountRole.add(build);
-                }
-        );
-        accountRoleRepo.deleteAll(listAccountRole);
+        var checkRole = repo.findById(req.getRoleId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
+        build.setCreateId(info.getId());
+        accountRoleRepo.delete(build);
         return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 }
