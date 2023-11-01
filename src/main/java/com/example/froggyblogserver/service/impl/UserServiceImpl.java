@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
         var info = currentUserService.getInfo();
         var dtoRes = userMapper.entityToDto(info);
         var account = accountRepo.findByEmail(info.getEmail());
-        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getName).collect(Collectors.toList()));
+        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getCode).collect(Collectors.toList()));
         return new BaseResponse(dtoRes);
     }
 
@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
         var update = repo.save(convertToEntity);
         var dtoRes = userMapper.entityToDto(update);
          var account = accountRepo.findByEmail(update.getEmail());
-        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getName).collect(Collectors.toList()));
+        dtoRes.setRoles(account.getRoles().parallelStream().map(RoleEntity::getCode).collect(Collectors.toList()));
         return new BaseResponse(dtoRes);
     }
 
