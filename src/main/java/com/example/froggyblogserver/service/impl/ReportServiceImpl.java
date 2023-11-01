@@ -47,10 +47,11 @@ public class ReportServiceImpl implements ReportService {
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(ReportDto req) {
         var info = currentUserService.getInfo();
-        commentRepo.findById(req.getCommentId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var comment = commentRepo.findById(req.getCommentId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         var entity = mapper.dtoToEntity(req);
         entity.setStatus(CONSTANTS.BOOLEAN.FALSE);
         entity.setCreateId(info.getId());
+        entity.setComment(comment);
         repo.save(entity);
         return new BaseResponse(req);
     }
