@@ -83,8 +83,8 @@ public class ReportServiceImpl implements ReportService {
     public BaseResponse acceptReport(String id) {
         var found = repo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         var deleteComment = commentRepo.findById(found.getComment().getId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-        deleteComment.setDelete(CONSTANTS.BOOLEAN.TRUE);
-        commentRepo.save(deleteComment);
+        commentRepo.delete(deleteComment);
+        repo.delete(found);
         return new BaseResponse();
     }
 
