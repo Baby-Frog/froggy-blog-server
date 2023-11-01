@@ -118,7 +118,10 @@ public class SecurityConfig {
                     .permitAll()
                 .antMatchers(
                         "/api/topic/delete/**",
-                        "/api/report/**",
+                        "/api/report/saveOrUpdate",
+                        "/api/report/accept/**",
+                        "/api/report/abort/**",
+                        "/api/report/search/**",
                         "/api/post/changeStatus",
                         "/api/dashboard/**",
                         "/api/post/postWaitApproval"
