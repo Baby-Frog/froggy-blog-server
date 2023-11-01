@@ -72,9 +72,8 @@ public class PostServiceImpl implements PostService {
         var post = postMapper.dtoToEntity(req);
         if (StringHelper.isNullOrEmpty(post.getId())) {
             post.setCreateId(info.getId());
-            post.setAuthor(info);
-        }
-        else post.setUpdateId(info.getId());
+        } else post.setUpdateId(info.getId());
+        post.setAuthor(info);
         post.setStatus(CONSTANTS.POST_STATUS.PENDING);
         post.setPublishDate(LocalDateTime.now());
         var totalChar = StringHelper.totalCharacter(req.getRaw());
