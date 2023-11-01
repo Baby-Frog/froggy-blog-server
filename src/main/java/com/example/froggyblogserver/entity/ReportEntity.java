@@ -18,7 +18,9 @@ public class ReportEntity extends BaseEntity{
     @Id
     private String id;
     private String reason;
-    private String idComment;
+    @OneToOne
+    @JoinColumn(name = "id_comment",referencedColumnName = "id")
+    private CommentEntity comment;
     private boolean status;
     @PrePersist
     private void beforeInsert() {

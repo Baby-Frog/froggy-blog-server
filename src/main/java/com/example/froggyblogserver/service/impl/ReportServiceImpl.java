@@ -47,7 +47,7 @@ public class ReportServiceImpl implements ReportService {
     @Transactional(rollbackOn = {CheckedException.class, UncheckedException.class})
     public BaseResponse saveOrUpdate(ReportDto req) {
         var info = currentUserService.getInfo();
-        commentRepo.findById(req.getIdComment()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        commentRepo.findById(req.getCommentId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         var entity = mapper.dtoToEntity(req);
         entity.setStatus(CONSTANTS.BOOLEAN.FALSE);
         entity.setCreateId(info.getId());
@@ -81,7 +81,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public BaseResponse acceptReport(String id) {
         var found = repo.findById(id).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-        var deleteComment = commentRepo.findById(found.getIdComment()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+        var deleteComment = commentRepo.findById(found.getComment().getId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
         deleteComment.setDelete(CONSTANTS.BOOLEAN.TRUE);
         commentRepo.save(deleteComment);
         return new BaseResponse();

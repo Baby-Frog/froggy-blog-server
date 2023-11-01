@@ -16,7 +16,8 @@ public class ReportDto {
     @NotBlank
     private String reason;
     @NotBlank
-    private String idComment;
+    private String commentId;
+    private CommentDto comment;
     private LocalDateTime createDate;
     private UserDto userDto;
 }
