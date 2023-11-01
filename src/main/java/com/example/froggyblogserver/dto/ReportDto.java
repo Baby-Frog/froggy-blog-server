@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,5 +17,6 @@ public class ReportDto {
     private String reason;
     @NotBlank
     private String idComment;
+    private LocalDateTime createDate;
     private UserDto userDto;
 }
