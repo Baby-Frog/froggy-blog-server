@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +35,7 @@ public class RoleServiceImpl implements RoleService {
     private CurrentUserService currentUserService;
     @Autowired
     private RoleMapper roleMapper;
+
     @Override
     public BaseResponse findById(String id) {
         return null;
@@ -42,7 +45,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackOn = {UncheckedException.class, CheckedException.class})
     public BaseResponse saveOrUpdate(RoleEntity req) {
         var info = currentUserService.getInfo();
-        if(StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
+        if (StringHelper.isNullOrEmpty(req.getId())) req.setCreateId(info.getId());
         else req.setUpdateId(info.getId());
         req.setCode(StringHelper.convertToNonAccent(req.getName()));
         return new BaseResponse(repo.save(req));
@@ -55,15 +58,39 @@ public class RoleServiceImpl implements RoleService {
         var info = currentUserService.getInfo();
         var checkAccount = accountRepo.findByEmail(req.getEmail());
         if (checkAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
-        var checkRole = repo.findById(req.getRoleId()).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
-        var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
-        build.setCreateId(info.getId());
-        accountRoleRepo.save(build);
+        List<AccountsRolesEntity> listAccountRole = new ArrayList<>();
+        req.getListRoleId().parallelStream().forEach(roleId ->
+                {
+                    var checkRole = repo.findById(roleId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+                    var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
+                    build.setCreateId(info.getId());
+                    listAccountRole.add(build);
+                }
+        );
+        accountRoleRepo.saveAll(listAccountRole);
         return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 
     @Override
     public BaseResponse getAllRole() {
         return new BaseResponse(repo.findAll().stream().map(roleMapper::entityToDto).collect(Collectors.toList()));
+    }
+
+    @Override
+    public BaseResponse removeRoleToUser(AddRoleUserDto req) {
+        var info = currentUserService.getInfo();
+        if(info.getEmail().equals(req.getEmail())) throw new ValidateException(MESSAGE.VALIDATE.CANNOT_REMOVE_ROLE_SELF);
+        var checkAccount = accountRepo.findByEmail(req.getEmail());
+        if (checkAccount == null) throw new ValidateException(MESSAGE.VALIDATE.EMAIL_INVALID);
+        List<AccountsRolesEntity> listAccountRole = new ArrayList<>();
+        req.getListRoleId().parallelStream().forEach(roleId ->
+                {
+                    var checkRole = repo.findById(roleId).orElseThrow(() -> new ValidateException(MESSAGE.VALIDATE.ID_INVALID));
+                    var build = AccountsRolesEntity.builder().accountId(checkAccount.getId()).roleId(checkRole.getId()).build();
+                    listAccountRole.add(build);
+                }
+        );
+        accountRoleRepo.deleteAll(listAccountRole);
+        return new BaseResponse(MESSAGE.RESPONSE.ACTIONS_SUCCESS);
     }
 }

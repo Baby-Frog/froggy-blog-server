@@ -27,6 +27,10 @@ public class RoleController {
     public ResponseEntity<?> addRole(@RequestBody AddRoleUserDto dto){
         return ResponseEntity.ok().body(roleService.addRoleToUser(dto));
     }
+    @PostMapping("removeRole")
+    public ResponseEntity<?> removeRole(@RequestBody AddRoleUserDto dto){
+        return ResponseEntity.ok().body(roleService.removeRoleToUser(dto));
+    }
     @RequestMapping("gets")
     public ResponseEntity<?> getAll(){
         return ResponseEntity.ok().body(roleService.getAllRole());

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.*;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,5 +18,5 @@ public class AddRoleUserDto {
     @NotNull
     @NotEmpty
     @NotBlank
-    private String roleId;
+    private List<String> listRoleId;
 }

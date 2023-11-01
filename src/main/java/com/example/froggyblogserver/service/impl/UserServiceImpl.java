@@ -186,7 +186,12 @@ public class UserServiceImpl implements UserService {
         else page = SortHelper.sort(page,CONSTANTS.SORT.DESC,"createDate");
         var exec = repo.search(request, page);
         return new BaseResponse(PageResponse.builder()
-                .data(exec.getContent())
+                .data(exec.getContent().stream().map(user ->{
+                    var dto = userMapper.entityToProfileAdmin(user);
+                    var account= accountRepo.findByEmail(user.getEmail());
+                    dto.setRole(account.getRoles());
+                    return dto;
+                }).collect(Collectors.toList()))
                 .pageNumber(request.getPageNumber())
                 .pageSize(request.getPageSize())
                 .totalPage(exec.getTotalPages())

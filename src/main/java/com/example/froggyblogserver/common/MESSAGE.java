@@ -18,6 +18,7 @@ public class MESSAGE {
         public static final String TOPIC_INVALID = "Topic invalid!!!";
         public static final String TOPIC_EXIST = "Topic already exist!!!";
         public static final String AUTHOR_INVALID = "Sorry,you are not an author!!!";
+        public static final String CANNOT_REMOVE_ROLE_SELF = "Sorry,you can't delete your role !!!";
 
 
     }

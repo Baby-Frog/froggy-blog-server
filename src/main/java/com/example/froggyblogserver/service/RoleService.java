@@ -10,4 +10,5 @@ public interface RoleService extends GeneralService<RoleEntity> {
 
     BaseResponse addRoleToUser(AddRoleUserDto req);
     BaseResponse getAllRole();
+    BaseResponse removeRoleToUser(AddRoleUserDto req);
 }
